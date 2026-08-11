@@ -24,24 +24,35 @@ intended to run unchanged on a real physical GFX1250 system as well as GFX950;
 | DSA-D1 / `dsa-decode-pipeline` | GLM-5.2 complete decode attention pipeline | B1, context 4096, q_len 1, 32 index heads × 128, 8 attention heads, top-k 2048, absorbed width 576 | BF16 index Q, packed FP8 index-K with FP32 scales, page 64; live slots feed FP8 Q and dense FP8 MLA KV selected attention | Complete index-selection plus selected-attention pipeline. Report logits, radix selection, attention main, and reduction dispatches separately inside the call. | Yes |
 | DSA-P1 / `dsa-prefill-pipeline-4k` | GLM-5.2 complete pure-prefill attention pipeline | B1, prefix 0, extend 4096, 32 index heads × 128, 8 attention heads, causal top-k up to 2048, absorbed width 576 | BF16 index Q, packed FP8 index-K with FP32 scales, page 64; live slots feed FP8 Q and dense FP8 MLA KV selected attention | Complete causal index-selection plus selected-attention pipeline. Report every component dispatch separately inside the call. | Yes |
 
-DSA is represented at the same level as MLA: one production-path workload per
-phase, with all internal/component dispatches reported under that case.
-For DSA, the runner composes the separate top-k and selected-attention APIs and
-passes the live selected slots between them. No packed sparse attention-KV case
-is included because current GLM serving uses dense MLA KV for selected
-attention. FP8 DSA prefill attention uses normal capability-based selection;
-the current common production solution on both architectures is Triton rather
-than forcing a BF16-only Gluon prefill registration.
+## Collection model
+
+Each table row is one official workload. Measure its complete latency in an
+unprofiled runner invocation. Then run the same case under the profiler and
+report every GPU dispatch separately; do not replace the pipeline case with
+synthetic component-only workloads.
+
+For DSA, the runner composes the top-k and selected-attention APIs and passes
+the live selected slots between them. The profiler still reports the logits,
+radix-selection, attention-main, and reduction dispatches individually. For
+MLA, it similarly reports all dispatches emitted by the single MLA API call.
+
+No packed sparse attention-KV case is included because current GLM serving uses
+dense MLA KV for selected attention. FP8 DSA prefill uses normal
+capability-based solution selection on both architectures.
 
 ## Metrics to collect
 
-### Required for every case
+### Workload-level
 
 - Device name, architecture string, ROCm version, PyTorch version, TokenSpeed
   commit, kernel package build, and command line.
-- Complete workload latency from GPU events after warmup.
-- Every dispatch name, dispatch count, and dispatch duration or AM cycle count
-  inside the workload.
+- Complete unprofiled workload latency from GPU events after warmup.
+- Correctness/status: successful completion, finite outputs, and selected
+  solution or fallback path.
+
+### Dispatch-level
+
+- Dispatch name, count, duration, or AM cycle count.
 - Grid/workgroup dimensions and static kernel resources: VGPR, SGPR, LDS, and
   scratch usage.
 - HBM read bytes, write bytes, and effective read/write bandwidth.
@@ -50,14 +61,16 @@ than forcing a BF16-only Gluon prefill registration.
 - Matrix-pipeline utilization (`MFMA`/`XDL`) with the exact counter definition.
 - LDS bank-conflict or LDS-stall metric.
 - Average VMEM and LDS dependency latency where available.
-- Correctness/status: successful completion, finite outputs, and the selected
-  kernel solution or fallback path.
 
 ### Reporting rules
 
+- Collect latency without profiler instrumentation. Collect dispatch counters
+  in separate reruns of the identical case.
+- If all counters cannot be collected together, use multiple profiler passes
+  with the same inputs and identify dispatches by name and order.
 - Keep raw counter names and definitions beside derived percentages.
-- Report both complete-call latency and per-dispatch data; do not substitute a
-  main-kernel duration for end-to-end latency.
+- Report both complete-workload latency and per-dispatch data; do not
+  substitute a main-kernel duration for end-to-end latency.
 - AM model time is simulated time, not physical MI450 latency. Never divide AM
   model time by MI350X physical time to claim a hardware speedup.
 - If a counter is unavailable on one architecture, report it as unavailable
@@ -159,9 +172,8 @@ core `tokenspeed-kernel` source tree. Before an FFM/ROCcap run, make the matchin
 core revision importable (for example at `/workspace/tokenspeed-kernel/python`)
 without rebuilding Triton.
 
-The pure-4K DSA selected-attention AM replay is required, but may take several
-hours. A stopped or unfinished replay must be reported as incomplete rather
-than omitted from the matched set.
+DSA-P1 AM replay is long-running but remains required. Report a stopped or
+unfinished replay as incomplete rather than omitting the case.
 
 ## Rerun checklist
 
