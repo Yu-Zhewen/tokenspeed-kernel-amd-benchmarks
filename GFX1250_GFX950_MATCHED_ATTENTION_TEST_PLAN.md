@@ -8,7 +8,7 @@ does not contain benchmark results.
 
 A comparison is complete only when:
 
-- all five cases below run on both architectures;
+- all six cases below run on both architectures;
 - both runs use the same TokenSpeed revision, kernel package, inputs, warmups,
   repeats, dtypes, layouts, and public API scope;
 - unprofiled physical latency and per-dispatch profiler data are both saved;
@@ -26,6 +26,7 @@ invalidates the comparison.
 |---|---|---|---|---|
 | MLA-D1 / `mla-decode` | Kimi-K3 decode | B1, context 4096, q_len 1, 12 heads, absorbed width 576 = rank 512 + rope 64 | FP8 absorbed Q, dense FP8 paged KV, page 64; BF16 value projection, raw sigmoid gate, and output | Complete projected-value MLA workload, including all main, reduction, and epilogue dispatches |
 | MLA-P1 / `mla-prefill` | Kimi-K3 pure prefill | B1, prefix 0, extend 4096, 12 heads, Q/K width 192, V width 128, causal | FP8 Q/K/V, packed variable-length sequence | Complete causal MLA prefill workload |
+| KDA-D1 / `kda-decode` | Kimi-K3 KDA decode | B1, q_len 1, 12 heads, K/V width 128 | BF16 Q/K/V/gates, FP32 parameters and indexed recurrent state | Complete one-token recurrent update from one state-pool page to another; prior context is represented by the fixed-size state |
 | KDA-P1 / `kda-prefill` | Kimi-K3 KDA pure prefill | B1, prefix 0, extend 4096, 12 heads, K/V width 128 | BF16 Q/K/V/gates, FP32 parameters and recurrent state | Complete pipeline: preprocess, solve/merge, W/U generation, state scan, and output |
 | DSA-D1 / `dsa-decode-pipeline` | GLM-5.2 decode: top-k then selected attention | B1, context 4096, q_len 1, 32 index heads × 128, 8 attention heads, top-k 2048, absorbed width 576 | BF16 index Q, packed FP8 index-K with FP32 scales, page 64; live slots feed FP8 Q and dense FP8 MLA KV | Complete pipeline; report logits, radix selection, attention main, and reduction dispatches individually |
 | DSA-P1 / `dsa-prefill-pipeline-4k` | GLM-5.2 pure prefill: causal top-k then selected attention | B1, prefix 0, extend 4096, 32 index heads × 128, 8 attention heads, causal top-k up to 2048, absorbed width 576 | BF16 index Q, packed FP8 index-K with FP32 scales, page 64; live slots feed FP8 Q and dense FP8 MLA KV | Complete pipeline and every component dispatch; this case is long-running but required |
@@ -45,6 +46,9 @@ MLA, it similarly reports all dispatches emitted by the single MLA API call.
 No packed sparse attention-KV case is included because current GLM serving uses
 dense MLA KV for selected attention. FP8 DSA prefill uses normal
 capability-based solution selection on both architectures.
+
+KDA-D1 has no context-length sweep: KDA decode reads the history summarized in
+its recurrent-state page, performs one token update, and writes the next page.
 
 ## Required outputs
 
@@ -292,7 +296,7 @@ replay as incomplete.
 
 ## Final validation
 
-- Both architectures contain all five case IDs.
+- Both architectures contain all six case IDs.
 - Commands, inputs, dtypes, layouts, warmups, and repeats match.
 - MLA-D1 uses FP8 absorbed Q and FP8 dense paged KV.
 - DSA uses live top-k slots with dense FP8 MLA KV, not packed sparse

@@ -36,6 +36,7 @@ State any unavoidable setup difference:
 |---|---|---|---|---|
 | MLA-D1 | `mla-decode` | Kimi-K3 B1 decode, context 4096, FP8 absorbed Q and FP8 dense paged KV | `<pass/fail>` | `<pass/fail>` |
 | MLA-P1 | `mla-prefill` | Kimi-K3 B1 pure prefill, extend 4096, causal FP8 Q/K/V | `<pass/fail>` | `<pass/fail>` |
+| KDA-D1 | `kda-decode` | Kimi-K3 B1 one-token recurrent decode, BF16 inputs and FP32 indexed state | `<pass/fail>` | `<pass/fail>` |
 | KDA-P1 | `kda-prefill` | Kimi-K3 B1 KDA pure prefill, extend 4096, BF16 inputs and FP32 state | `<pass/fail>` | `<pass/fail>` |
 | DSA-D1 | `dsa-decode-pipeline` | GLM-5.2 B1 decode, context 4096, top-k 2048, live selected slots and dense FP8 KV | `<pass/fail>` | `<pass/fail>` |
 | DSA-P1 | `dsa-prefill-pipeline-4k` | GLM-5.2 B1 pure prefill, extend 4096, causal top-k up to 2048 and dense FP8 KV | `<pass/fail>` | `<pass/fail>` |
@@ -49,6 +50,7 @@ FFM or AM time in this table.
 |---|---:|---:|---|---|
 | MLA-D1 | `<value>` | `<value or unavailable>` | `<N / N>` | `<status>` |
 | MLA-P1 | `<value>` | `<value or unavailable>` | `<N / N>` | `<status>` |
+| KDA-D1 | `<value>` | `<value or unavailable>` | `<N / N>` | `<status>` |
 | KDA-P1 | `<value>` | `<value or unavailable>` | `<N / N>` | `<status>` |
 | DSA-D1 | `<value>` | `<value or unavailable>` | `<N / N>` | `<status>` |
 | DSA-P1 | `<value>` | `<value or unavailable>` | `<N / N>` | `<status>` |

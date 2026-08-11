@@ -47,6 +47,14 @@ CASE_SPECS: dict[str, dict[str, Any]] = {
         "layout": "packed varlen, causal",
         "long_running": False,
     },
+    "kda-decode": {
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, q_len=1, heads=12, K/V=128",
+        "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+        "layout": "indexed K-major recurrent-state pool",
+        "long_running": False,
+    },
     "kda-prefill": {
         "model": "Kimi-K3",
         "phase": "prefill",
@@ -91,6 +99,7 @@ def _load_kernel_apis() -> None:
     global dsa_decode_topk
     global dsa_prefill
     global dsa_prefill_topk
+    global kda_paged_decode
     global kda_paged_prefill
     global mla_decode_with_kvcache
     global mla_prefill
@@ -116,7 +125,7 @@ def _load_kernel_apis() -> None:
         mla_decode_with_kvcache,
         mla_prefill,
     )
-    from tokenspeed_kernel.ops.attention import kda_paged_prefill
+    from tokenspeed_kernel.ops.attention import kda_paged_decode, kda_paged_prefill
 
 
 def _arch() -> str:
@@ -300,6 +309,47 @@ def _kda_prefill() -> Workload:
     return Workload(run, {})
 
 
+def _kda_decode() -> Workload:
+    shape = (1, 1, KIMI_HEADS, KIMI_VALUE_DIM)
+    q = torch.full(shape, 0.125, dtype=torch.bfloat16, device="cuda")
+    k = torch.full_like(q, 0.0625)
+    v = torch.full_like(q, 0.25)
+    g_raw = torch.zeros_like(q)
+    beta_logits = torch.zeros(
+        (1, 1, KIMI_HEADS), dtype=torch.bfloat16, device="cuda"
+    )
+    a_log = torch.zeros(KIMI_HEADS, dtype=torch.float32, device="cuda")
+    dt_bias = torch.zeros(
+        (KIMI_HEADS, KIMI_VALUE_DIM), dtype=torch.float32, device="cuda"
+    )
+    state_pool = torch.zeros(
+        (2, KIMI_HEADS, KIMI_VALUE_DIM, KIMI_VALUE_DIM),
+        dtype=torch.float32,
+        device="cuda",
+    )
+    read_indices = torch.tensor([0], dtype=torch.int32, device="cuda")
+    write_indices = torch.tensor([1], dtype=torch.int32, device="cuda")
+    cu_seqlens = torch.tensor([0, 1], dtype=torch.int32, device="cuda")
+
+    def run() -> object:
+        return kda_paged_decode(
+            q=q,
+            k=k,
+            v=v,
+            g_raw=g_raw,
+            beta_logits=beta_logits,
+            A_log=a_log,
+            dt_bias=dt_bias,
+            state_pool=state_pool,
+            read_indices=read_indices,
+            write_indices=write_indices,
+            cu_seqlens=cu_seqlens,
+            lower_bound=-5.0,
+        )
+
+    return Workload(run, {"state_pages": "read page 0, write page 1"})
+
+
 def _dsa_common() -> dict[str, torch.Tensor]:
     context = 4096
     torch.manual_seed(42)
@@ -461,6 +511,7 @@ def _build(name: str, arch: str) -> Workload:
     builders: dict[str, Callable[[], Workload]] = {
         "mla-decode": _mla_decode,
         "mla-prefill": _mla_prefill,
+        "kda-decode": _kda_decode,
         "kda-prefill": _kda_prefill,
         "dsa-decode-pipeline": lambda: _dsa_decode_pipeline(arch),
         "dsa-prefill-pipeline-4k": _dsa_prefill_pipeline,
