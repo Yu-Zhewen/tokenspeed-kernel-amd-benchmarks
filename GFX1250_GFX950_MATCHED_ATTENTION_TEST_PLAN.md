@@ -147,6 +147,14 @@ definitions, exact commands, failures, and artifact paths. Keep physical
 latency and AM results in separate columns; never place AM model time in a
 physical-latency column.
 
+Every execution agent must create or update
+`matched-attention-results/MATCHED_ATTENTION_RESULTS.md` from
+`MATCHED_ATTENTION_RESULT_TEMPLATE.md` before reporting completion. Raw JSON,
+CSV, capture, or AM artifacts alone are not a complete handoff. If only one
+architecture has been collected, generate the report anyway, mark it
+`incomplete`, fill the collected side, and explicitly mark the other side
+`unavailable`. The completion message must include the report path.
+
 ## Execution instructions
 
 ### 1. Prepare identical software
