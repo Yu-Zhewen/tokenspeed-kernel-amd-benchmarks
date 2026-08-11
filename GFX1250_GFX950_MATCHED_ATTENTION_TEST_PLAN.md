@@ -89,6 +89,60 @@ the field or substitute a counter with a different definition.
 - Record failures and stopped runs. Do not silently omit an impractically slow
   case.
 
+## Output format
+
+The deliverable has two layers:
+
+1. Raw machine-readable runner JSON and profiler/AM artifacts.
+2. One completed `MATCHED_ATTENTION_RESULT_TEMPLATE.md` from this gist.
+
+The runner JSON has this schema:
+
+```json
+{
+  "schema_version": 1,
+  "device": "<device name>",
+  "arch": "<gfx950 or gfx1250>",
+  "environment": "<physical, ffm, or am>",
+  "torch": "<version>",
+  "rocm": "<version>",
+  "warmup": 2,
+  "repeats": 5,
+  "cases": {
+    "<runner case>": {
+      "spec": {},
+      "details": {},
+      "latency_us": null
+    }
+  }
+}
+```
+
+The runner does not automatically record commit SHAs, the exact command line,
+or profiler counters. Add those to the Markdown report and retain the raw files.
+Use this artifact layout unless the execution environment requires another
+location:
+
+```text
+matched-attention-results/
+  MATCHED_ATTENTION_RESULTS.md
+  matched-attention-cases.json
+  gfx950/
+    latency.json
+    profiles/<case>/*.csv
+  gfx1250/
+    latency.json
+    profiles/<case>/*.csv
+    captures/<case>/<dispatch>/
+    am/<case>/<dispatch>/
+```
+
+The final Markdown report must include setup and full commit SHAs, required-suite
+status, physical workload latency, normalized per-dispatch results, raw counter
+definitions, exact commands, failures, and artifact paths. Keep physical
+latency and AM results in separate columns; never place AM model time in a
+physical-latency column.
+
 ## Execution instructions
 
 ### 1. Prepare identical software
