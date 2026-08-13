@@ -11,8 +11,8 @@ for TokenSpeed AMD kernels.
 
 ## Results
 
-- [GFX950 at `f1e194c9`](results/GFX950_MATCHED_ATTENTION_RESULTS_f1e194c9.md)
-- [GFX950 at `9d1b02ed`](results/MATCHED_ATTENTION_RESULTS_GFX950_9D1B02ED.md)
+- 2026-08-11 — [GFX950 at `f1e194c9`](results/MATCHED_ATTENTION_RESULTS_GFX950_f1e194c9.md)
+- 2026-08-13 — [GFX950 at `9d1b02ed`](results/MATCHED_ATTENTION_RESULTS_GFX950_9d1b02ed.md)
 
 The repository preserves the revision history imported from the original
 benchmark gist.
