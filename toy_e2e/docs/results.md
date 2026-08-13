@@ -12,20 +12,22 @@ with a real eight-rank run is therefore out of scope.
 
 ## Result
 
-Overall: **FAIL at MLA decode due to a nonfinite current-token FP8 cache row.**
+Overall: **PASS for structural logical-rank prefill and decode.**
 
-- Checkpoint load passed in about 2 seconds and allocated 7.03 GiB.
+- Checkpoint load passed in about 2 seconds and allocated 7.11 GiB.
 - The model contained three KDA layers followed by one MLA layer.
 - Every attention layer used 12 rank-local heads.
 - Each of the three MoE layers loaded 112 local experts and selected the Triton
   dynamic-MXFP4 SiTU solution.
 - Eight-token prefill passed through all four layers with finite `[8, 7168]`
   output.
-- Decode passed all three KDA+MoE layers with finite output, then the MLA
-  attention returned 7,168 nonfinite values.
+- One-token decode passed through all four layers with finite `[1, 7168]`
+  output.
+- The production projected-value MLA kernel and a torch attention reference
+  both produced finite output.
 - The process exited and released the GPU after every probe.
 
-The first diagnostic run reported 6.58 s for prefill and 2.45 s for decode,
+The corrected diagnostic run reported 6.57 s for prefill and 2.42 s for decode,
 including compilation and synchronous diagnostic hooks. These are not
 steady-state performance measurements.
 
@@ -40,29 +42,35 @@ Shape capture confirmed:
   page size 64, sequence length 9;
 - MoE plan: `triton` for all three local 112-expert layers.
 
-The KDA and MoE operations executed and remained finite, but their exact kernel
-names were not emitted by the current shape-capture instrumentation.
+All KDA, MLA, and MoE layer outputs remained finite. The exact KDA and MoE
+kernel names were not emitted by the current shape-capture instrumentation.
 
-## Failure isolation
+## Cache allocation correction
 
-The logical cache table resolved correctly:
+The harness now constructs a real `tokenspeed_scheduler.Scheduler` from the
+runtime cache contract and consumes its prefill/decode `ForwardOp` block tables.
+The scheduler allocated separate LCM parents:
 
-- logical parent page: 1;
-- full-attention child pages: 12–23;
-- decode kernel pages: `[24, 25]` at kernel page size 64;
-- current-token write location: 1544;
+- full attention: child page `37` (LCM parent 4);
+- KDA groups: pages `1`, `2`, and `3` (LCM parents 1–3);
+- decode kernel pages: `[74, 75]` at kernel page size 64;
+- current-token write location: `4744`;
 - decode sequence length: 9.
 
-Immediately after prefill, all eight live MLA cache rows were finite
-(`abs_max=2.25`). The absorbed BF16 query, latent row, output gate, `w_kc`, and
-`w_vc` were also finite. The final FP8 query passed to decode was finite
-(`abs_max=13.0`).
+All nine MLA cache rows were finite at decode (`abs_max=2.25`). The absorbed
+query, latent row, output gate, `w_kc`, and `w_vc` were finite. Attention scores
+were finite (`abs_max=13.76`), as were the projected gfx1250 kernel output and
+the torch reference.
 
-By the decode attention call, however, the nine-row cache contained nonfinite
-data. A torch attention reference over that cache was nonfinite too. Forcing
-the portable `triton_mla_decode_with_kvcache` path produced the same result.
-This excludes the gfx1250 projected-value reducer as the primary cause and
-places the defect in the preceding NoPE FP8 decode cache-write path.
+The earlier harness assigned all cache groups to LCM parent 1. KDA state and
+MLA history fields intentionally alias storage within one parent, so every KDA
+decode layer overwrote the MLA cache before MLA ran. Instrumentation showed the
+cache was finite before KDA layer 0, changed immediately after that layer, and
+was already nonfinite before the MLA QKV/cache-write path. The MLA write did
+not change the corruption pattern.
+
+Therefore, the previous reported MLA cache-write defect was a harness false
+positive. This test found no MLA runtime or kernel defect.
 
 ## Reproduction
 
@@ -83,9 +91,7 @@ validation is available with `--phase load`.
 ```text
 python3 -m pytest -q -p no:cacheprovider \
   toy_e2e/tests/test_logical_rank.py
-4 passed
+6 passed
 ```
 
-No production runtime or kernel source was changed. The next fix should use a
-small reproducer for the NoPE BF16-to-FP8 current-token cache write before
-changing the attention kernels.
+No production runtime or kernel source was changed.

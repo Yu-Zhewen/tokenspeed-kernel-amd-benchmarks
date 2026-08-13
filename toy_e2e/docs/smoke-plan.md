@@ -260,10 +260,17 @@ dynamic-MXFP4 SiTU path, and replaces rank-spanning reductions with rank-0
 identity reductions. Its output is therefore a structural integration result,
 not a numerical parity result.
 
+The model still runs directly, but cache allocation does not bypass production
+semantics: the harness builds a real TokenSpeed scheduler from the runtime cache
+contract and uses its per-group `ForwardOp` tables. Never hand-assign KDA and
+MLA pages from the same LCM parent because their physical fields alias.
+
 The command exits nonzero if prefill or decode contains nonfinite values.
 `--phase load` checks construction and checkpoint loading without running
 kernels. `--mla-decode-mode composed --mla-kernel-solution triton` can isolate
 the generic MLA composition, but must not be reported as production dispatch.
+At revision `d34dcf1aec3295019614bd9af53370f9ddaade64`, the projected gfx1250
+path passed with finite eight-token prefill and one-token decode outputs.
 
 ## 7. Optional request-load smoke
 

@@ -26,11 +26,9 @@ import json
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 from unittest import mock
 
-import numpy as np
 import torch
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -53,11 +51,11 @@ def logicalize_topk(
     return local_ids, local_weights, is_local
 
 
-def first_child_page(parent_page: int, cache_blocks_per_parent: int) -> int:
-    """Return the first group-local child page inside an LCM parent page."""
-    if parent_page < 0 or cache_blocks_per_parent <= 0:
+def cache_parent_page(child_page: int, cache_blocks_per_parent: int) -> int:
+    """Map a positive group-local child page to its shared LCM parent."""
+    if child_page <= 0 or cache_blocks_per_parent <= 0:
         raise ValueError("page and packing values must be positive")
-    return parent_page * cache_blocks_per_parent
+    return (child_page - 1) // cache_blocks_per_parent + 1
 
 
 class LogicalRankCommBackend:
@@ -392,37 +390,91 @@ def _model_summary(server_args, model_config, runner, stats):
     }
 
 
-def _cache_metadata(pool):
-    from tokenspeed.runtime.layers.attention.backends.cache_metadata import (
-        CacheBatchMetadata,
-    )
-
+def _validate_cache_group_tables(pool, forward_op) -> dict[str, list[list[int]]]:
+    """Reject scheduler tables whose live groups alias one LCM parent."""
+    arrays = forward_op.block_tables_arrays()
     packing = {
         str(group.group_id): int(group.cache_blocks_per_lcm_block)
         for group in pool.plan.groups
     }
-    # Parent page 1: a group packed N-per-parent starts at child page N.
-    arrays = {
-        str(spec.group_id): np.full(
-            (1, 1),
-            first_child_page(1, packing[str(spec.group_id)]),
-            dtype=np.int32,
+    if set(arrays) != set(packing):
+        raise ValueError(
+            "scheduler cache groups do not match the runtime plan: "
+            f"{sorted(arrays)} != {sorted(packing)}"
         )
-        for spec in pool.runtime_contract.group_specs
-    }
-    forward_op = SimpleNamespace(block_tables_arrays=lambda: arrays)
+
+    parent_owners: dict[int, str] = {}
+    serialized: dict[str, list[list[int]]] = {}
+    for group_id, array in arrays.items():
+        serialized[group_id] = array.tolist()
+        for child_page in set(int(page) for page in array.flat if page > 0):
+            parent_page = cache_parent_page(child_page, packing[group_id])
+            owner = parent_owners.setdefault(parent_page, group_id)
+            if owner != group_id:
+                raise ValueError(
+                    f"cache groups {owner!r} and {group_id!r} alias "
+                    f"LCM parent {parent_page}"
+                )
+    return serialized
+
+
+def _scheduler_forward_ops(pool, prefill_tokens: int):
+    """Allocate one request's prefill/decode cache tables with the real scheduler."""
+    from tokenspeed.runtime.engine.scheduler_utils import (
+        make_spec,
+        pool_to_paged_cache_groups,
+        scheduler_cache_geometry_from_pool,
+    )
+    from tokenspeed_scheduler import Scheduler, SchedulerConfig
+
+    geometry = scheduler_cache_geometry_from_pool(
+        pool,
+        fallback_token_capacity=pool.size,
+        fallback_page_size=pool.page_size,
+    )
+    # Use the scheduler binding's stable core fields directly. This keeps the
+    # harness compatible with validation images whose compiled scheduler may
+    # predate optional runtime-helper fields such as prefix_replay_tokens.
+    config = SchedulerConfig()
+    config.num_device_pages = geometry.num_device_pages
+    config.max_scheduled_tokens = max(prefill_tokens, geometry.page_size)
+    config.max_batch_size = 1
+    config.block_size = geometry.page_size
+    config.num_host_pages = 0
+    config.disable_l2_cache = True
+    config.enable_l3_storage = False
+    config.disable_prefix_cache = True
+    config.paged_cache_groups = pool_to_paged_cache_groups(pool)
+    scheduler = Scheduler(config)
+    scheduler.submit_requests(
+        [make_spec("logical-rank-0", [1] * prefill_tokens, max_new_tokens=1)]
+    )
+    prefill_op = scheduler.next_execution_plan().forward[0]
+    decode_op = scheduler.next_execution_plan().forward[0]
+    if prefill_op.num_extends() != 1 or decode_op.num_extends() != 0:
+        raise RuntimeError("scheduler did not produce prefill followed by decode")
+    return prefill_op, decode_op
+
+
+def _cache_metadata(pool, forward_op):
+    from tokenspeed.runtime.layers.attention.backends.cache_metadata import (
+        CacheBatchMetadata,
+    )
+
+    _validate_cache_group_tables(pool, forward_op)
     metadata = CacheBatchMetadata.from_forward_op(
         forward_op,
         device="cuda",
         contract=pool.runtime_contract,
         num_requests=1,
     )
-    return metadata, forward_op
+    return metadata
 
 
 def _init_forward(
     backend,
     pool,
+    forward_op,
     *,
     seq_len: int,
     num_tokens: int,
@@ -435,8 +487,11 @@ def _init_forward(
     num_extends = 0 if is_decode else 1
     req_pool_indices = torch.tensor([0], dtype=torch.int32, device="cuda")
     seq_lens = torch.tensor([seq_len], dtype=torch.int32, device="cuda")
-    page_table = torch.ones((1, 1), dtype=torch.int32, device="cuda")
-    metadata, forward_op = _cache_metadata(pool)
+    metadata = _cache_metadata(pool, forward_op)
+    tables = dict(metadata.tables(active_forward_op=forward_op))
+    page_table = tables.get("full_attention")
+    if page_table is None:
+        page_table = torch.zeros((1, 1), dtype=torch.int32, device="cuda")
     extend_seq_lens = torch.tensor(
         [] if is_decode else [num_tokens],
         dtype=torch.int32,
@@ -511,12 +566,11 @@ def run_prefill_decode(
     stats["mla_kernel_solution"] = mla_kernel_solution
     pool.clear_kv_buffers()
     model = runner.model.language_model.model
-    page_size = int(pool.page_size)
-    full_attention_packing = next(
-        int(group.cache_blocks_per_lcm_block)
-        for group in pool.plan.groups
-        if str(group.group_id) == "full_attention"
-    )
+    prefill_op, decode_op = _scheduler_forward_ops(pool, prefill_tokens)
+    stats["scheduler_cache_tables"] = {
+        "prefill": _validate_cache_group_tables(pool, prefill_op),
+        "decode": _validate_cache_group_tables(pool, decode_op),
+    }
     diagnostics: dict[str, list[dict[str, Any]]] = {}
     active_phase = {"name": "setup"}
     hooks = []
@@ -565,11 +619,12 @@ def run_prefill_decode(
         hooks.append(ffn.register_forward_hook(record_output(f"layer{index}.ffn")))
         hooks.append(layer.register_forward_hook(record_output(f"layer{index}.output")))
 
-    def execute(*, phase, num_tokens, seq_len, is_decode):
+    def execute(*, phase, num_tokens, seq_len, is_decode, forward_op):
         active_phase["name"] = phase
         ctx = _init_forward(
             backend,
             pool,
+            forward_op,
             seq_len=seq_len,
             num_tokens=num_tokens,
             is_decode=is_decode,
@@ -589,7 +644,11 @@ def run_prefill_decode(
             dtype=torch.int64,
             device="cuda",
         )
-        out_cache_loc = full_attention_packing * page_size + positions
+        out_cache_loc = backend.select_out_cache_loc(
+            model.layers[-1].self_attn.attn_mqa,
+            torch.zeros(num_tokens, dtype=torch.int64, device="cuda"),
+            ctx.forward_mode,
+        )
         start = torch.cuda.Event(enable_timing=True)
         end = torch.cuda.Event(enable_timing=True)
         start.record()
@@ -611,16 +670,20 @@ def run_prefill_decode(
             num_tokens=prefill_tokens,
             seq_len=prefill_tokens,
             is_decode=False,
+            forward_op=prefill_op,
         )
     except BaseException:
         kernel_profiling.stop_shape_capture(capture_path)
         raise
     mla_layer = model.layers[-1].self_attn
-    mla_cache = pool.get_component(len(model.layers) - 1, "latent_kv")
-    live_cache = mla_cache[full_attention_packing, :prefill_tokens]
-    if live_cache.dtype != pool.dtype:
-        live_cache = live_cache.view(pool.dtype)
-    live_cache = live_cache.float()
+    prefill_cache_locs = (
+        backend.full_attn_backend.forward_prefill_metadata.group_out_cache_loc
+    )
+    live_cache = (
+        pool.get_key_buffer(len(model.layers) - 1)
+        .index_select(0, prefill_cache_locs.to(torch.int64))
+        .float()
+    )
     stats["mla_prefill_cache"] = {
         "shape": list(live_cache.shape),
         "finite": bool(torch.isfinite(live_cache).all().item()),
@@ -640,6 +703,7 @@ def run_prefill_decode(
             num_tokens=1,
             seq_len=prefill_tokens + 1,
             is_decode=True,
+            forward_op=decode_op,
         )
     finally:
         kernel_profiling.stop_shape_capture(capture_path)

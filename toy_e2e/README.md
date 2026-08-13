@@ -29,7 +29,7 @@ TokenSpeed-kernel dependencies required by the pinned TokenSpeed revision.
 - `scripts/repack_checkpoint.py`: resumable, one-shard-at-a-time downloader and
   reduced-checkpoint builder.
 - `tests/`: CPU tests for checkpoint selection/repacking and logical adapters.
-- `docs/results.md`: observed prefill/decode result and MLA failure isolation.
+- `docs/results.md`: observed prefill/decode result and cache-harness correction.
 - `docs/checkpoint-preparation.md`: exact checkpoint sizing and preparation
   record.
 - `docs/smoke-plan.md`: broader staged Kimi-K3 smoke-test plan.
@@ -156,9 +156,8 @@ docker run --rm \
     --mla-kernel-solution auto
 ```
 
-At the tested revisions, load and prefill pass, then decode intentionally exits
-with status 2 after detecting nonfinite MLA output. This is the recorded known
-failure, not a successful numerical result. Use
+At the tested revisions, the command exits with status 0: prefill, projected
+gfx1250 MLA decode, the FP8 cache, and every layer output are finite. Use
 `--mla-decode-mode composed --mla-kernel-solution triton` only to isolate the
 generic MLA composition; it is not production dispatch.
 
@@ -172,21 +171,22 @@ Triton A4W4 SiTU path. It did not change the production runtime and did not use
 an A16W16 fallback.
 
 All three local 112-expert MoE layers executed with finite outputs during
-prefill. The routed MoE layers reached before the failing MLA operation also
-remained finite during decode.
+prefill and decode.
 
-## MLA finding
+## MLA and cache-allocation finding
 
-Eight-token prefill produced a finite FP8 MLA cache. The decode query and
-absorbed weights were finite, but the current token’s NoPE FP8 cache row was
-nonfinite before attention reduction. The gfx1250 projected-value kernel,
-portable Triton decode, and a torch attention reference all then produced
-nonfinite output.
+The harness uses the real TokenSpeed scheduler to allocate one synthetic
+request and consumes its prefill/decode `ForwardOp` cache tables. The scheduler
+assigned separate LCM parents to the three KDA state groups and the MLA history
+group. Eight-token prefill, the nine-row FP8 decode cache, the decode query,
+absorbed weights, attention scores, the gfx1250 projected-value output, and a
+torch reference were all finite.
 
-The evidence isolates this run’s failure to the preceding NoPE FP8 decode cache
-write, not to the projected-value attention reducer. It does not yet prove that
-the same defect occurs in real eight-GPU serving; a minimal cache-write
-reproducer and a true TP8/EP8 run are still required.
+An earlier harness revision manually assigned every group to LCM parent 1.
+Because KDA and MLA fields intentionally alias within one parent, KDA decode
+overwrote the MLA cache before MLA ran and created a false-positive kernel
+failure. The corrected result provides no evidence of an MLA runtime or kernel
+bug.
 
 ## Coverage limits
 

@@ -20,11 +20,16 @@
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
+import numpy as np
+import pytest
 import torch
 
 from toy_e2e.run_kimi_k3_logical_rank import (
     LogicalRankCommBackend,
-    first_child_page,
+    _validate_cache_group_tables,
+    cache_parent_page,
     logicalize_topk,
 )
 
@@ -81,6 +86,37 @@ def test_logical_collectives_preserve_local_partials_and_expected_shapes() -> No
     assert torch.equal(scattered, value)
 
 
-def test_lcm_parent_page_uses_each_groups_packing_factor() -> None:
-    assert first_child_page(parent_page=1, cache_blocks_per_parent=12) == 12
-    assert first_child_page(parent_page=1, cache_blocks_per_parent=1) == 1
+def _cache_pool():
+    groups = (
+        SimpleNamespace(group_id="full_attention", cache_blocks_per_lcm_block=12),
+        SimpleNamespace(group_id="linear_attention_0", cache_blocks_per_lcm_block=1),
+    )
+    return SimpleNamespace(plan=SimpleNamespace(groups=groups))
+
+
+def _forward_op(full_page: int, state_page: int):
+    arrays = {
+        "full_attention": np.array([[full_page]], dtype=np.int32),
+        "linear_attention_0": np.array([[state_page]], dtype=np.int32),
+    }
+    return SimpleNamespace(block_tables_arrays=lambda: arrays)
+
+
+def test_child_pages_map_to_shared_lcm_parents() -> None:
+    assert cache_parent_page(child_page=1, cache_blocks_per_parent=12) == 1
+    assert cache_parent_page(child_page=12, cache_blocks_per_parent=12) == 1
+    assert cache_parent_page(child_page=13, cache_blocks_per_parent=12) == 2
+
+
+def test_cache_groups_reject_aliasing_lcm_parent() -> None:
+    with pytest.raises(ValueError, match="alias LCM parent 1"):
+        _validate_cache_group_tables(_cache_pool(), _forward_op(12, 1))
+
+
+def test_cache_groups_accept_scheduler_allocated_parents() -> None:
+    tables = _validate_cache_group_tables(_cache_pool(), _forward_op(1, 2))
+
+    assert tables == {
+        "full_attention": [[1]],
+        "linear_attention_0": [[2]],
+    }
