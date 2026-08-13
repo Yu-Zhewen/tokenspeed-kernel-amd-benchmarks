@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Never add model payloads or partial downloads.
+*.safetensors
+*.safetensors.part
+reduced_checkpoint_manifest.json

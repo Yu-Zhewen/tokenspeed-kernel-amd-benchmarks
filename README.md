@@ -1,20 +1,12 @@
 # TokenSpeed AMD kernel benchmarks
 
-Benchmark plans, reproducible runners, result templates, and collected results
-for TokenSpeed AMD kernels.
+Reproducible AMD kernel benchmarks and early model-integration prototypes.
 
-## Matched attention benchmark
-
-- [Test plan](GFX1250_GFX950_MATCHED_ATTENTION_TEST_PLAN.md)
-- [Result template](MATCHED_ATTENTION_RESULT_TEMPLATE.md)
-- [Runner](profile_matched_attention.py)
-
-## Results
-
-- 2026-08-11 — [GFX950 at `f1e194c9`](results/MATCHED_ATTENTION_RESULTS_GFX950_f1e194c9.md)
-- 2026-08-12 — [GFX1250 at `f1e194c9`](results/MATCHED_ATTENTION_RESULTS_GFX1250_f1e194c9.md)
-- 2026-08-13 — [GFX950 at `9d1b02ed`](results/MATCHED_ATTENTION_RESULTS_GFX950_9d1b02ed.md)
-- 2026-08-13 — [GFX1250 at `9d1b02ed`](results/MATCHED_ATTENTION_RESULTS_GFX1250_9d1b02ed.md)
+- [`attention/`](attention/): matched gfx950/gfx1250 attention benchmarks,
+  plans, templates, and collected results.
+- [`toy_e2e/`](toy_e2e/): single-MI450 logical TP8/EP8 Kimi-K3 integration
+  test, reduced-checkpoint preparation tools, tests, findings, and rerun guide.
 
 The repository preserves the revision history imported from the original
-benchmark gist.
+benchmark gist. The toy E2E harness depends on a compatible TokenSpeed checkout;
+its README pins the tested revision and execution environment.
