@@ -446,14 +446,19 @@ def _scheduler_forward_ops(pool, prefill_tokens: int):
     config.disable_prefix_cache = True
     config.paged_cache_groups = pool_to_paged_cache_groups(pool)
     scheduler = Scheduler(config)
+    bind_scheduler = getattr(pool, "bind_paged_cache_scheduler", None)
+    if callable(bind_scheduler):
+        bind_scheduler(scheduler)
     scheduler.submit_requests(
         [make_spec("logical-rank-0", [1] * prefill_tokens, max_new_tokens=1)]
     )
-    prefill_op = scheduler.next_execution_plan().forward[0]
-    decode_op = scheduler.next_execution_plan().forward[0]
+    prefill_plan = scheduler.next_execution_plan()
+    decode_plan = scheduler.next_execution_plan()
+    prefill_op = prefill_plan.forward[0]
+    decode_op = decode_plan.forward[0]
     if prefill_op.num_extends() != 1 or decode_op.num_extends() != 0:
         raise RuntimeError("scheduler did not produce prefill followed by decode")
-    return prefill_op, decode_op
+    return scheduler, prefill_plan, decode_plan
 
 
 def _cache_metadata(pool, forward_op):
@@ -484,21 +489,29 @@ def _init_forward(
     from tokenspeed.runtime.execution.forward_batch_info import ForwardMode
 
     mode = ForwardMode.DECODE if is_decode else ForwardMode.EXTEND
-    num_extends = 0 if is_decode else 1
-    req_pool_indices = torch.tensor([0], dtype=torch.int32, device="cuda")
+    num_extends = int(forward_op.num_extends())
+    expected_num_extends = 0 if is_decode else 1
+    if num_extends != expected_num_extends:
+        raise ValueError(
+            f"scheduler num_extends={num_extends}, expected {expected_num_extends}"
+        )
+    req_pool_indices = torch.tensor(
+        forward_op.request_pool_indices,
+        dtype=torch.int32,
+        device="cuda",
+    )
     seq_lens = torch.tensor([seq_len], dtype=torch.int32, device="cuda")
     metadata = _cache_metadata(pool, forward_op)
-    tables = dict(metadata.tables(active_forward_op=forward_op))
-    page_table = tables.get("full_attention")
-    if page_table is None:
-        page_table = torch.zeros((1, 1), dtype=torch.int32, device="cuda")
+    page_table = metadata.require_full_attention_table(
+        active_forward_op=forward_op
+    )
     extend_seq_lens = torch.tensor(
-        [] if is_decode else [num_tokens],
+        forward_op.input_lengths[:num_extends],
         dtype=torch.int32,
         device="cuda",
     )
     extend_prefix_lens = torch.tensor(
-        [] if is_decode else [seq_len - num_tokens],
+        forward_op.extend_prefix_lens[:num_extends],
         dtype=torch.int32,
         device="cuda",
     )
@@ -566,7 +579,11 @@ def run_prefill_decode(
     stats["mla_kernel_solution"] = mla_kernel_solution
     pool.clear_kv_buffers()
     model = runner.model.language_model.model
-    prefill_op, decode_op = _scheduler_forward_ops(pool, prefill_tokens)
+    _scheduler, prefill_plan, decode_plan = _scheduler_forward_ops(
+        pool, prefill_tokens
+    )
+    prefill_op = prefill_plan.forward[0]
+    decode_op = decode_plan.forward[0]
     stats["scheduler_cache_tables"] = {
         "prefill": _validate_cache_group_tables(pool, prefill_op),
         "decode": _validate_cache_group_tables(pool, decode_op),
@@ -665,6 +682,7 @@ def run_prefill_decode(
     capture_path = Path("/tmp/kimi_k3_logical_rank_shapes.json")
     kernel_profiling.start_shape_capture()
     try:
+        pool.zero_new_pages(dict(prefill_plan.pages_to_zero))
         prefill_hidden, prefill_ms = execute(
             phase="prefill",
             num_tokens=prefill_tokens,
@@ -698,6 +716,7 @@ def run_prefill_decode(
         "w_vc_abs_max": float(mla_layer.w_vc.abs().max().item()),
     }
     try:
+        pool.zero_new_pages(dict(decode_plan.pages_to_zero))
         decode_hidden, decode_ms = execute(
             phase="decode",
             num_tokens=1,
