@@ -1,0 +1,27 @@
+rocprofiler-sdk:
+  counters-schema-version: 1
+  counters:
+    - name: TX_PERF_SEL_VMW_LDS_BANK_CONFLICT
+      description: Number of cycles LDS0+LDS1 is stalled by conflicting bank addresses. {emulated, C1}
+      properties: []
+      definitions:
+        - architectures:
+            - gfx1250
+          block: TCP
+          event: 132
+    - name: TX_PERF_SEL_VMW_CROSS_PORT_SEGMENT_CONFLICT_LDS_STALLED_CYCLES
+      description: Total cycles stalled secondary LDS port due to segment conflict even though secondary port was available.
+      properties: []
+      definitions:
+        - architectures:
+            - gfx1250
+          block: TCP
+          event: 164
+    - name: TX_PERF_SEL_VMW_CROSS_PORT_SEGMENT_CONFLICT_VC_STALLED_CYCLES
+      description: Total cycles stalled secondary VC port due to segment conflict even though secondary port was available.
+      properties: []
+      definitions:
+        - architectures:
+            - gfx1250
+          block: TCP
+          event: 165

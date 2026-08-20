@@ -5,6 +5,7 @@ Production-shaped attention workloads run identically on gfx950 and gfx1250.
 - [Test plan](GFX1250_GFX950_MATCHED_ATTENTION_TEST_PLAN.md)
 - [Result template](MATCHED_ATTENTION_RESULT_TEMPLATE.md)
 - [Runner](profile_matched_attention.py)
+- [GFX1250 rocprofv3 counter setup](gfx1250_rocprof/)
 
 ## Results
 

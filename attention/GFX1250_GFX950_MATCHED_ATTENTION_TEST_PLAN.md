@@ -229,6 +229,13 @@ Current ROCm uses `rocprofv3-avail`; the older
 hardware pass, use multiple `--pmc` groups or separate profiler runs with
 identical inputs.
 
+On the tested GFX1250 system, clock gating caused WMMA and custom LDS-conflict
+PMCs to report zero. Follow the
+[GFX1250 rocprofv3 counter setup](gfx1250_rocprof/README.md) to apply the MGCG
+override during collection and restore the default register values afterward.
+Use its `extra.yaml` for TCP events 132, 164, and 165. Prefer the provided
+wrapper so restoration also occurs when rocprofv3 fails.
+
 The runner performs one untimed setup invocation before its timed repeats.
 Therefore, the profiler may show the workload dispatch sequence more than
 once. Preserve sequence order, label the setup and measured sequences, and
