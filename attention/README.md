@@ -14,3 +14,4 @@ Production-shaped attention workloads run identically on gfx950 and gfx1250.
 - 2026-08-13 — [GFX950 at `9d1b02ed`](results/MATCHED_ATTENTION_RESULTS_GFX950_9d1b02ed.md)
 - 2026-08-13 — [GFX1250 at `9d1b02ed`](results/MATCHED_ATTENTION_RESULTS_GFX1250_9d1b02ed.md)
 - 2026-08-20 — [GFX950 at `70f69266`](results/MATCHED_ATTENTION_RESULTS_GFX950_70f69266.md)
+- 2026-08-20 — [GFX1250 at `70f69266`](results/MATCHED_ATTENTION_RESULTS_GFX1250_70f69266.md)
