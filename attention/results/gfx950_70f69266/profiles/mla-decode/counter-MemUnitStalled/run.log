@@ -1,0 +1,39 @@
+W20260820 14:59:09.942265 140555147461120 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.160249 sec
+W20260820 14:59:09.942537 140555147461120 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 14:59:10.907800 140555147461120 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 14:59:11.262305 127322150924800 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.161607 sec
+W20260820 14:59:11.262412 127322150924800 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-decode": {
+      "details": {
+        "gate": "sigmoid",
+        "max_seqlen_k": 4096,
+        "projected_value": true
+      },
+      "latency_us": 547.4439859390259,
+      "spec": {
+        "dtypes": "FP8 absorbed Q/KV; BF16 value projection, gate, and output",
+        "layout": "dense paged KV, page_size=64, projected-value/gate epilogue",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, context=4096, q_len=1, heads=12, rank=512, rope=64"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 14:59:12.793414 140555147461120 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.850877 sec
+E20260820 14:59:12.800239 140555147461120 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-decode/counter-MemUnitStalled/smci355-ccs-aus-n15-05/52637_kernel_trace.csv
+E20260820 14:59:12.804598 140555147461120 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-decode/counter-MemUnitStalled/smci355-ccs-aus-n15-05/52637_counter_collection.csv
+E20260820 14:59:12.806348 140555147461120 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-decode/counter-MemUnitStalled/smci355-ccs-aus-n15-05/52637_agent_info.csv
+W20260820 14:59:12.808570 140555147461120 simple_timer.cpp:55] [rocprofv3] output generation ::     0.011695 sec
+W20260820 14:59:12.808764 140555147461120 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.011919 sec

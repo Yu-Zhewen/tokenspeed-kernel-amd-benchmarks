@@ -1,0 +1,37 @@
+W20260820 15:01:07.939018 131708028129792 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.161753 sec
+W20260820 15:01:07.939167 131708028129792 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case dsa-prefill-pipeline-4k --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 15:01:08.898232 131708028129792 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 15:01:09.246605 125470723236352 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.159687 sec
+W20260820 15:01:09.247032 125470723236352 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "dsa-prefill-pipeline-4k": {
+      "details": {
+        "selection": "live output of dsa_prefill_topk"
+      },
+      "latency_us": 3128.300905227661,
+      "spec": {
+        "dtypes": "BF16 index Q, packed FP8 index-K, FP8 attention Q/KV",
+        "layout": "production dense-KV selected-attention path",
+        "long_running": true,
+        "model": "GLM-5.2",
+        "phase": "pure prefill top-k plus selected attention",
+        "shape": "B1, prefix=0, extend=4096, index_heads=32, index_dim=128, attention_heads=8, causal topk<=2048, rank=512, rope=64"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 15:01:10.866936 131708028129792 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case dsa-prefill-pipeline-4k --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.927770 sec
+E20260820 15:01:10.875234 131708028129792 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/dsa-prefill-pipeline-4k/counter-MemWrites32B/smci355-ccs-aus-n15-05/55335_kernel_trace.csv
+E20260820 15:01:10.880703 131708028129792 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/dsa-prefill-pipeline-4k/counter-MemWrites32B/smci355-ccs-aus-n15-05/55335_counter_collection.csv
+E20260820 15:01:10.882700 131708028129792 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/dsa-prefill-pipeline-4k/counter-MemWrites32B/smci355-ccs-aus-n15-05/55335_agent_info.csv
+W20260820 15:01:10.885987 131708028129792 simple_timer.cpp:55] [rocprofv3] output generation ::     0.014597 sec
+W20260820 15:01:10.886669 131708028129792 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.015310 sec

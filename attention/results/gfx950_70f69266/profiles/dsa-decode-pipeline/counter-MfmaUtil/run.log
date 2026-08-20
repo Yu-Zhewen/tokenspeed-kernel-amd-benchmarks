@@ -1,0 +1,37 @@
+W20260820 15:00:47.903797 138227240305152 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.157465 sec
+W20260820 15:00:47.903928 138227240305152 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case dsa-decode-pipeline --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 15:00:48.864589 138227240305152 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 15:00:49.214354 123592618480128 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.158475 sec
+W20260820 15:00:49.214480 123592618480128 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000001 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "dsa-decode-pipeline": {
+      "details": {
+        "selection": "live output of dsa_decode_topk"
+      },
+      "latency_us": 480.0429940223694,
+      "spec": {
+        "dtypes": "BF16 index Q, packed FP8 index-K, FP8 attention Q/KV",
+        "layout": "production dense-KV selected-attention path",
+        "long_running": false,
+        "model": "GLM-5.2",
+        "phase": "decode top-k plus selected attention",
+        "shape": "B1, context=4096, q_len=1, index_heads=32, index_dim=128, attention_heads=8, topk=2048, rank=512, rope=64"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 15:00:50.807489 138227240305152 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case dsa-decode-pipeline --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.903561 sec
+E20260820 15:00:50.815698 138227240305152 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/dsa-decode-pipeline/counter-MfmaUtil/smci355-ccs-aus-n15-05/54867_kernel_trace.csv
+E20260820 15:00:50.820910 138227240305152 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/dsa-decode-pipeline/counter-MfmaUtil/smci355-ccs-aus-n15-05/54867_counter_collection.csv
+E20260820 15:00:50.822927 138227240305152 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/dsa-decode-pipeline/counter-MfmaUtil/smci355-ccs-aus-n15-05/54867_agent_info.csv
+W20260820 15:00:50.826330 138227240305152 simple_timer.cpp:55] [rocprofv3] output generation ::     0.014493 sec
+W20260820 15:00:50.826897 138227240305152 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.015089 sec

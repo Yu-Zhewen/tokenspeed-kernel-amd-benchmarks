@@ -1,0 +1,36 @@
+W20260820 15:00:34.257139 139775710388736 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000597 sec
+W20260820 15:00:34.257227 139775710388736 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case dsa-decode-pipeline --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 15:00:35.223111 139775710388736 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 15:00:35.414862 123447621870080 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000609 sec
+W20260820 15:00:35.414945 123447621870080 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "dsa-decode-pipeline": {
+      "details": {
+        "selection": "live output of dsa_decode_topk"
+      },
+      "latency_us": 388.5219991207123,
+      "spec": {
+        "dtypes": "BF16 index Q, packed FP8 index-K, FP8 attention Q/KV",
+        "layout": "production dense-KV selected-attention path",
+        "long_running": false,
+        "model": "GLM-5.2",
+        "phase": "decode top-k plus selected attention",
+        "shape": "B1, context=4096, q_len=1, index_heads=32, index_dim=128, attention_heads=8, topk=2048, rank=512, rope=64"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 15:00:36.902178 139775710388736 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case dsa-decode-pipeline --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.644952 sec
+E20260820 15:00:36.909829 139775710388736 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/dsa-decode-pipeline/trace/smci355-ccs-aus-n15-05/54555_kernel_trace.csv
+E20260820 15:00:36.911848 139775710388736 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/dsa-decode-pipeline/trace/smci355-ccs-aus-n15-05/54555_agent_info.csv
+W20260820 15:00:36.913055 139775710388736 simple_timer.cpp:55] [rocprofv3] output generation ::     0.007240 sec
+W20260820 15:00:36.913577 139775710388736 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.007790 sec

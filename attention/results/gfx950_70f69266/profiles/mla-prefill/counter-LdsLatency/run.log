@@ -1,0 +1,35 @@
+W20260820 14:59:33.293000 130697957011968 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.159477 sec
+W20260820 14:59:33.293138 130697957011968 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 14:59:34.262978 130697957011968 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 14:59:34.611714 130248913244672 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.159245 sec
+W20260820 14:59:34.611875 130248913244672 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-prefill": {
+      "details": {},
+      "latency_us": 492.482990026474,
+      "spec": {
+        "dtypes": "FP8 Q/K/V",
+        "layout": "packed varlen, causal",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "prefill",
+        "shape": "B1, prefix=0, extend=4096, heads=12, QK=192, V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 14:59:36.110332 130697957011968 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.817193 sec
+E20260820 14:59:36.116674 130697957011968 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-LdsLatency/smci355-ccs-aus-n15-05/53183_kernel_trace.csv
+E20260820 14:59:36.121094 130697957011968 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-LdsLatency/smci355-ccs-aus-n15-05/53183_counter_collection.csv
+E20260820 14:59:36.122816 130697957011968 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-LdsLatency/smci355-ccs-aus-n15-05/53183_agent_info.csv
+W20260820 14:59:36.124898 130697957011968 simple_timer.cpp:55] [rocprofv3] output generation ::     0.011530 sec
+W20260820 14:59:36.125039 130697957011968 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.011704 sec

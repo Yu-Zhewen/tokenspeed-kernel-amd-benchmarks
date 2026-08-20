@@ -1,0 +1,448 @@
+GPU:0
+Name:gfx950
+Counter_Name        :	FetchSize
+Description         :	The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+Expression          :	FETCH_SIZE
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:1
+Name:gfx950
+Counter_Name        :	FetchSize
+Description         :	The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+Expression          :	FETCH_SIZE
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:2
+Name:gfx950
+Counter_Name        :	FetchSize
+Description         :	The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+Expression          :	FETCH_SIZE
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:3
+Name:gfx950
+Counter_Name        :	FetchSize
+Description         :	The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+Expression          :	FETCH_SIZE
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:4
+Name:gfx950
+Counter_Name        :	FetchSize
+Description         :	The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+Expression          :	FETCH_SIZE
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:5
+Name:gfx950
+Counter_Name        :	FetchSize
+Description         :	The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+Expression          :	FETCH_SIZE
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:6
+Name:gfx950
+Counter_Name        :	FetchSize
+Description         :	The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+Expression          :	FETCH_SIZE
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:7
+Name:gfx950
+Counter_Name        :	FetchSize
+Description         :	The total kilobytes fetched from the video memory. This is measured with all extra fetches and any cache or memory effects taken into account.
+Expression          :	FETCH_SIZE
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:0
+Name:gfx950
+Counter_Name        :	MemWrites32B
+Description         :	The total number of effective 32B write transactions to the memory
+Expression          :	WRITE_REQ_32B
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:1
+Name:gfx950
+Counter_Name        :	MemWrites32B
+Description         :	The total number of effective 32B write transactions to the memory
+Expression          :	WRITE_REQ_32B
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:2
+Name:gfx950
+Counter_Name        :	MemWrites32B
+Description         :	The total number of effective 32B write transactions to the memory
+Expression          :	WRITE_REQ_32B
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:3
+Name:gfx950
+Counter_Name        :	MemWrites32B
+Description         :	The total number of effective 32B write transactions to the memory
+Expression          :	WRITE_REQ_32B
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:4
+Name:gfx950
+Counter_Name        :	MemWrites32B
+Description         :	The total number of effective 32B write transactions to the memory
+Expression          :	WRITE_REQ_32B
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:5
+Name:gfx950
+Counter_Name        :	MemWrites32B
+Description         :	The total number of effective 32B write transactions to the memory
+Expression          :	WRITE_REQ_32B
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:6
+Name:gfx950
+Counter_Name        :	MemWrites32B
+Description         :	The total number of effective 32B write transactions to the memory
+Expression          :	WRITE_REQ_32B
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:7
+Name:gfx950
+Counter_Name        :	MemWrites32B
+Description         :	The total number of effective 32B write transactions to the memory
+Expression          :	WRITE_REQ_32B
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:0
+Name:gfx950
+Counter_Name        :	MeanOccupancyPerActiveCU
+Description         :	Mean occupancy per active compute unit.
+Expression          :	reduce(accumulate(SQ_LEVEL_WAVES, LOW_RES),sum)/reduce(SQ_BUSY_CU_CYCLES,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:1
+Name:gfx950
+Counter_Name        :	MeanOccupancyPerActiveCU
+Description         :	Mean occupancy per active compute unit.
+Expression          :	reduce(accumulate(SQ_LEVEL_WAVES, LOW_RES),sum)/reduce(SQ_BUSY_CU_CYCLES,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:2
+Name:gfx950
+Counter_Name        :	MeanOccupancyPerActiveCU
+Description         :	Mean occupancy per active compute unit.
+Expression          :	reduce(accumulate(SQ_LEVEL_WAVES, LOW_RES),sum)/reduce(SQ_BUSY_CU_CYCLES,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:3
+Name:gfx950
+Counter_Name        :	MeanOccupancyPerActiveCU
+Description         :	Mean occupancy per active compute unit.
+Expression          :	reduce(accumulate(SQ_LEVEL_WAVES, LOW_RES),sum)/reduce(SQ_BUSY_CU_CYCLES,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:4
+Name:gfx950
+Counter_Name        :	MeanOccupancyPerActiveCU
+Description         :	Mean occupancy per active compute unit.
+Expression          :	reduce(accumulate(SQ_LEVEL_WAVES, LOW_RES),sum)/reduce(SQ_BUSY_CU_CYCLES,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:5
+Name:gfx950
+Counter_Name        :	MeanOccupancyPerActiveCU
+Description         :	Mean occupancy per active compute unit.
+Expression          :	reduce(accumulate(SQ_LEVEL_WAVES, LOW_RES),sum)/reduce(SQ_BUSY_CU_CYCLES,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:6
+Name:gfx950
+Counter_Name        :	MeanOccupancyPerActiveCU
+Description         :	Mean occupancy per active compute unit.
+Expression          :	reduce(accumulate(SQ_LEVEL_WAVES, LOW_RES),sum)/reduce(SQ_BUSY_CU_CYCLES,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:7
+Name:gfx950
+Counter_Name        :	MeanOccupancyPerActiveCU
+Description         :	Mean occupancy per active compute unit.
+Expression          :	reduce(accumulate(SQ_LEVEL_WAVES, LOW_RES),sum)/reduce(SQ_BUSY_CU_CYCLES,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:0
+Name:gfx950
+Counter_Name        :	MfmaUtil
+Description         :	Unit: percent
+Expression          :	reduce(SQ_VALU_MFMA_BUSY_CYCLES,sum)/(reduce(GRBM_GUI_ACTIVE,max)*SIMD_NUM)*100
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:1
+Name:gfx950
+Counter_Name        :	MfmaUtil
+Description         :	Unit: percent
+Expression          :	reduce(SQ_VALU_MFMA_BUSY_CYCLES,sum)/(reduce(GRBM_GUI_ACTIVE,max)*SIMD_NUM)*100
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:2
+Name:gfx950
+Counter_Name        :	MfmaUtil
+Description         :	Unit: percent
+Expression          :	reduce(SQ_VALU_MFMA_BUSY_CYCLES,sum)/(reduce(GRBM_GUI_ACTIVE,max)*SIMD_NUM)*100
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:3
+Name:gfx950
+Counter_Name        :	MfmaUtil
+Description         :	Unit: percent
+Expression          :	reduce(SQ_VALU_MFMA_BUSY_CYCLES,sum)/(reduce(GRBM_GUI_ACTIVE,max)*SIMD_NUM)*100
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:4
+Name:gfx950
+Counter_Name        :	MfmaUtil
+Description         :	Unit: percent
+Expression          :	reduce(SQ_VALU_MFMA_BUSY_CYCLES,sum)/(reduce(GRBM_GUI_ACTIVE,max)*SIMD_NUM)*100
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:5
+Name:gfx950
+Counter_Name        :	MfmaUtil
+Description         :	Unit: percent
+Expression          :	reduce(SQ_VALU_MFMA_BUSY_CYCLES,sum)/(reduce(GRBM_GUI_ACTIVE,max)*SIMD_NUM)*100
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:6
+Name:gfx950
+Counter_Name        :	MfmaUtil
+Description         :	Unit: percent
+Expression          :	reduce(SQ_VALU_MFMA_BUSY_CYCLES,sum)/(reduce(GRBM_GUI_ACTIVE,max)*SIMD_NUM)*100
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:7
+Name:gfx950
+Counter_Name        :	MfmaUtil
+Description         :	Unit: percent
+Expression          :	reduce(SQ_VALU_MFMA_BUSY_CYCLES,sum)/(reduce(GRBM_GUI_ACTIVE,max)*SIMD_NUM)*100
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:0
+Name:gfx950
+Counter_Name        :	LDSBankConflict
+Description         :	The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*reduce(SQ_LDS_BANK_CONFLICT,sum)/reduce(GRBM_GUI_ACTIVE,max)/CU_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:1
+Name:gfx950
+Counter_Name        :	LDSBankConflict
+Description         :	The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*reduce(SQ_LDS_BANK_CONFLICT,sum)/reduce(GRBM_GUI_ACTIVE,max)/CU_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:2
+Name:gfx950
+Counter_Name        :	LDSBankConflict
+Description         :	The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*reduce(SQ_LDS_BANK_CONFLICT,sum)/reduce(GRBM_GUI_ACTIVE,max)/CU_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:3
+Name:gfx950
+Counter_Name        :	LDSBankConflict
+Description         :	The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*reduce(SQ_LDS_BANK_CONFLICT,sum)/reduce(GRBM_GUI_ACTIVE,max)/CU_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:4
+Name:gfx950
+Counter_Name        :	LDSBankConflict
+Description         :	The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*reduce(SQ_LDS_BANK_CONFLICT,sum)/reduce(GRBM_GUI_ACTIVE,max)/CU_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:5
+Name:gfx950
+Counter_Name        :	LDSBankConflict
+Description         :	The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*reduce(SQ_LDS_BANK_CONFLICT,sum)/reduce(GRBM_GUI_ACTIVE,max)/CU_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:6
+Name:gfx950
+Counter_Name        :	LDSBankConflict
+Description         :	The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*reduce(SQ_LDS_BANK_CONFLICT,sum)/reduce(GRBM_GUI_ACTIVE,max)/CU_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:7
+Name:gfx950
+Counter_Name        :	LDSBankConflict
+Description         :	The percentage of GPUTime LDS is stalled by bank conflicts. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*reduce(SQ_LDS_BANK_CONFLICT,sum)/reduce(GRBM_GUI_ACTIVE,max)/CU_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:0
+Name:gfx950
+Counter_Name        :	LdsLatency
+Description         :	Unit: cycles
+Expression          :	reduce(accumulate(SQ_INST_LEVEL_LDS, HIGH_RES),sum)/reduce(SQ_INSTS_LDS,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:1
+Name:gfx950
+Counter_Name        :	LdsLatency
+Description         :	Unit: cycles
+Expression          :	reduce(accumulate(SQ_INST_LEVEL_LDS, HIGH_RES),sum)/reduce(SQ_INSTS_LDS,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:2
+Name:gfx950
+Counter_Name        :	LdsLatency
+Description         :	Unit: cycles
+Expression          :	reduce(accumulate(SQ_INST_LEVEL_LDS, HIGH_RES),sum)/reduce(SQ_INSTS_LDS,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:3
+Name:gfx950
+Counter_Name        :	LdsLatency
+Description         :	Unit: cycles
+Expression          :	reduce(accumulate(SQ_INST_LEVEL_LDS, HIGH_RES),sum)/reduce(SQ_INSTS_LDS,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:4
+Name:gfx950
+Counter_Name        :	LdsLatency
+Description         :	Unit: cycles
+Expression          :	reduce(accumulate(SQ_INST_LEVEL_LDS, HIGH_RES),sum)/reduce(SQ_INSTS_LDS,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:5
+Name:gfx950
+Counter_Name        :	LdsLatency
+Description         :	Unit: cycles
+Expression          :	reduce(accumulate(SQ_INST_LEVEL_LDS, HIGH_RES),sum)/reduce(SQ_INSTS_LDS,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:6
+Name:gfx950
+Counter_Name        :	LdsLatency
+Description         :	Unit: cycles
+Expression          :	reduce(accumulate(SQ_INST_LEVEL_LDS, HIGH_RES),sum)/reduce(SQ_INSTS_LDS,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:7
+Name:gfx950
+Counter_Name        :	LdsLatency
+Description         :	Unit: cycles
+Expression          :	reduce(accumulate(SQ_INST_LEVEL_LDS, HIGH_RES),sum)/reduce(SQ_INSTS_LDS,sum)
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:0
+Name:gfx950
+Counter_Name        :	MemUnitStalled
+Description         :	The percentage of GPUTime the memory unit is stalled. Try reducing the number or size of fetches and writes if possible. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*TCP_TCP_TA_DATA_STALL_CYCLES_max/reduce(GRBM_GUI_ACTIVE,max)/SE_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:1
+Name:gfx950
+Counter_Name        :	MemUnitStalled
+Description         :	The percentage of GPUTime the memory unit is stalled. Try reducing the number or size of fetches and writes if possible. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*TCP_TCP_TA_DATA_STALL_CYCLES_max/reduce(GRBM_GUI_ACTIVE,max)/SE_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:2
+Name:gfx950
+Counter_Name        :	MemUnitStalled
+Description         :	The percentage of GPUTime the memory unit is stalled. Try reducing the number or size of fetches and writes if possible. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*TCP_TCP_TA_DATA_STALL_CYCLES_max/reduce(GRBM_GUI_ACTIVE,max)/SE_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:3
+Name:gfx950
+Counter_Name        :	MemUnitStalled
+Description         :	The percentage of GPUTime the memory unit is stalled. Try reducing the number or size of fetches and writes if possible. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*TCP_TCP_TA_DATA_STALL_CYCLES_max/reduce(GRBM_GUI_ACTIVE,max)/SE_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:4
+Name:gfx950
+Counter_Name        :	MemUnitStalled
+Description         :	The percentage of GPUTime the memory unit is stalled. Try reducing the number or size of fetches and writes if possible. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*TCP_TCP_TA_DATA_STALL_CYCLES_max/reduce(GRBM_GUI_ACTIVE,max)/SE_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:5
+Name:gfx950
+Counter_Name        :	MemUnitStalled
+Description         :	The percentage of GPUTime the memory unit is stalled. Try reducing the number or size of fetches and writes if possible. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*TCP_TCP_TA_DATA_STALL_CYCLES_max/reduce(GRBM_GUI_ACTIVE,max)/SE_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:6
+Name:gfx950
+Counter_Name        :	MemUnitStalled
+Description         :	The percentage of GPUTime the memory unit is stalled. Try reducing the number or size of fetches and writes if possible. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*TCP_TCP_TA_DATA_STALL_CYCLES_max/reduce(GRBM_GUI_ACTIVE,max)/SE_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+
+GPU:7
+Name:gfx950
+Counter_Name        :	MemUnitStalled
+Description         :	The percentage of GPUTime the memory unit is stalled. Try reducing the number or size of fetches and writes if possible. Value range: 0% (optimal) to 100% (bad).
+Expression          :	100*TCP_TCP_TA_DATA_STALL_CYCLES_max/reduce(GRBM_GUI_ACTIVE,max)/SE_NUM
+Dimensions          :	DIMENSION_INSTANCE[0:0]
+
+

@@ -1,0 +1,35 @@
+W20260820 14:59:16.166963 126975198097920 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.161662 sec
+W20260820 14:59:16.167107 126975198097920 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 14:59:17.135464 126975198097920 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 14:59:17.485990 133980867060224 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.157367 sec
+W20260820 14:59:17.486116 133980867060224 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-prefill": {
+      "details": {},
+      "latency_us": 554.364025592804,
+      "spec": {
+        "dtypes": "FP8 Q/K/V",
+        "layout": "packed varlen, causal",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "prefill",
+        "shape": "B1, prefix=0, extend=4096, heads=12, QK=192, V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 14:59:19.008969 126975198097920 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.841862 sec
+E20260820 14:59:19.015427 126975198097920 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-FetchSize/smci355-ccs-aus-n15-05/52793_kernel_trace.csv
+E20260820 14:59:19.020780 126975198097920 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-FetchSize/smci355-ccs-aus-n15-05/52793_counter_collection.csv
+E20260820 14:59:19.022660 126975198097920 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-FetchSize/smci355-ccs-aus-n15-05/52793_agent_info.csv
+W20260820 14:59:19.025734 126975198097920 simple_timer.cpp:55] [rocprofv3] output generation ::     0.014369 sec
+W20260820 14:59:19.025888 126975198097920 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.014557 sec

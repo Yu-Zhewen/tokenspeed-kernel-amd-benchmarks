@@ -1,0 +1,8 @@
+"Correlation_Id","Dispatch_Id","Agent_Id","Queue_Id","Process_Id","Thread_Id","Grid_Size","Kernel_Id","Kernel_Name","Workgroup_Size","LDS_Block_Size","Scratch_Size","VGPR_Count","Accum_VGPR_Count","SGPR_Count","Counter_Name","Counter_Value","Start_Timestamp","End_Timestamp"
+1,1,"Agent 2",1,52871,52871,589824,166,"void at::native::vectorized_elementwise_kernel<16, at::native::FillFunctor<c10::Float8_e4m3fn>, std::array<char*, 1ul> >(int, at::native::FillFunctor<c10::Float8_e4m3fn>, std::array<char*, 1ul>)",256,0,0,4,0,16,"MemWrites32B",294912.000000,1940405413889079,1940405413893479
+2,2,"Agent 2",1,52871,52871,589824,166,"void at::native::vectorized_elementwise_kernel<16, at::native::FillFunctor<c10::Float8_e4m3fn>, std::array<char*, 1ul> >(int, at::native::FillFunctor<c10::Float8_e4m3fn>, std::array<char*, 1ul>)",256,0,0,4,0,16,"MemWrites32B",294912.000000,1940405414667484,1940405414671404
+3,3,"Agent 2",1,52871,52871,393216,166,"void at::native::vectorized_elementwise_kernel<16, at::native::FillFunctor<c10::Float8_e4m3fn>, std::array<char*, 1ul> >(int, at::native::FillFunctor<c10::Float8_e4m3fn>, std::array<char*, 1ul>)",256,0,0,4,0,16,"MemWrites32B",196608.000000,1940405414806245,1940405414809925
+4,4,"Agent 2",1,52871,52871,512,175,"__amd_rocclr_copyBuffer",512,0,0,8,0,32,"MemWrites32B",1.000000,1940405414948486,1940405414951566
+5,5,"Agent 2",1,52871,52871,256,170,"__amd_rocclr_initHeap",256,0,0,8,0,32,"MemWrites32B",4098.000000,1940405517003982,1940405517007382
+6,6,"Agent 2",1,52871,52871,131072,179,"_mla_prefill_kernel",256,0,0,140,0,112,"MemWrites32B",393216.000000,1940405517156662,1940405517290823
+7,7,"Agent 2",1,52871,52871,131072,179,"_mla_prefill_kernel",256,0,0,140,0,112,"MemWrites32B",393216.000000,1940405517768866,1940405517902307

@@ -1,0 +1,36 @@
+W20260820 14:59:39.828852 135384513237504 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000662 sec
+W20260820 14:59:39.828934 135384513237504 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 14:59:40.777420 135384513237504 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 14:59:40.966412 136366554948096 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000613 sec
+W20260820 14:59:40.966477 136366554948096 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "kda-decode": {
+      "details": {
+        "state_pages": "read page 0, write page 1"
+      },
+      "latency_us": 248.0420023202896,
+      "spec": {
+        "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+        "layout": "indexed K-major recurrent-state pool",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, q_len=1, heads=12, K/V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 14:59:42.263678 135384513237504 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.434743 sec
+E20260820 14:59:42.269341 135384513237504 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/kda-decode/trace/smci355-ccs-aus-n15-05/53339_kernel_trace.csv
+E20260820 14:59:42.271154 135384513237504 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/kda-decode/trace/smci355-ccs-aus-n15-05/53339_agent_info.csv
+W20260820 14:59:42.272292 135384513237504 simple_timer.cpp:55] [rocprofv3] output generation ::     0.006286 sec
+W20260820 14:59:42.272430 135384513237504 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.006457 sec

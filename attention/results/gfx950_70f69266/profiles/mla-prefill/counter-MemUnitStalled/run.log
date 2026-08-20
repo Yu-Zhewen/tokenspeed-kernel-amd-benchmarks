@@ -1,0 +1,35 @@
+W20260820 14:59:36.635853 128712436130304 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.158031 sec
+W20260820 14:59:36.635992 128712436130304 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 14:59:37.608480 128712436130304 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 14:59:37.960655 128815405330944 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.159027 sec
+W20260820 14:59:37.960764 128815405330944 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-prefill": {
+      "details": {},
+      "latency_us": 506.8429708480835,
+      "spec": {
+        "dtypes": "FP8 Q/K/V",
+        "layout": "packed varlen, causal",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "prefill",
+        "shape": "B1, prefix=0, extend=4096, heads=12, QK=192, V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 14:59:39.456474 128712436130304 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.820482 sec
+E20260820 14:59:39.462212 128712436130304 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-MemUnitStalled/smci355-ccs-aus-n15-05/53261_kernel_trace.csv
+E20260820 14:59:39.466706 128712436130304 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-MemUnitStalled/smci355-ccs-aus-n15-05/53261_counter_collection.csv
+E20260820 14:59:39.468386 128712436130304 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-prefill/counter-MemUnitStalled/smci355-ccs-aus-n15-05/53261_agent_info.csv
+W20260820 14:59:39.470603 128712436130304 simple_timer.cpp:55] [rocprofv3] output generation ::     0.011731 sec
+W20260820 14:59:39.470753 128712436130304 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.011914 sec

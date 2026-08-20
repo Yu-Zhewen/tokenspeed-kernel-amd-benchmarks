@@ -1,0 +1,38 @@
+W20260820 14:58:46.618858 140036033577472 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000595 sec
+W20260820 14:58:46.618951 140036033577472 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260820 14:58:47.564290 140036033577472 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260820 14:58:47.754488 137818316583424 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000628 sec
+W20260820 14:58:47.754558 137818316583424 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-decode": {
+      "details": {
+        "gate": "sigmoid",
+        "max_seqlen_k": 4096,
+        "projected_value": true
+      },
+      "latency_us": 339.6419882774353,
+      "spec": {
+        "dtypes": "FP8 absorbed Q/KV; BF16 value projection, gate, and output",
+        "layout": "dense paged KV, page_size=64, projected-value/gate epilogue",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, context=4096, q_len=1, heads=12, rank=512, rope=64"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260820 14:58:49.239830 140036033577472 simple_timer.cpp:55] [rocprofv3] 'python /tmp/profile_matched_attention.py --case mla-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.620879 sec
+E20260820 14:58:49.246537 140036033577472 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-decode/trace/smci355-ccs-aus-n15-05/52091_kernel_trace.csv
+E20260820 14:58:49.248384 140036033577472 output_stream.cpp:111] Opened result file: /tmp/matched-attention-gfx950-70f69266/profiles/mla-decode/trace/smci355-ccs-aus-n15-05/52091_agent_info.csv
+W20260820 14:58:49.249579 140036033577472 simple_timer.cpp:55] [rocprofv3] output generation ::     0.006866 sec
+W20260820 14:58:49.249770 140036033577472 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.007085 sec
