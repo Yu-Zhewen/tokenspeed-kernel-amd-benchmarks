@@ -1,0 +1,35 @@
+W20260831 09:06:06.805714 129043190485504 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.159490 sec
+W20260831 09:06:06.805854 129043190485504 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:06:07.814279 129043190485504 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:06:08.183944 136521572901376 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.156624 sec
+W20260831 09:06:08.184057 136521572901376 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-prefill": {
+      "details": {},
+      "latency_us": 580.7629823684692,
+      "spec": {
+        "dtypes": "FP8 Q/K/V",
+        "layout": "packed varlen, causal",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "prefill",
+        "shape": "B1, prefix=0, extend=4096, heads=12, QK=192, V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:06:09.747978 129043190485504 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.942124 sec
+E20260831 09:06:09.754178 129043190485504 output_stream.cpp:111] Opened result file: profiles/mla-prefill/counter-FetchSize/81b771ff473d/6868_kernel_trace.csv
+E20260831 09:06:09.759182 129043190485504 output_stream.cpp:111] Opened result file: profiles/mla-prefill/counter-FetchSize/81b771ff473d/6868_counter_collection.csv
+E20260831 09:06:09.760849 129043190485504 output_stream.cpp:111] Opened result file: profiles/mla-prefill/counter-FetchSize/81b771ff473d/6868_agent_info.csv
+W20260831 09:06:09.763180 129043190485504 simple_timer.cpp:55] [rocprofv3] output generation ::     0.012741 sec
+W20260831 09:06:09.763337 129043190485504 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.012927 sec

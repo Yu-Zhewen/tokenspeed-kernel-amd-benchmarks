@@ -1,0 +1,37 @@
+W20260831 09:07:04.106726 137763444670976 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.163833 sec
+W20260831 09:07:04.106869 137763444670976 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:07:05.109236 137763444670976 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:07:05.498504 127182879900160 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.161020 sec
+W20260831 09:07:05.498621 127182879900160 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "kda-prefill": {
+      "details": {
+        "cu_seqlens_cpu": "host int64 boundary hint"
+      },
+      "latency_us": 1384.6080303192139,
+      "spec": {
+        "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+        "layout": "packed sequence, 64-token implementation chunks",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "prefill",
+        "shape": "B1, prefix=0, extend=4096, heads=12, K/V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:07:07.479704 137763444670976 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     3.372835 sec
+E20260831 09:07:07.491972 137763444670976 output_stream.cpp:111] Opened result file: profiles/kda-prefill/counter-FetchSize/81b771ff473d/8114_kernel_trace.csv
+E20260831 09:07:07.497129 137763444670976 output_stream.cpp:111] Opened result file: profiles/kda-prefill/counter-FetchSize/81b771ff473d/8114_counter_collection.csv
+E20260831 09:07:07.499212 137763444670976 output_stream.cpp:111] Opened result file: profiles/kda-prefill/counter-FetchSize/81b771ff473d/8114_agent_info.csv
+W20260831 09:07:07.501880 137763444670976 simple_timer.cpp:55] [rocprofv3] output generation ::     0.014026 sec
+W20260831 09:07:07.503212 137763444670976 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.015397 sec

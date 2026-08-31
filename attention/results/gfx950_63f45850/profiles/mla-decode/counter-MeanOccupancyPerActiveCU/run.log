@@ -1,0 +1,39 @@
+W20260831 09:05:45.969567 139076991431168 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.159239 sec
+W20260831 09:05:45.969706 139076991431168 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case mla-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:05:46.987770 139076991431168 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:05:47.360968 126428953862656 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.159035 sec
+W20260831 09:05:47.361080 126428953862656 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-decode": {
+      "details": {
+        "gate": "sigmoid",
+        "max_seqlen_k": 4096,
+        "projected_value": true
+      },
+      "latency_us": 457.6230049133301,
+      "spec": {
+        "dtypes": "FP8 absorbed Q/KV; BF16 value projection, gate, and output",
+        "layout": "dense paged KV, page_size=64, projected-value/gate epilogue",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, context=4096, q_len=1, heads=12, rank=512, rope=64"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:05:48.851997 139076991431168 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case mla-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.882291 sec
+E20260831 09:05:48.858761 139076991431168 output_stream.cpp:111] Opened result file: profiles/mla-decode/counter-MeanOccupancyPerActiveCU/81b771ff473d/6394_kernel_trace.csv
+E20260831 09:05:48.863275 139076991431168 output_stream.cpp:111] Opened result file: profiles/mla-decode/counter-MeanOccupancyPerActiveCU/81b771ff473d/6394_counter_collection.csv
+E20260831 09:05:48.864829 139076991431168 output_stream.cpp:111] Opened result file: profiles/mla-decode/counter-MeanOccupancyPerActiveCU/81b771ff473d/6394_agent_info.csv
+W20260831 09:05:48.866945 139076991431168 simple_timer.cpp:55] [rocprofv3] output generation ::     0.011924 sec
+W20260831 09:05:48.867136 139076991431168 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.012146 sec

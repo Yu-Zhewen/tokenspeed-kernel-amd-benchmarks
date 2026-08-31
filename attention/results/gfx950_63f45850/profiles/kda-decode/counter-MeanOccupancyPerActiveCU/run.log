@@ -1,0 +1,37 @@
+W20260831 09:06:42.646268 132776946496000 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.164378 sec
+W20260831 09:06:42.646400 132776946496000 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:06:43.659470 132776946496000 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:06:44.045980 136065577210368 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.160791 sec
+W20260831 09:06:44.046178 136065577210368 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "kda-decode": {
+      "details": {
+        "state_pages": "read page 0, write page 1"
+      },
+      "latency_us": 368.3620095252991,
+      "spec": {
+        "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+        "layout": "indexed K-major recurrent-state pool",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, q_len=1, heads=12, K/V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:06:45.551735 132776946496000 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.905335 sec
+E20260831 09:06:45.557847 132776946496000 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-MeanOccupancyPerActiveCU/81b771ff473d/7652_kernel_trace.csv
+E20260831 09:06:45.562289 132776946496000 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-MeanOccupancyPerActiveCU/81b771ff473d/7652_counter_collection.csv
+E20260831 09:06:45.563902 132776946496000 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-MeanOccupancyPerActiveCU/81b771ff473d/7652_agent_info.csv
+W20260831 09:06:45.566172 132776946496000 simple_timer.cpp:55] [rocprofv3] output generation ::     0.011885 sec
+W20260831 09:06:45.566342 132776946496000 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.012096 sec

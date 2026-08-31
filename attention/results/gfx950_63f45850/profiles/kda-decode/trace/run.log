@@ -1,0 +1,36 @@
+W20260831 09:06:32.246924 126438951125504 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000675 sec
+W20260831 09:06:32.247021 126438951125504 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:06:33.267318 126438951125504 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:06:33.493500 134242876781056 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000701 sec
+W20260831 09:06:33.493577 134242876781056 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "kda-decode": {
+      "details": {
+        "state_pages": "read page 0, write page 1"
+      },
+      "latency_us": 327.6410102844238,
+      "spec": {
+        "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+        "layout": "indexed K-major recurrent-state pool",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, q_len=1, heads=12, K/V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:06:34.874790 126438951125504 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.627769 sec
+E20260831 09:06:34.880826 126438951125504 output_stream.cpp:111] Opened result file: profiles/kda-decode/trace/81b771ff473d/7421_kernel_trace.csv
+E20260831 09:06:34.882560 126438951125504 output_stream.cpp:111] Opened result file: profiles/kda-decode/trace/81b771ff473d/7421_agent_info.csv
+W20260831 09:06:34.883730 126438951125504 simple_timer.cpp:55] [rocprofv3] output generation ::     0.006575 sec
+W20260831 09:06:34.883884 126438951125504 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.006768 sec

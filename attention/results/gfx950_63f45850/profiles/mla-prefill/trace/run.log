@@ -1,0 +1,34 @@
+W20260831 09:06:03.617221 137265251660288 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000598 sec
+W20260831 09:06:03.617313 137265251660288 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:06:04.649269 137265251660288 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:06:04.862586 130481700114944 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.000609 sec
+W20260831 09:06:04.862663 130481700114944 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-prefill": {
+      "details": {},
+      "latency_us": 424.72198605537415,
+      "spec": {
+        "dtypes": "FP8 Q/K/V",
+        "layout": "packed varlen, causal",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "prefill",
+        "shape": "B1, prefix=0, extend=4096, heads=12, QK=192, V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:06:06.259576 137265251660288 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case mla-prefill --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.642264 sec
+E20260831 09:06:06.266884 137265251660288 output_stream.cpp:111] Opened result file: profiles/mla-prefill/trace/81b771ff473d/6789_kernel_trace.csv
+E20260831 09:06:06.268718 137265251660288 output_stream.cpp:111] Opened result file: profiles/mla-prefill/trace/81b771ff473d/6789_agent_info.csv
+W20260831 09:06:06.269991 137265251660288 simple_timer.cpp:55] [rocprofv3] output generation ::     0.006744 sec
+W20260831 09:06:06.270147 137265251660288 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.006934 sec

@@ -1,0 +1,50 @@
+{
+  "mla-decode": {
+    "model": "Kimi-K3",
+    "phase": "decode",
+    "shape": "B1, context=4096, q_len=1, heads=12, rank=512, rope=64",
+    "dtypes": "FP8 absorbed Q/KV; BF16 value projection, gate, and output",
+    "layout": "dense paged KV, page_size=64, projected-value/gate epilogue",
+    "long_running": false
+  },
+  "mla-prefill": {
+    "model": "Kimi-K3",
+    "phase": "prefill",
+    "shape": "B1, prefix=0, extend=4096, heads=12, QK=192, V=128",
+    "dtypes": "FP8 Q/K/V",
+    "layout": "packed varlen, causal",
+    "long_running": false
+  },
+  "kda-decode": {
+    "model": "Kimi-K3",
+    "phase": "decode",
+    "shape": "B1, q_len=1, heads=12, K/V=128",
+    "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+    "layout": "indexed K-major recurrent-state pool",
+    "long_running": false
+  },
+  "kda-prefill": {
+    "model": "Kimi-K3",
+    "phase": "prefill",
+    "shape": "B1, prefix=0, extend=4096, heads=12, K/V=128",
+    "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+    "layout": "packed sequence, 64-token implementation chunks",
+    "long_running": false
+  },
+  "dsa-decode-pipeline": {
+    "model": "GLM-5.2",
+    "phase": "decode top-k plus selected attention",
+    "shape": "B1, context=4096, q_len=1, index_heads=32, index_dim=128, attention_heads=8, topk=2048, rank=512, rope=64",
+    "dtypes": "BF16 index Q, packed FP8 index-K, FP8 attention Q/KV",
+    "layout": "production dense-KV selected-attention path",
+    "long_running": false
+  },
+  "dsa-prefill-pipeline-4k": {
+    "model": "GLM-5.2",
+    "phase": "pure prefill top-k plus selected attention",
+    "shape": "B1, prefix=0, extend=4096, index_heads=32, index_dim=128, attention_heads=8, causal topk<=2048, rank=512, rope=64",
+    "dtypes": "BF16 index Q, packed FP8 index-K, FP8 attention Q/KV",
+    "layout": "production dense-KV selected-attention path",
+    "long_running": true
+  }
+}

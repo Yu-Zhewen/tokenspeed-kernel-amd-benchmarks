@@ -1,0 +1,37 @@
+W20260831 09:08:26.313494 131943747334656 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.162034 sec
+W20260831 09:08:26.313633 131943747334656 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case dsa-prefill-pipeline-4k --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:08:27.329308 131943747334656 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:08:27.706526 123253770097152 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.161946 sec
+W20260831 09:08:27.706647 123253770097152 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "dsa-prefill-pipeline-4k": {
+      "details": {
+        "selection": "live output of dsa_prefill_topk"
+      },
+      "latency_us": 2810.256004333496,
+      "spec": {
+        "dtypes": "BF16 index Q, packed FP8 index-K, FP8 attention Q/KV",
+        "layout": "production dense-KV selected-attention path",
+        "long_running": true,
+        "model": "GLM-5.2",
+        "phase": "pure prefill top-k plus selected attention",
+        "shape": "B1, prefix=0, extend=4096, index_heads=32, index_dim=128, attention_heads=8, causal topk<=2048, rank=512, rope=64"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:08:29.315658 131943747334656 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case dsa-prefill-pipeline-4k --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     3.002025 sec
+E20260831 09:08:29.324479 131943747334656 output_stream.cpp:111] Opened result file: profiles/dsa-prefill-pipeline-4k/counter-MemUnitStalled/81b771ff473d/9838_kernel_trace.csv
+E20260831 09:08:29.330354 131943747334656 output_stream.cpp:111] Opened result file: profiles/dsa-prefill-pipeline-4k/counter-MemUnitStalled/81b771ff473d/9838_counter_collection.csv
+E20260831 09:08:29.332320 131943747334656 output_stream.cpp:111] Opened result file: profiles/dsa-prefill-pipeline-4k/counter-MemUnitStalled/81b771ff473d/9838_agent_info.csv
+W20260831 09:08:29.335095 131943747334656 simple_timer.cpp:55] [rocprofv3] output generation ::     0.014686 sec
+W20260831 09:08:29.335783 131943747334656 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.015405 sec

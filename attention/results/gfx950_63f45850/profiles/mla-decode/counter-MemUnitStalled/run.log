@@ -1,0 +1,39 @@
+W20260831 09:06:00.249122 130784129393152 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.161405 sec
+W20260831 09:06:00.249254 130784129393152 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case mla-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:06:01.282540 130784129393152 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:06:01.661359 139113751593472 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.162018 sec
+W20260831 09:06:01.661472 139113751593472 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "mla-decode": {
+      "details": {
+        "gate": "sigmoid",
+        "max_seqlen_k": 4096,
+        "projected_value": true
+      },
+      "latency_us": 605.3230166435242,
+      "spec": {
+        "dtypes": "FP8 absorbed Q/KV; BF16 value projection, gate, and output",
+        "layout": "dense paged KV, page_size=64, projected-value/gate epilogue",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, context=4096, q_len=1, heads=12, rank=512, rope=64"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:06:03.229644 130784129393152 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case mla-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.980391 sec
+E20260831 09:06:03.235945 130784129393152 output_stream.cpp:111] Opened result file: profiles/mla-decode/counter-MemUnitStalled/81b771ff473d/6710_kernel_trace.csv
+E20260831 09:06:03.240699 130784129393152 output_stream.cpp:111] Opened result file: profiles/mla-decode/counter-MemUnitStalled/81b771ff473d/6710_counter_collection.csv
+E20260831 09:06:03.242275 130784129393152 output_stream.cpp:111] Opened result file: profiles/mla-decode/counter-MemUnitStalled/81b771ff473d/6710_agent_info.csv
+W20260831 09:06:03.244495 130784129393152 simple_timer.cpp:55] [rocprofv3] output generation ::     0.012199 sec
+W20260831 09:06:03.244686 130784129393152 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.012423 sec

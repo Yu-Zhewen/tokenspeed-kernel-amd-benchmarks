@@ -1,0 +1,37 @@
+W20260831 09:06:49.831139 130102803943936 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.163059 sec
+W20260831 09:06:49.831278 130102803943936 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:06:50.850979 130102803943936 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:06:51.239044 131506939195904 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.158198 sec
+W20260831 09:06:51.239178 131506939195904 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "kda-decode": {
+      "details": {
+        "state_pages": "read page 0, write page 1"
+      },
+      "latency_us": 366.8519854545593,
+      "spec": {
+        "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+        "layout": "indexed K-major recurrent-state pool",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, q_len=1, heads=12, K/V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:06:52.788075 130102803943936 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.956797 sec
+E20260831 09:06:52.794043 130102803943936 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-LDSBankConflict/81b771ff473d/7806_kernel_trace.csv
+E20260831 09:06:52.798461 130102803943936 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-LDSBankConflict/81b771ff473d/7806_counter_collection.csv
+E20260831 09:06:52.800152 130102803943936 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-LDSBankConflict/81b771ff473d/7806_agent_info.csv
+W20260831 09:06:52.802293 130102803943936 simple_timer.cpp:55] [rocprofv3] output generation ::     0.011559 sec
+W20260831 09:06:52.802473 130102803943936 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.011777 sec

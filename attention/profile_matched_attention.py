@@ -290,6 +290,8 @@ def _kda_prefill() -> Workload:
         device="cuda",
     )
     cu_seqlens = torch.tensor([0, context], dtype=torch.int32, device="cuda")
+    # Built once during setup so the timed region never issues a D2H copy.
+    cu_seqlens_cpu = torch.tensor([0, context], dtype=torch.int64, device="cpu")
 
     def run() -> object:
         return kda_paged_prefill(
@@ -302,11 +304,12 @@ def _kda_prefill() -> Workload:
             dt_bias=dt_bias,
             initial_state=initial_state,
             cu_seqlens=cu_seqlens,
+            cu_seqlens_cpu=cu_seqlens_cpu,
             lower_bound=-5.0,
             solution="gluon",
         )
 
-    return Workload(run, {})
+    return Workload(run, {"cu_seqlens_cpu": "host int64 boundary hint"})
 
 
 def _kda_decode() -> Workload:

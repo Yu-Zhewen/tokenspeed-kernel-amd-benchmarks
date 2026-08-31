@@ -1,0 +1,37 @@
+W20260831 09:06:53.442454 129152170992128 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.159289 sec
+W20260831 09:06:53.442583 129152170992128 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     0.000000 sec
+W20260831 09:06:54.462702 129152170992128 tool.cpp:2422] HSA version 8.20.4 initialized (instance=0)
+W20260831 09:06:54.850696 134221235749376 simple_timer.cpp:55] [rocprofv3] tool initialization ::     0.160328 sec
+W20260831 09:06:54.850820 134221235749376 simple_timer.cpp:55] [rocprofv3] '/bin/sh /sbin/ldconfig -p' ::     0.000000 sec
+{
+  "arch": "gfx950",
+  "cases": {
+    "kda-decode": {
+      "details": {
+        "state_pages": "read page 0, write page 1"
+      },
+      "latency_us": 354.02199625968933,
+      "spec": {
+        "dtypes": "BF16 Q/K/V/gates, FP32 parameters and recurrent state",
+        "layout": "indexed K-major recurrent-state pool",
+        "long_running": false,
+        "model": "Kimi-K3",
+        "phase": "decode",
+        "shape": "B1, q_len=1, heads=12, K/V=128"
+      }
+    }
+  },
+  "device": "AMD Radeon Graphics",
+  "environment": "physical",
+  "repeats": 1,
+  "rocm": "7.2.26015",
+  "schema_version": 1,
+  "torch": "2.11.0+rocm7.2",
+  "warmup": 0
+}
+W20260831 09:06:56.350249 129152170992128 simple_timer.cpp:55] [rocprofv3] 'python profile_matched_attention.py --case kda-decode --expected-arch gfx950 --environment physical --warmup 0 --repeats 1' ::     2.907666 sec
+E20260831 09:06:56.357467 129152170992128 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-LdsLatency/81b771ff473d/7883_kernel_trace.csv
+E20260831 09:06:56.363765 129152170992128 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-LdsLatency/81b771ff473d/7883_counter_collection.csv
+E20260831 09:06:56.365618 129152170992128 output_stream.cpp:111] Opened result file: profiles/kda-decode/counter-LdsLatency/81b771ff473d/7883_agent_info.csv
+W20260831 09:06:56.368759 129152170992128 simple_timer.cpp:55] [rocprofv3] output generation ::     0.015980 sec
+W20260831 09:06:56.368932 129152170992128 simple_timer.cpp:55] [rocprofv3] tool finalization ::     0.016190 sec
