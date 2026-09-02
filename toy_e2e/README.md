@@ -151,7 +151,7 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
   --warmup-output-tokens 2 \
   --profile-output-tokens 8 \
   --decode-graph-replays 20 \
-  --output "$BENCHMARKS_ROOT/toy_e2e/results/gfx950_0b1061eb/one_gpu_rank_local_4k_1k.json"
+  --output "$BENCHMARKS_ROOT/toy_e2e/results/gfx950_0b1061eb/one_gpu/one_gpu_rank_local_4k_1k.json"
 ```
 
 The eager workload advances the real TokenSpeed scheduler through prefill and
@@ -176,7 +176,7 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
   --warmup-output-tokens 2 \
   --profile-output-tokens 8 \
   --decode-graph-replays 20 \
-  --output "$BENCHMARKS_ROOT/toy_e2e/results/gfx950_0b1061eb/one_gpu_full_source_4k_1k.json"
+  --output "$BENCHMARKS_ROOT/toy_e2e/results/gfx950_0b1061eb/one_gpu/one_gpu_full_source_4k_1k.json"
 ```
 
 The two result files should report the same 93 layers, TP8/EP1 mapping, 896
@@ -222,7 +222,7 @@ Normalize the two EvalScope directories:
 ```bash
 python3 toy_e2e/scripts/collect_real_serving_results.py \
   --input /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/evalscope \
-  --output toy_e2e/results/gfx950_0b1061eb/real_8gpu_tp8ep1_4k_1k.json \
+  --output toy_e2e/results/gfx950_0b1061eb/real_8gpu/real_8gpu_tp8ep1_4k_1k.json \
   --tokenspeed-revision 0b1061eb9fe1df36a4e48e5c9c291cd753af9e89 \
   --model-revision eaf5a944bfc8c57438bbce226feef9f6bdbdaae1
 ```
@@ -253,8 +253,8 @@ python3 toy_e2e/scripts/profile_serving_stages.py \
 python3 toy_e2e/scripts/summarize_gpu_hotspots.py \
   --input /data/results/kimi-k3-profile \
   --top-k 15 \
-  --csv-dir toy_e2e/results/gfx950_0b1061eb/hotspots/csv \
-  --output toy_e2e/results/gfx950_0b1061eb/hotspots/eager_kernel_hotspots.json
+  --csv-dir toy_e2e/results/gfx950_0b1061eb/real_8gpu/hotspots/csv \
+  --output toy_e2e/results/gfx950_0b1061eb/real_8gpu/hotspots/eager_kernel_hotspots.json
 ```
 
 The JSON records category totals and per-rank imbalance. Each CSV retains all
@@ -302,7 +302,7 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
 Successful completion proves target-side gfx1250 preprocessing and execution
 for the portable artifact. Preserve the complete JSON and the console log so
 the result can be added as
-`toy_e2e/results/gfx1250_<TokenSpeed-short-SHA>/one_gpu_rank_local_4k_1k.json`
+`toy_e2e/results/gfx1250_<TokenSpeed-short-SHA>/one_gpu/one_gpu_rank_local_4k_1k.json`
 beside the MI355X baseline.
 
 ## Files

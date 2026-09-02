@@ -1,7 +1,6 @@
 # Kimi-K3 one-GPU TP8/EP1 gfx950 results
 
-The revision-organized report, including real eight-GPU serving and kernel
-hotspots, is
+The revision index links separate one-GPU and real eight-GPU reports at
 [`results/gfx950_0b1061eb/README.md`](../results/gfx950_0b1061eb/README.md).
 This page retains the detailed one-GPU artifact validation.
 
@@ -45,8 +44,8 @@ steady-state compute regression against loading the full checkpoint.
 
 Raw outputs:
 
-- [rank-local checkpoint result](../results/gfx950_0b1061eb/one_gpu_rank_local_4k_1k.json)
-- [full source checkpoint result](../results/gfx950_0b1061eb/one_gpu_full_source_4k_1k.json)
+- [rank-local checkpoint result](../results/gfx950_0b1061eb/one_gpu/one_gpu_rank_local_4k_1k.json)
+- [full source checkpoint result](../results/gfx950_0b1061eb/one_gpu/one_gpu_full_source_4k_1k.json)
 
 ## Rank-local artifact
 

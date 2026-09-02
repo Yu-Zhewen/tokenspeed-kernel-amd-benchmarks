@@ -103,7 +103,8 @@ export BENCHMARKS_ROOT=/workspace/tokenspeed-kernel-amd-benchmarks
 export TOKENSPEED_ROOT=/workspace/tokenspeed
 export PYTHONPATH="$BENCHMARKS_ROOT:$TOKENSPEED_ROOT/python:$TOKENSPEED_ROOT/tokenspeed-kernel/python:$TOKENSPEED_ROOT/tokenspeed-kernel-amd/python"
 export TS_SHORT_SHA="$(git -C "$TOKENSPEED_ROOT" rev-parse --short=8 HEAD)"
-export RESULT_DIR="$BENCHMARKS_ROOT/toy_e2e/results/gfx1250_${TS_SHORT_SHA}"
+export REVISION_DIR="$BENCHMARKS_ROOT/toy_e2e/results/gfx1250_${TS_SHORT_SHA}"
+export RESULT_DIR="$REVISION_DIR/one_gpu"
 mkdir -p "$RESULT_DIR"
 ```
 
@@ -165,7 +166,7 @@ totals and the top timed layer/module hotspots for prefill and decode.
 
 Return:
 
-- the complete `gfx1250_<TokenSpeed-short-SHA>/` result directory;
+- the complete `gfx1250_<TokenSpeed-short-SHA>/one_gpu/` result directory;
 - the smoke JSON and complete 4K/1K console log;
 - exact TokenSpeed, kernel, PyTorch, HIP, Transformers, and Triton versions;
 - physical GPU name, architecture string, and HBM size;
