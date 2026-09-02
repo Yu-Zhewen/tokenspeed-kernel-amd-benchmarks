@@ -85,6 +85,44 @@ def _collective_summary(events: list[dict[str, Any]]) -> dict[str, dict[str, int
     return dict(totals)
 
 
+def _hotspot_summary(
+    module_ms: dict[tuple[str, int, str, str], list[float]],
+    model_ms: dict[str, list[float]],
+    *,
+    top_k: int,
+) -> dict[str, dict[str, Any]]:
+    result: dict[str, dict[str, Any]] = {}
+    for phase, phase_model_ms in model_ms.items():
+        if not phase_model_ms:
+            continue
+        model_p50_ms = float(statistics.median(phase_model_ms))
+        modules = []
+        for (module_phase, layer, category, module_type), values in module_ms.items():
+            if module_phase != phase or not values:
+                continue
+            timing = _summary(values)
+            p50_ms = float(timing["p50"])
+            modules.append(
+                {
+                    "layer": layer,
+                    "category": category,
+                    "module_type": module_type,
+                    "timing_ms": timing,
+                    "share_of_model_p50_pct": (
+                        100.0 * p50_ms / model_p50_ms if model_p50_ms else 0.0
+                    ),
+                }
+            )
+        modules.sort(
+            key=lambda item: (-float(item["timing_ms"]["p50"]), int(item["layer"]))
+        )
+        result[phase] = {
+            "model_p50_ms": model_p50_ms,
+            "top_modules": modules[:top_k],
+        }
+    return result
+
+
 class LayerBreakdown:
     """Low-volume CUDA-event instrumentation for sampled forwards."""
 
@@ -92,25 +130,27 @@ class LayerBreakdown:
         model = runner.model.language_model.model
         self.enabled = False
         self._starts: dict[int, list[torch.cuda.Event]] = defaultdict(list)
-        self._samples: list[tuple[str, torch.cuda.Event, torch.cuda.Event]] = []
-        self._categories: dict[int, str] = {}
+        self._samples: list[
+            tuple[str, int, str, torch.cuda.Event, torch.cuda.Event]
+        ] = []
+        self._metadata: dict[int, tuple[str, int, str]] = {}
         self._hooks = []
-        for layer in model.layers:
+        for layer_index, layer in enumerate(model.layers):
             attention = layer.self_attn
             attention_category = (
                 "kda_attention"
                 if "KDA" in type(attention).__name__
                 else "mla_attention"
             )
-            self._register(attention, attention_category)
+            self._register(attention, attention_category, layer_index)
             if hasattr(layer, "block_sparse_moe"):
-                self._register(layer.block_sparse_moe, "moe")
+                self._register(layer.block_sparse_moe, "moe", layer_index)
             elif hasattr(layer, "mlp"):
-                self._register(layer.mlp, "dense_ffn")
+                self._register(layer.mlp, "dense_ffn", layer_index)
 
-    def _register(self, module, category: str) -> None:
+    def _register(self, module, category: str, layer_index: int) -> None:
         key = id(module)
-        self._categories[key] = category
+        self._metadata[key] = (category, layer_index, type(module).__name__)
 
         def before(current, _args):
             if not self.enabled:
@@ -125,21 +165,33 @@ class LayerBreakdown:
             start = self._starts[id(current)].pop()
             end = torch.cuda.Event(enable_timing=True)
             end.record()
-            self._samples.append((self._categories[id(current)], start, end))
+            category, layer, module_type = self._metadata[id(current)]
+            self._samples.append((category, layer, module_type, start, end))
 
         self._hooks.append(module.register_forward_pre_hook(before))
         self._hooks.append(module.register_forward_hook(after))
 
     def begin(self) -> None:
+        self._starts.clear()
         self._samples.clear()
         self.enabled = True
 
-    def end(self) -> dict[str, float]:
+    def end(self) -> tuple[dict[str, float], list[dict[str, Any]]]:
         self.enabled = False
-        result: dict[str, float] = defaultdict(float)
-        for category, start, end in self._samples:
-            result[category] += float(start.elapsed_time(end))
-        return dict(result)
+        categories: dict[str, float] = defaultdict(float)
+        modules = []
+        for category, layer, module_type, start, end in self._samples:
+            elapsed_ms = float(start.elapsed_time(end))
+            categories[category] += elapsed_ms
+            modules.append(
+                {
+                    "category": category,
+                    "layer": layer,
+                    "module_type": module_type,
+                    "elapsed_ms": elapsed_ms,
+                }
+            )
+        return dict(categories), modules
 
     def close(self) -> None:
         for hook in self._hooks:
@@ -383,6 +435,7 @@ def _run_workload(
     output_tokens: int,
     chunked_prefill_size: int,
     breakdown: LayerBreakdown | None = None,
+    hotspot_top_k: int = 10,
 ) -> dict[str, Any]:
     from tokenspeed.runtime.engine.scheduler_utils import (
         advance_scheduler,
@@ -414,6 +467,7 @@ def _run_workload(
     model_ms: dict[str, list[float]] = defaultdict(list)
     step_wall_ms: dict[str, list[float]] = defaultdict(list)
     component_ms: dict[str, list[float]] = defaultdict(list)
+    module_ms: dict[tuple[str, int, str, str], list[float]] = defaultdict(list)
     collective_events: dict[str, list[dict[str, Any]]] = defaultdict(list)
     started = time.perf_counter()
 
@@ -449,8 +503,17 @@ def _run_workload(
         elapsed = float(start_event.elapsed_time(end_event))
         model_ms[phase].append(elapsed)
         if breakdown is not None:
-            for category, value in breakdown.end().items():
+            category_totals, module_samples = breakdown.end()
+            for category, value in category_totals.items():
                 component_ms[f"{phase}.{category}"].append(value)
+            for sample in module_samples:
+                key = (
+                    phase,
+                    int(sample["layer"]),
+                    str(sample["category"]),
+                    str(sample["module_type"]),
+                )
+                module_ms[key].append(float(sample["elapsed_ms"]))
         collective_events[phase].extend(logical_backend.snapshot(reset=True))
 
         events = []
@@ -506,6 +569,11 @@ def _run_workload(
         "component_ms": {
             category: _summary(values) for category, values in component_ms.items()
         },
+        "hotspots": _hotspot_summary(
+            module_ms,
+            model_ms,
+            top_k=hotspot_top_k,
+        ),
         "collectives": collective_summaries,
     }
 
@@ -687,6 +755,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--warmup-output-tokens", type=int, default=2)
     parser.add_argument("--profile-output-tokens", type=int, default=8)
     parser.add_argument(
+        "--hotspot-top-k",
+        type=int,
+        default=10,
+        help="slowest layer components retained per profiled phase",
+    )
+    parser.add_argument(
         "--decode-graph-replays",
         type=int,
         default=20,
@@ -713,6 +787,8 @@ def main() -> int:
         raise ValueError("--cache-gib must be positive")
     if args.decode_graph_replays < 0:
         raise ValueError("--decode-graph-replays cannot be negative")
+    if args.hotspot_top_k <= 0:
+        raise ValueError("--hotspot-top-k must be positive")
 
     torch.cuda.set_device(0)
     concurrencies = tuple(dict.fromkeys(args.concurrency))
@@ -770,6 +846,7 @@ def main() -> int:
                     output_tokens=args.profile_output_tokens,
                     chunked_prefill_size=args.chunked_prefill_size,
                     breakdown=breakdown,
+                    hotspot_top_k=args.hotspot_top_k,
                 )
                 if args.decode_graph_replays:
                     print(

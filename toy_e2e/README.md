@@ -151,7 +151,7 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
   --warmup-output-tokens 2 \
   --profile-output-tokens 8 \
   --decode-graph-replays 20 \
-  --output /data/results/kimi-k3-gfx950-rank-local-4k-1k.json
+  --output "$BENCHMARKS_ROOT/toy_e2e/results/gfx950_0b1061eb/one_gpu_rank_local_4k_1k.json"
 ```
 
 The eager workload advances the real TokenSpeed scheduler through prefill and
@@ -176,13 +176,92 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
   --warmup-output-tokens 2 \
   --profile-output-tokens 8 \
   --decode-graph-replays 20 \
-  --output /data/results/kimi-k3-gfx950-full-source-4k-1k.json
+  --output "$BENCHMARKS_ROOT/toy_e2e/results/gfx950_0b1061eb/one_gpu_full_source_4k_1k.json"
 ```
 
 The two result files should report the same 93 layers, TP8/EP1 mapping, 896
 local expert IDs, kernel solutions, cache geometry, collective counts, and
 similar steady-state latency. Loading time is intentionally outside the
 reported workload latency.
+
+## Run real eight-GPU serving
+
+This is a separate physical TP8/EP1 measurement, not part of the one-GPU
+estimator. Start TokenSpeed with all eight MI355X devices visible:
+
+```bash
+export ROCR_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+unset HIP_VISIBLE_DEVICES
+export TORCH_NCCL_BLOCKING_WAIT=1
+
+ts serve \
+  --model /data/models/Kimi-K3 \
+  --served-model-name kimi-k3 \
+  --tp 8 --ep-size 1 \
+  --attention-backend mla --moe-backend auto \
+  --kv-cache-dtype fp8 --mm-encoder-tp-mode data \
+  --max-model-len 8192 --max-num-seqs 16 \
+  --max-prefill-tokens 8192 --chunked-prefill-size 8192 \
+  --max-cudagraph-capture-size 16 \
+  --cudagraph-capture-sizes 1 2 4 8 16 \
+  --disable-prefill-graph \
+  --gpu-memory-utilization 0.92 \
+  --trust-remote-code --sampling-backend greedy \
+  --disable-kvstore --kvstore-ratio 0 \
+  --no-enable-prefix-caching --enable-cache-report
+```
+
+Use raw streaming `/v1/completions` with exact 4096-token random prompts,
+1024 generated tokens, greedy sampling, `ignore_eos=true`, closed-loop
+concurrency, one full-concurrency warmup, and `3 * concurrency` measured
+requests. Run C1 and C16. Preserve EvalScope's complete output directory; its
+`benchmark_args.json` is the authoritative client contract.
+
+Normalize the two EvalScope directories:
+
+```bash
+python3 toy_e2e/scripts/collect_real_serving_results.py \
+  --input /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/evalscope \
+  --output toy_e2e/results/gfx950_0b1061eb/real_8gpu_tp8ep1_4k_1k.json \
+  --tokenspeed-revision 0b1061eb9fe1df36a4e48e5c9c291cd753af9e89 \
+  --model-revision eaf5a944bfc8c57438bbce226feef9f6bdbdaae1
+```
+
+## Capture serving hotspots
+
+Measure throughput on the graph-mode server above without a profiler.
+Post-capture PyTorch/roctracer profiling does not expose kernels inside
+replayed CUDA graphs on the validated ROCm stack. For diagnostic kernel
+attribution, launch a separate otherwise-identical server with
+`--enforce-eager`, then capture prefill and the first 64 decode forward
+batches:
+
+```bash
+python3 toy_e2e/scripts/profile_serving_stages.py \
+  --output-dir /data/results/kimi-k3-profile/c16/prefill \
+  --profile-id c16-prefill \
+  --concurrency 16 \
+  --capture prefill
+
+python3 toy_e2e/scripts/profile_serving_stages.py \
+  --output-dir /data/results/kimi-k3-profile/c16/decode \
+  --profile-id c16-decode \
+  --concurrency 16 \
+  --capture decode \
+  --profile-steps 64
+
+python3 toy_e2e/scripts/summarize_gpu_hotspots.py \
+  --input /data/results/kimi-k3-profile \
+  --top-k 15 \
+  --csv-dir toy_e2e/results/gfx950_0b1061eb/hotspots/csv \
+  --output toy_e2e/results/gfx950_0b1061eb/hotspots/eager_kernel_hotspots.json
+```
+
+The JSON records category totals and per-rank imbalance. Each CSV retains all
+exact kernel names with calls, summed time across eight ranks, percentage of
+the stage's summed GPU kernel time, and average call time. These summed
+durations are hotspot weights, not critical-path wall time. Eager profiles are
+diagnostic and must not be presented as graph-mode serving performance.
 
 ## Run on gfx1250
 
@@ -222,7 +301,9 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
 
 Successful completion proves target-side gfx1250 preprocessing and execution
 for the portable artifact. Preserve the complete JSON and the console log so
-the result can be added beside the MI355X baseline.
+the result can be added as
+`toy_e2e/results/gfx1250_<TokenSpeed-short-SHA>/one_gpu_rank_local_4k_1k.json`
+beside the MI355X baseline.
 
 ## Files
 
@@ -231,6 +312,9 @@ the result can be added beside the MI355X baseline.
 - `benchmark_logical_rank.py`: scheduler, cache, eager, graph, and breakdown
   benchmark.
 - `scripts/export_rank_local_checkpoint.py`: full-source conversion CLI.
+- `scripts/collect_real_serving_results.py`: normalize EvalScope serving data.
+- `scripts/profile_serving_stages.py`: exact-token stage profiling workload.
+- `scripts/summarize_gpu_hotspots.py`: rank aggregation and exact-name CSVs.
 - `tests/test_rank_checkpoint.py`: CPU checkpoint-format tests.
 - `docs/checkpoint-preparation.md`: artifact contract and transfer validation.
 - `docs/gfx1250-validation.md`: physical MI450 handoff procedure.

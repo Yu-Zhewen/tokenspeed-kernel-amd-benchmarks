@@ -102,6 +102,9 @@ Set the source paths used by the benchmark:
 export BENCHMARKS_ROOT=/workspace/tokenspeed-kernel-amd-benchmarks
 export TOKENSPEED_ROOT=/workspace/tokenspeed
 export PYTHONPATH="$BENCHMARKS_ROOT:$TOKENSPEED_ROOT/python:$TOKENSPEED_ROOT/tokenspeed-kernel/python:$TOKENSPEED_ROOT/tokenspeed-kernel-amd/python"
+export TS_SHORT_SHA="$(git -C "$TOKENSPEED_ROOT" rev-parse --short=8 HEAD)"
+export RESULT_DIR="$BENCHMARKS_ROOT/toy_e2e/results/gfx1250_${TS_SHORT_SHA}"
+mkdir -p "$RESULT_DIR"
 ```
 
 ## 3. Run CPU format tests
@@ -138,6 +141,7 @@ replace the artifact with gfx1250-preprocessed weights.
 ## 5. Run the 4K/1K benchmark
 
 ```bash
+set -o pipefail
 python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
   --checkpoint /data/models/kimi-k3-tp8ep1-rank0 \
   --load-format raw-rank-state \
@@ -149,18 +153,20 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
   --warmup-output-tokens 2 \
   --profile-output-tokens 8 \
   --decode-graph-replays 20 \
-  --output /data/results/kimi-k3-gfx1250-rank-local-4k-1k.json
+  --output "$RESULT_DIR/one_gpu_rank_local_4k_1k.json" \
+  2>&1 | tee "$RESULT_DIR/one_gpu_rank_local_4k_1k.log"
 ```
 
 Do not run another GPU workload concurrently. Preserve the complete console
-log even when the command fails.
+log even when the command fails. The JSON includes per-setting component
+totals and the top timed layer/module hotspots for prefill and decode.
 
 ## 6. Return the result
 
 Return:
 
-- smoke and 4K/1K JSON files;
-- complete console logs;
+- the complete `gfx1250_<TokenSpeed-short-SHA>/` result directory;
+- the smoke JSON and complete 4K/1K console log;
 - exact TokenSpeed, kernel, PyTorch, HIP, Transformers, and Triton versions;
 - physical GPU name, architecture string, and HBM size;
 - rank artifact manifest;

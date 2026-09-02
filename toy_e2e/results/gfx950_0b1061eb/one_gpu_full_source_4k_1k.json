@@ -1,0 +1,1663 @@
+{
+  "architecture": "gfx950:sramecc+:xnack-",
+  "cache": {
+    "allocated_cache_bytes": 34356068352,
+    "capacity_source": "lcm_geometry",
+    "configured_cache_bytes": 34359738368,
+    "geometry": {
+      "arena_bytes": 34356068352,
+      "binding_utilization": {
+        "full_attention": 1.0,
+        "linear_attention_0": 0.8818,
+        "linear_attention_1": 0.8818,
+        "linear_attention_2": 0.8818
+      },
+      "cache_blocks_per_lcm_block": {
+        "full_attention": 12,
+        "linear_attention_0": 1,
+        "linear_attention_1": 1,
+        "linear_attention_2": 1
+      },
+      "fixed_workspace_bytes": 0,
+      "num_lcm_blocks": 1617,
+      "prefix_granularity": 128
+    },
+    "physical_token_capacity": 2483712
+  },
+  "checkpoint": "/data/models/sunkist",
+  "device": "AMD Radeon Graphics",
+  "load_format": "safetensors",
+  "load_peak_gib": 214.2771463394165,
+  "load_wall_s": 137.9954930320382,
+  "model": {
+    "allocated_gib": 209.9448709487915,
+    "attn_tp_rank": 0,
+    "attn_tp_size": 8,
+    "local_experts": [
+      896
+    ],
+    "model_type": "KimiK3ForConditionalGeneration",
+    "moe_ep_rank": 0,
+    "moe_ep_size": 1,
+    "moe_solutions": [
+      "gluon"
+    ],
+    "moe_tp_rank": 0,
+    "moe_tp_size": 8,
+    "num_layers": 93,
+    "reserved_gib": 213.189453125
+  },
+  "runs": [
+    {
+      "benchmark": {
+        "aggregate_output_tps": 15.695882701625791,
+        "cache_token_capacity": 2334336,
+        "collectives": {
+          "decode": {
+            "all_gather_into_tensor": {
+              "calls": 1023,
+              "input_bytes": 41902080,
+              "output_bytes": 335216640
+            },
+            "all_reduce": {
+              "calls": 191301,
+              "input_bytes": 3417114624,
+              "output_bytes": 3417114624
+            }
+          },
+          "prefill": {
+            "all_gather_into_tensor": {
+              "calls": 1,
+              "input_bytes": 40960,
+              "output_bytes": 327680
+            },
+            "all_reduce": {
+              "calls": 187,
+              "input_bytes": 13681819648,
+              "output_bytes": 13681819648
+            }
+          }
+        },
+        "component_ms": {},
+        "concurrency": 1,
+        "effective_chunked_prefill_size": 8192,
+        "first_token_ms": {
+          "count": 1,
+          "max": 278.0229737982154,
+          "mean": 278.0229737982154,
+          "min": 278.0229737982154,
+          "p50": 278.0229737982154,
+          "p95": 278.0229737982154
+        },
+        "hotspots": {
+          "decode": {
+            "model_p50_ms": 62.508338928222656,
+            "top_modules": []
+          },
+          "prefill": {
+            "model_p50_ms": 270.5699768066406,
+            "top_modules": []
+          }
+        },
+        "model_ms": {
+          "decode": {
+            "count": 1023,
+            "max": 65.1888427734375,
+            "mean": 62.547949443231694,
+            "min": 61.38205337524414,
+            "p50": 62.508338928222656,
+            "p95": 63.48787155151367
+          },
+          "prefill": {
+            "count": 1,
+            "max": 270.5699768066406,
+            "mean": 270.5699768066406,
+            "min": 270.5699768066406,
+            "p50": 270.5699768066406,
+            "p95": 270.5699768066406
+          }
+        },
+        "output_tokens": 1024,
+        "per_user_decode_tps": 15.7479435710496,
+        "prompt_tokens": 4096,
+        "step_wall_ms": {
+          "decode": {
+            "count": 1023,
+            "max": 67.06573907285929,
+            "mean": 63.50035453761472,
+            "min": 62.290328089147806,
+            "p50": 63.44967894256115,
+            "p95": 64.55937963910401
+          },
+          "prefill": {
+            "count": 1,
+            "max": 278.0443341471255,
+            "mean": 278.0443341471255,
+            "min": 278.0443341471255,
+            "p50": 278.0443341471255,
+            "p95": 278.0443341471255
+          }
+        },
+        "wall_ms": 65240.03902589902
+      },
+      "concurrency": 1,
+      "graph_decode": {
+        "aggregate_decode_tps": 93.50755856614497,
+        "capture_wall_ms": 74.73959075286984,
+        "collectives_per_replay": {
+          "all_gather_into_tensor": {
+            "calls": 1,
+            "input_bytes": 40960,
+            "output_bytes": 327680
+          },
+          "all_reduce": {
+            "calls": 187,
+            "input_bytes": 3340288,
+            "output_bytes": 3340288
+          }
+        },
+        "concurrency": 1,
+        "effective_chunked_prefill_size": 8192,
+        "model_ms": {
+          "count": 20,
+          "max": 10.717597961425781,
+          "mean": 10.694322633743287,
+          "min": 10.675078392028809,
+          "p50": 10.691478252410889,
+          "p95": 10.708820724487305
+        },
+        "per_user_decode_tps": 93.50755856614497,
+        "prompt_tokens": 4096,
+        "replay_wall_ms": 214.0223872847855,
+        "replays": 20,
+        "scope": "static first full decode batch after prefill",
+        "sequence_lengths": [
+          4097
+        ]
+      },
+      "profile": {
+        "aggregate_output_tps": 10.30176635334931,
+        "cache_token_capacity": 2334336,
+        "collectives": {
+          "decode": {
+            "all_gather_into_tensor": {
+              "calls": 7,
+              "input_bytes": 286720,
+              "output_bytes": 2293760
+            },
+            "all_reduce": {
+              "calls": 1309,
+              "input_bytes": 23382016,
+              "output_bytes": 23382016
+            }
+          },
+          "prefill": {
+            "all_gather_into_tensor": {
+              "calls": 1,
+              "input_bytes": 40960,
+              "output_bytes": 327680
+            },
+            "all_reduce": {
+              "calls": 187,
+              "input_bytes": 13681819648,
+              "output_bytes": 13681819648
+            }
+          }
+        },
+        "component_ms": {
+          "decode.dense_ffn": {
+            "count": 7,
+            "max": 0.15208099782466888,
+            "mean": 0.13242957102400915,
+            "min": 0.1239209994673729,
+            "p50": 0.12984099984169006,
+            "p95": 0.14724499732255936
+          },
+          "decode.kda_attention": {
+            "count": 7,
+            "max": 15.891566038131714,
+            "mean": 15.678050999130521,
+            "min": 15.513636991381645,
+            "p50": 15.657279953360558,
+            "p95": 15.858169446885586
+          },
+          "decode.mla_attention": {
+            "count": 7,
+            "max": 10.736236959695816,
+            "mean": 10.52224258014134,
+            "min": 10.411118030548096,
+            "p50": 10.508514940738678,
+            "p95": 10.677761280536652
+          },
+          "decode.moe": {
+            "count": 7,
+            "max": 29.995415180921555,
+            "mean": 29.59970200913293,
+            "min": 29.28170394897461,
+            "p50": 29.502727836370468,
+            "p95": 29.978625938296318
+          },
+          "prefill.dense_ffn": {
+            "count": 1,
+            "max": 0.6008440256118774,
+            "mean": 0.6008440256118774,
+            "min": 0.6008440256118774,
+            "p50": 0.6008440256118774,
+            "p95": 0.6008440256118774
+          },
+          "prefill.kda_attention": {
+            "count": 1,
+            "max": 57.95030200481415,
+            "mean": 57.95030200481415,
+            "min": 57.95030200481415,
+            "p50": 57.95030200481415,
+            "p95": 57.95030200481415
+          },
+          "prefill.mla_attention": {
+            "count": 1,
+            "max": 12.869016110897064,
+            "mean": 12.869016110897064,
+            "min": 12.869016110897064,
+            "p50": 12.869016110897064,
+            "p95": 12.869016110897064
+          },
+          "prefill.moe": {
+            "count": 1,
+            "max": 179.8548424243927,
+            "mean": 179.8548424243927,
+            "min": 179.8548424243927,
+            "p50": 179.8548424243927,
+            "p95": 179.8548424243927
+          }
+        },
+        "concurrency": 1,
+        "effective_chunked_prefill_size": 8192,
+        "first_token_ms": {
+          "count": 1,
+          "max": 279.12109810858965,
+          "mean": 279.12109810858965,
+          "min": 279.12109810858965,
+          "p50": 279.12109810858965,
+          "p95": 279.12109810858965
+        },
+        "hotspots": {
+          "decode": {
+            "model_p50_ms": 69.057861328125,
+            "top_modules": [
+              {
+                "category": "mla_attention",
+                "layer": 67,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7037620368170011,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.5030040144920349,
+                  "mean": 0.48290672046797617,
+                  "min": 0.4444440007209778,
+                  "p50": 0.48600301146507263,
+                  "p95": 0.49910401105880736
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 3,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6629846289067334,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.5458840131759644,
+                  "mean": 0.470426150730678,
+                  "min": 0.4533640146255493,
+                  "p50": 0.45784300565719604,
+                  "p95": 0.5216197133064269
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 39,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6548175643663098,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.4784030020236969,
+                  "mean": 0.45383756927081514,
+                  "min": 0.4393639862537384,
+                  "p50": 0.45220300555229187,
+                  "p95": 0.4720673024654388
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 43,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6502996064238487,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.4723629951477051,
+                  "mean": 0.4510202833584377,
+                  "min": 0.4375630021095276,
+                  "p50": 0.44908300042152405,
+                  "p95": 0.4668789952993393
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 51,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.647924797868918,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.4573639929294586,
+                  "mean": 0.44777485728263855,
+                  "min": 0.4434430003166199,
+                  "p50": 0.44744300842285156,
+                  "p95": 0.455167692899704
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 31,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6478683072112937,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.4569239914417267,
+                  "mean": 0.44675771253449575,
+                  "min": 0.4330829977989197,
+                  "p50": 0.44740399718284607,
+                  "p95": 0.45478769242763517
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 27,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6463029679192033,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.45864298939704895,
+                  "mean": 0.4479459992476872,
+                  "min": 0.44036298990249634,
+                  "p50": 0.4463230073451996,
+                  "p95": 0.4573349922895431
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 7,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6460133508043704,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.46744298934936523,
+                  "mean": 0.44907757214137484,
+                  "min": 0.43892401456832886,
+                  "p50": 0.44612300395965576,
+                  "p95": 0.4642989933490753
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 15,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6456658188976874,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.45672300457954407,
+                  "mean": 0.44786042826516287,
+                  "min": 0.44240400195121765,
+                  "p50": 0.44588300585746765,
+                  "p95": 0.4556430041790009
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 55,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6450286698761715,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.4658840000629425,
+                  "mean": 0.44890614066805157,
+                  "min": 0.44116300344467163,
+                  "p50": 0.4454430043697357,
+                  "p95": 0.4619119971990585
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 91,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6442177333235228,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.45044299960136414,
+                  "mean": 0.4444659948348999,
+                  "min": 0.439844012260437,
+                  "p50": 0.44488298892974854,
+                  "p95": 0.44911099672317506
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 79,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6421325418834251,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.45808300375938416,
+                  "mean": 0.4448945735182081,
+                  "min": 0.4354430139064789,
+                  "p50": 0.4434430003166199,
+                  "p95": 0.4564869999885559
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 19,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.642074627091575,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.45328301191329956,
+                  "mean": 0.44507186327661785,
+                  "min": 0.438603013753891,
+                  "p50": 0.4434030055999756,
+                  "p95": 0.4527433067560196
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 63,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6416706045272678,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.45224300026893616,
+                  "mean": 0.4446662834712437,
+                  "min": 0.43720299005508423,
+                  "p50": 0.443123996257782,
+                  "p95": 0.45199099779129026
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 75,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.6399893924958946,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.45360299944877625,
+                  "mean": 0.4437347097056253,
+                  "min": 0.4375630021095276,
+                  "p50": 0.44196298718452454,
+                  "p95": 0.45143129527568815
+                }
+              }
+            ]
+          },
+          "prefill": {
+            "model_p50_ms": 271.1401062011719,
+            "top_modules": [
+              {
+                "category": "moe",
+                "layer": 55,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7708394815300292,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.090054988861084,
+                  "mean": 2.090054988861084,
+                  "min": 2.090054988861084,
+                  "p50": 2.090054988861084,
+                  "p95": 2.090054988861084
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 43,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7694970255952945,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0864150524139404,
+                  "mean": 2.0864150524139404,
+                  "min": 2.0864150524139404,
+                  "p50": 2.0864150524139404,
+                  "p95": 2.0864150524139404
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 47,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7682139236761455,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0829360485076904,
+                  "mean": 2.0829360485076904,
+                  "min": 2.0829360485076904,
+                  "p50": 2.0829360485076904,
+                  "p95": 2.0829360485076904
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 57,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7642893482337483,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0722949504852295,
+                  "mean": 2.0722949504852295,
+                  "min": 2.0722949504852295,
+                  "p50": 2.0722949504852295,
+                  "p95": 2.0722949504852295
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 50,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7634632282686712,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0700550079345703,
+                  "mean": 2.0700550079345703,
+                  "min": 2.0700550079345703,
+                  "p50": 2.0700550079345703,
+                  "p95": 2.0700550079345703
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 34,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7631829014513571,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0692949295043945,
+                  "mean": 2.0692949295043945,
+                  "min": 2.0692949295043945,
+                  "p50": 2.0692949295043945,
+                  "p95": 2.0692949295043945
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 39,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7604245664663114,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0618159770965576,
+                  "mean": 2.0618159770965576,
+                  "min": 2.0618159770965576,
+                  "p50": 2.0618159770965576,
+                  "p95": 2.0618159770965576
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 75,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7580637714878771,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.055414915084839,
+                  "mean": 2.055414915084839,
+                  "min": 2.055414915084839,
+                  "p50": 2.055414915084839,
+                  "p95": 2.055414915084839
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 11,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7572524240777901,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0532150268554688,
+                  "mean": 2.0532150268554688,
+                  "min": 2.0532150268554688,
+                  "p50": 2.0532150268554688,
+                  "p95": 2.0532150268554688
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 33,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7567954421237183,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.051975965499878,
+                  "mean": 2.051975965499878,
+                  "min": 2.051975965499878,
+                  "p50": 2.051975965499878,
+                  "p95": 2.051975965499878
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 79,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7514989535684808,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0376150608062744,
+                  "mean": 2.0376150608062744,
+                  "min": 2.0376150608062744,
+                  "p50": 2.0376150608062744,
+                  "p95": 2.0376150608062744
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 84,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7500970556862856,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.033813953399658,
+                  "mean": 2.033813953399658,
+                  "min": 2.033813953399658,
+                  "p50": 2.033813953399658,
+                  "p95": 2.033813953399658
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 54,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.748917273720193,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0306150913238525,
+                  "mean": 2.0306150913238525,
+                  "min": 2.0306150913238525,
+                  "p50": 2.0306150913238525,
+                  "p95": 2.0306150913238525
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 45,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7487988294846466,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0302939414978027,
+                  "mean": 2.0302939414978027,
+                  "min": 2.0302939414978027,
+                  "p50": 2.0302939414978027,
+                  "p95": 2.0302939414978027
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 56,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.7485779446147931,
+                "timing_ms": {
+                  "count": 1,
+                  "max": 2.0296950340270996,
+                  "mean": 2.0296950340270996,
+                  "min": 2.0296950340270996,
+                  "p50": 2.0296950340270996,
+                  "p95": 2.0296950340270996
+                }
+              }
+            ]
+          }
+        },
+        "model_ms": {
+          "decode": {
+            "count": 7,
+            "max": 70.23639678955078,
+            "mean": 69.20247323172433,
+            "min": 68.35062408447266,
+            "p50": 69.057861328125,
+            "p95": 70.15195083618164
+          },
+          "prefill": {
+            "count": 1,
+            "max": 271.1401062011719,
+            "mean": 271.1401062011719,
+            "min": 271.1401062011719,
+            "p50": 271.1401062011719,
+            "p95": 271.1401062011719
+          }
+        },
+        "output_tokens": 8,
+        "per_user_decode_tps": 14.072648723128564,
+        "prompt_tokens": 4096,
+        "step_wall_ms": {
+          "decode": {
+            "count": 7,
+            "max": 72.4806347861886,
+            "mean": 71.05982815846801,
+            "min": 70.06935076788068,
+            "p50": 70.93064486980438,
+            "p95": 72.26757896132767
+          },
+          "prefill": {
+            "count": 1,
+            "max": 279.1366879828274,
+            "mean": 279.1366879828274,
+            "min": 279.1366879828274,
+            "p50": 279.1366879828274,
+            "p95": 279.1366879828274
+          }
+        },
+        "wall_ms": 776.5658553689718
+      },
+      "warmup": {
+        "aggregate_output_tps": 0.6185109214350035,
+        "cache_token_capacity": 2334336,
+        "collectives": {
+          "decode": {
+            "all_gather_into_tensor": {
+              "calls": 1,
+              "input_bytes": 40960,
+              "output_bytes": 327680
+            },
+            "all_reduce": {
+              "calls": 187,
+              "input_bytes": 3340288,
+              "output_bytes": 3340288
+            }
+          },
+          "prefill": {
+            "all_gather_into_tensor": {
+              "calls": 1,
+              "input_bytes": 40960,
+              "output_bytes": 327680
+            },
+            "all_reduce": {
+              "calls": 187,
+              "input_bytes": 13681819648,
+              "output_bytes": 13681819648
+            }
+          }
+        },
+        "component_ms": {},
+        "concurrency": 1,
+        "effective_chunked_prefill_size": 8192,
+        "first_token_ms": {
+          "count": 1,
+          "max": 3075.619652867317,
+          "mean": 3075.619652867317,
+          "min": 3075.619652867317,
+          "p50": 3075.619652867317,
+          "p95": 3075.619652867317
+        },
+        "hotspots": {
+          "decode": {
+            "model_p50_ms": 153.5664825439453,
+            "top_modules": []
+          },
+          "prefill": {
+            "model_p50_ms": 2868.105712890625,
+            "top_modules": []
+          }
+        },
+        "model_ms": {
+          "decode": {
+            "count": 1,
+            "max": 153.5664825439453,
+            "mean": 153.5664825439453,
+            "min": 153.5664825439453,
+            "p50": 153.5664825439453,
+            "p95": 153.5664825439453
+          },
+          "prefill": {
+            "count": 1,
+            "max": 2868.105712890625,
+            "mean": 2868.105712890625,
+            "min": 2868.105712890625,
+            "p50": 2868.105712890625,
+            "p95": 2868.105712890625
+          }
+        },
+        "output_tokens": 2,
+        "per_user_decode_tps": 6.332999954009832,
+        "prompt_tokens": 4096,
+        "step_wall_ms": {
+          "decode": {
+            "count": 1,
+            "max": 157.9030486755073,
+            "mean": 157.9030486755073,
+            "min": 157.9030486755073,
+            "p50": 157.9030486755073,
+            "p95": 157.9030486755073
+          },
+          "prefill": {
+            "count": 1,
+            "max": 3075.6630622781813,
+            "mean": 3075.6630622781813,
+            "min": 3075.6630622781813,
+            "p50": 3075.6630622781813,
+            "p95": 3075.6630622781813
+          }
+        },
+        "wall_ms": 3233.572651166469
+      }
+    },
+    {
+      "benchmark": {
+        "aggregate_output_tps": 196.51995643883012,
+        "cache_token_capacity": 2334336,
+        "collectives": {
+          "decode": {
+            "all_gather_into_tensor": {
+              "calls": 1023,
+              "input_bytes": 670433280,
+              "output_bytes": 5363466240
+            },
+            "all_reduce": {
+              "calls": 191301,
+              "input_bytes": 54673833984,
+              "output_bytes": 54673833984
+            }
+          },
+          "prefill": {
+            "all_gather_into_tensor": {
+              "calls": 8,
+              "input_bytes": 655360,
+              "output_bytes": 5242880
+            },
+            "all_reduce": {
+              "calls": 1496,
+              "input_bytes": 218909114368,
+              "output_bytes": 218909114368
+            }
+          }
+        },
+        "component_ms": {},
+        "concurrency": 16,
+        "effective_chunked_prefill_size": 8192,
+        "first_token_ms": {
+          "count": 16,
+          "max": 3472.6741099730134,
+          "mean": 1953.7182480562478,
+          "min": 434.7008001059294,
+          "p50": 1953.359088394791,
+          "p95": 3472.6692124968395
+        },
+        "hotspots": {
+          "decode": {
+            "model_p50_ms": 76.27623748779297,
+            "top_modules": []
+          },
+          "prefill": {
+            "model_p50_ms": 427.3943176269531,
+            "top_modules": []
+          }
+        },
+        "model_ms": {
+          "decode": {
+            "count": 1023,
+            "max": 348.71624755859375,
+            "mean": 76.80148127491523,
+            "min": 75.28935241699219,
+            "p50": 76.27623748779297,
+            "p95": 77.62420806884766
+          },
+          "prefill": {
+            "count": 8,
+            "max": 428.2950744628906,
+            "mean": 427.5024070739746,
+            "min": 426.7547607421875,
+            "p50": 427.3943176269531,
+            "p95": 428.214453125
+          }
+        },
+        "output_tokens": 1024,
+        "per_user_decode_tps": 12.804016698108962,
+        "prompt_tokens": 4096,
+        "step_wall_ms": {
+          "decode": {
+            "count": 1023,
+            "max": 349.92787800729275,
+            "mean": 78.10049171114335,
+            "min": 76.38490106910467,
+            "p50": 77.40902295336127,
+            "p95": 79.35250587761402
+          },
+          "prefill": {
+            "count": 8,
+            "max": 434.7449401393533,
+            "mean": 434.08674123929814,
+            "min": 433.3249479532242,
+            "p50": 434.04706404544413,
+            "p95": 434.69283203594387
+          }
+        },
+        "wall_ms": 83370.66777795553
+      },
+      "concurrency": 16,
+      "graph_decode": {
+        "aggregate_decode_tps": 863.0459362721546,
+        "capture_wall_ms": 97.23493270576,
+        "collectives_per_replay": {
+          "all_gather_into_tensor": {
+            "calls": 1,
+            "input_bytes": 655360,
+            "output_bytes": 5242880
+          },
+          "all_reduce": {
+            "calls": 187,
+            "input_bytes": 53444608,
+            "output_bytes": 53444608
+          }
+        },
+        "concurrency": 16,
+        "effective_chunked_prefill_size": 8192,
+        "model_ms": {
+          "count": 20,
+          "max": 18.588895797729492,
+          "mean": 18.538990020751953,
+          "min": 18.481096267700195,
+          "p50": 18.546095848083496,
+          "p95": 18.587185287475588
+        },
+        "per_user_decode_tps": 53.94037101700966,
+        "prompt_tokens": 4096,
+        "replay_wall_ms": 370.9185146726668,
+        "replays": 20,
+        "scope": "static first full decode batch after prefill",
+        "sequence_lengths": [
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097,
+          4097
+        ]
+      },
+      "profile": {
+        "aggregate_output_tps": 31.39740150325822,
+        "cache_token_capacity": 2334336,
+        "collectives": {
+          "decode": {
+            "all_gather_into_tensor": {
+              "calls": 7,
+              "input_bytes": 4587520,
+              "output_bytes": 36700160
+            },
+            "all_reduce": {
+              "calls": 1309,
+              "input_bytes": 374112256,
+              "output_bytes": 374112256
+            }
+          },
+          "prefill": {
+            "all_gather_into_tensor": {
+              "calls": 8,
+              "input_bytes": 655360,
+              "output_bytes": 5242880
+            },
+            "all_reduce": {
+              "calls": 1496,
+              "input_bytes": 218909114368,
+              "output_bytes": 218909114368
+            }
+          }
+        },
+        "component_ms": {
+          "decode.dense_ffn": {
+            "count": 7,
+            "max": 0.13656100630760193,
+            "mean": 0.11958385897534234,
+            "min": 0.11284100264310837,
+            "p50": 0.11724100261926651,
+            "p95": 0.1320610038936138
+          },
+          "decode.kda_attention": {
+            "count": 7,
+            "max": 13.639261990785599,
+            "mean": 13.377018134508814,
+            "min": 13.228580981492996,
+            "p50": 13.360341042280197,
+            "p95": 13.574434679746627
+          },
+          "decode.mla_attention": {
+            "count": 7,
+            "max": 14.558864951133728,
+            "mean": 14.346899279526301,
+            "min": 14.220463991165161,
+            "p50": 14.323430061340332,
+            "p95": 14.519889289140702
+          },
+          "decode.moe": {
+            "count": 7,
+            "max": 37.90867605805397,
+            "mean": 37.45775280254228,
+            "min": 37.10095205903053,
+            "p50": 37.41655296087265,
+            "p95": 37.84649081230164
+          },
+          "prefill.dense_ffn": {
+            "count": 8,
+            "max": 1.1623280048370361,
+            "mean": 1.1214881241321564,
+            "min": 1.0826079845428467,
+            "p50": 1.1093884706497192,
+            "p95": 1.1604660212993623
+          },
+          "prefill.kda_attention": {
+            "count": 8,
+            "max": 100.79937994480133,
+            "mean": 100.5773387402296,
+            "min": 100.36909866333008,
+            "p50": 100.59027832746506,
+            "p95": 100.76069623231888
+          },
+          "prefill.mla_attention": {
+            "count": 8,
+            "max": 23.373490810394287,
+            "mean": 23.294301480054855,
+            "min": 23.239812910556793,
+            "p50": 23.273491144180298,
+            "p95": 23.367317208647727
+          },
+          "prefill.moe": {
+            "count": 8,
+            "max": 265.05306935310364,
+            "mean": 264.7338173389435,
+            "min": 264.34722685813904,
+            "p50": 264.723429441452,
+            "p95": 265.0082551598549
+          }
+        },
+        "concurrency": 16,
+        "effective_chunked_prefill_size": 8192,
+        "first_token_ms": {
+          "count": 16,
+          "max": 3472.7857946418226,
+          "mean": 1954.3587458028924,
+          "min": 436.06924498453736,
+          "p50": 1954.3503613676876,
+          "p95": 3472.7807246381417
+        },
+        "hotspots": {
+          "decode": {
+            "model_p50_ms": 83.61641693115234,
+            "top_modules": [
+              {
+                "category": "mla_attention",
+                "layer": 39,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.807215913772286,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.7113649845123291,
+                  "mean": 0.673130716596331,
+                  "min": 0.6295250058174133,
+                  "p50": 0.6749650239944458,
+                  "p95": 0.7104889929294587
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 81,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.785641201467622,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.6720849871635437,
+                  "mean": 0.6438332796096802,
+                  "min": 0.5561239719390869,
+                  "p50": 0.6569250226020813,
+                  "p95": 0.6708849847316742
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 67,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7640652773447547,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.6533240079879761,
+                  "mean": 0.6390671559742519,
+                  "min": 0.6281650066375732,
+                  "p50": 0.6388840079307556,
+                  "p95": 0.6500360131263733
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 3,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7248863394362893,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.7273650169372559,
+                  "mean": 0.6222047124590192,
+                  "min": 0.597445011138916,
+                  "p50": 0.6061239838600159,
+                  "p95": 0.6932970106601714
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 83,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7205331320335069,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.6042050123214722,
+                  "mean": 0.6011530075754438,
+                  "min": 0.5949649810791016,
+                  "p50": 0.6024839878082275,
+                  "p95": 0.6038927137851715
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 11,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7165638571508474,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.623324990272522,
+                  "mean": 0.6011872887611389,
+                  "min": 0.5914440155029297,
+                  "p50": 0.5991650223731995,
+                  "p95": 0.6178286969661713
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 7,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7136445158160695,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.623045027256012,
+                  "mean": 0.5974842820848737,
+                  "min": 0.5794839859008789,
+                  "p50": 0.5967239737510681,
+                  "p95": 0.6177287101745605
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 75,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.71153973016407,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.6208450198173523,
+                  "mean": 0.5977988583700997,
+                  "min": 0.5850840210914612,
+                  "p50": 0.5949640274047852,
+                  "p95": 0.618625009059906
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 71,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7090533643449302,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.6009250283241272,
+                  "mean": 0.5933758616447449,
+                  "min": 0.5850039720535278,
+                  "p50": 0.5928850173950195,
+                  "p95": 0.6001807153224945
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 43,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.709052152526727,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.5997650027275085,
+                  "mean": 0.593255707195827,
+                  "min": 0.5862839818000793,
+                  "p50": 0.5928840041160583,
+                  "p95": 0.5990806996822358
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 27,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7084793189337624,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.5970439910888672,
+                  "mean": 0.5891814317022052,
+                  "min": 0.579043984413147,
+                  "p50": 0.5924050211906433,
+                  "p95": 0.5961923003196716
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 15,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7083824447609353,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.5987640023231506,
+                  "mean": 0.5919128571237836,
+                  "min": 0.5865240097045898,
+                  "p50": 0.5923240184783936,
+                  "p95": 0.5970123052597046
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 47,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7064210813574481,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.5966439843177795,
+                  "mean": 0.5904554213796344,
+                  "min": 0.582643985748291,
+                  "p50": 0.5906839966773987,
+                  "p95": 0.5963919818401336
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 35,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7063744619983392,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.6001240015029907,
+                  "mean": 0.5895475830350604,
+                  "min": 0.5796040296554565,
+                  "p50": 0.5906450152397156,
+                  "p95": 0.5975203096866608
+                }
+              },
+              {
+                "category": "mla_attention",
+                "layer": 23,
+                "module_type": "KimiLinearMLAAttention",
+                "share_of_model_p50_pct": 0.7063254190028241,
+                "timing_ms": {
+                  "count": 7,
+                  "max": 0.5932049751281738,
+                  "mean": 0.58837000812803,
+                  "min": 0.5820440053939819,
+                  "p50": 0.5906040072441101,
+                  "p95": 0.5928326845169067
+                }
+              }
+            ]
+          },
+          "prefill": {
+            "model_p50_ms": 427.4385223388672,
+            "top_modules": [
+              {
+                "category": "moe",
+                "layer": 70,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6920812881830258,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.988581895828247,
+                  "mean": 2.957931786775589,
+                  "min": 2.910741090774536,
+                  "p50": 2.9582220315933228,
+                  "p95": 2.9862715959548947
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 65,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6897650601902122,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.97746205329895,
+                  "mean": 2.9480364620685577,
+                  "min": 2.9235808849334717,
+                  "p50": 2.948321580886841,
+                  "p95": 2.973303997516632
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 84,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6889977997320564,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.984502077102661,
+                  "mean": 2.9456067383289337,
+                  "min": 2.9206619262695312,
+                  "p50": 2.9450420141220093,
+                  "p95": 2.979168009757996
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 75,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6886795000116198,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.9695019721984863,
+                  "mean": 2.942726582288742,
+                  "min": 2.9238219261169434,
+                  "p50": 2.943681478500366,
+                  "p95": 2.96384596824646
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 62,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6877390195794315,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.9583020210266113,
+                  "mean": 2.9365214109420776,
+                  "min": 2.912661075592041,
+                  "p50": 2.9396615028381348,
+                  "p95": 2.9561876535415648
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 69,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6876174783385954,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.9647018909454346,
+                  "mean": 2.938621759414673,
+                  "min": 2.907381057739258,
+                  "p50": 2.9391419887542725,
+                  "p95": 2.9645059585571287
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 87,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6875051963203287,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.975421905517578,
+                  "mean": 2.9414418637752533,
+                  "min": 2.9228219985961914,
+                  "p50": 2.938662052154541,
+                  "p95": 2.967091941833496
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 85,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6874488043081739,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.9665420055389404,
+                  "mean": 2.936496615409851,
+                  "min": 2.8964219093322754,
+                  "p50": 2.9384210109710693,
+                  "p95": 2.9641199707984924
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 66,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6872383522192915,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.967142105102539,
+                  "mean": 2.9393815994262695,
+                  "min": 2.9192209243774414,
+                  "p50": 2.937521457672119,
+                  "p95": 2.9650140523910524
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 63,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.687041956299611,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.9586620330810547,
+                  "mean": 2.9418870210647583,
+                  "min": 2.927701950073242,
+                  "p50": 2.9366819858551025,
+                  "p95": 2.9578640341758726
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 53,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6870138997396565,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.989622116088867,
+                  "mean": 2.939621776342392,
+                  "min": 2.910861015319824,
+                  "p50": 2.9365620613098145,
+                  "p95": 2.9804240584373476
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 80,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6868031966477527,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.948180913925171,
+                  "mean": 2.9315813183784485,
+                  "min": 2.900420904159546,
+                  "p50": 2.9356614351272583,
+                  "p95": 2.946473264694214
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 47,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.686597234724032,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.976141929626465,
+                  "mean": 2.933376669883728,
+                  "min": 2.904102087020874,
+                  "p50": 2.934781074523926,
+                  "p95": 2.965221953392029
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 43,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.6865878639445641,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.968142032623291,
+                  "mean": 2.941711515188217,
+                  "min": 2.923661947250366,
+                  "p50": 2.9347410202026367,
+                  "p95": 2.965341651439667
+                }
+              },
+              {
+                "category": "moe",
+                "layer": 64,
+                "module_type": "KimiLinearMoE",
+                "share_of_model_p50_pct": 0.686517806212352,
+                "timing_ms": {
+                  "count": 8,
+                  "max": 2.977381944656372,
+                  "mean": 2.9461716413497925,
+                  "min": 2.919861078262329,
+                  "p50": 2.934441566467285,
+                  "p95": 2.9768079996109007
+                }
+              }
+            ]
+          }
+        },
+        "model_ms": {
+          "decode": {
+            "count": 7,
+            "max": 85.15234375,
+            "mean": 83.81439099993024,
+            "min": 83.02948760986328,
+            "p50": 83.61641693115234,
+            "p95": 84.89425659179688
+          },
+          "prefill": {
+            "count": 8,
+            "max": 427.8740539550781,
+            "mean": 427.50978088378906,
+            "min": 427.0211486816406,
+            "p50": 427.4385223388672,
+            "p95": 427.87344512939455
+          }
+        },
+        "output_tokens": 8,
+        "per_user_decode_tps": 11.590140669473119,
+        "prompt_tokens": 4096,
+        "step_wall_ms": {
+          "decode": {
+            "count": 7,
+            "max": 91.78863698616624,
+            "mean": 86.28022976751838,
+            "min": 84.74234212189913,
+            "p50": 85.39247792214155,
+            "p95": 90.0865920819342
+          },
+          "prefill": {
+            "count": 8,
+            "max": 436.0950249247253,
+            "mean": 434.0985305607319,
+            "min": 433.2991619594395,
+            "p50": 433.90672747045755,
+            "p95": 435.43248218484223
+          }
+        },
+        "wall_ms": 4076.7704928293824
+      },
+      "warmup": {
+        "aggregate_output_tps": 7.060968426429349,
+        "cache_token_capacity": 2334336,
+        "collectives": {
+          "decode": {
+            "all_gather_into_tensor": {
+              "calls": 1,
+              "input_bytes": 655360,
+              "output_bytes": 5242880
+            },
+            "all_reduce": {
+              "calls": 187,
+              "input_bytes": 53444608,
+              "output_bytes": 53444608
+            }
+          },
+          "prefill": {
+            "all_gather_into_tensor": {
+              "calls": 8,
+              "input_bytes": 655360,
+              "output_bytes": 5242880
+            },
+            "all_reduce": {
+              "calls": 1496,
+              "input_bytes": 218909114368,
+              "output_bytes": 218909114368
+            }
+          }
+        },
+        "component_ms": {},
+        "concurrency": 16,
+        "effective_chunked_prefill_size": 8192,
+        "first_token_ms": {
+          "count": 16,
+          "max": 3537.3060279525816,
+          "mean": 2023.14571235911,
+          "min": 507.45645398274064,
+          "p50": 2023.394425632432,
+          "p95": 3537.298475508578
+        },
+        "hotspots": {
+          "decode": {
+            "model_p50_ms": 987.1006469726562,
+            "top_modules": []
+          },
+          "prefill": {
+            "model_p50_ms": 426.8667755126953,
+            "top_modules": []
+          }
+        },
+        "model_ms": {
+          "decode": {
+            "count": 1,
+            "max": 987.1006469726562,
+            "mean": 987.1006469726562,
+            "min": 987.1006469726562,
+            "p50": 987.1006469726562,
+            "p95": 987.1006469726562
+          },
+          "prefill": {
+            "count": 8,
+            "max": 491.61083984375,
+            "mean": 434.90560150146484,
+            "min": 426.3642578125,
+            "p50": 426.8667755126953,
+            "p95": 469.1207870483398
+          }
+        },
+        "output_tokens": 2,
+        "per_user_decode_tps": 1.0054195296950967,
+        "prompt_tokens": 4096,
+        "step_wall_ms": {
+          "decode": {
+            "count": 1,
+            "max": 994.6096832863986,
+            "mean": 994.6096832863986,
+            "min": 994.6096832863986,
+            "p50": 994.6096832863986,
+            "p95": 994.6096832863986
+          },
+          "prefill": {
+            "count": 8,
+            "max": 507.4847927317023,
+            "mean": 442.1655246987939,
+            "min": 432.28639010339975,
+            "p50": 432.7146967407316,
+            "p95": 481.79656951688224
+          }
+        },
+        "wall_ms": 4531.956251244992
+      }
+    }
+  ],
+  "runtime_peak_gib": 244.6854748725891,
+  "status": "passed"
+}

@@ -1,0 +1,813 @@
+---
+pid: 3562581
+cwd: "/home/zhewenyu"
+command: "docker exec -e TORCH_NCCL_BLOCKING_WAIT=1 -e ROCR_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 -e PYTHONPATH=/workspace/python:/workspace/tokenspeed-kernel/python:/workspace/tokenspeed-kernel-amd/python -e TOKENSPEED_KERNEL_PROFILE_BACKEND=roctracer -e TOKENSPEED_KERNEL_PROFILE_DATA=trace -e TOKENSPEED_KERNEL_PROFILE_OUTPUT_FORMAT=chrome_trace zhewenyu-kimi-k3-e2e bash -lc 'exec 9>/tmp/zhewenyu-kimi-gpu0.lock; if ! flock -n 9; then echo GPU_LOCK_BUSY; exit 77; fi; unset HIP_VISIBLE_DEVICES; cd /workspace; ts serve --model /data/models/sunkist --served-model-name kimi-k3 --tp 8 --ep-size 1 --attention-backend mla --moe-backend auto --kv-cache-dtype fp8 --mm-encoder-tp-mode data --max-model-len 8192 --max-num-seqs 16 --max-prefill-tokens 8192 --chunked-prefill-size 8192 --enforce-eager --disable-prefill-graph --gpu-memory-utilization 0.92 --trust-remote-code --sampling-backend greedy --disable-kvstore --kvstore-ratio 0.0 --no-enable-prefix-caching --enable-cache-report --enable-log-request-stats --host 127.0.0.1 --port 21000 --policy round_robin --engine-startup-timeout 3000 --gateway-startup-timeout 600'"
+title: "Restart eager server for prefill capture"
+status: succeeded
+started_at: 2026-09-02T10:54:56.609Z
+running_for_ms: 360210   
+---
+████████  ██████  ██   ██ ███████ ███    ██  ███████ ██████  ███████ ███████ ██████  
+   ██    ██    ██ ██  ██  ██      ████   ██  ██      ██   ██ ██      ██      ██   ██ 
+   ██    ██    ██ █████   █████   ██ ██  ██  ███████ ██████  █████   █████   ██   ██ 
+   ██    ██    ██ ██  ██  ██      ██  ██ ██       ██ ██      ██      ██      ██   ██ 
+   ██     ██████  ██   ██ ███████ ██   ████  ███████ ██      ███████ ███████ ██████  
+                        Tokens at the speed of light · v0.1.0
+[ts] [38;20m[2026-09-02 10:55:03,945 None] - INFO - Inferred world_size (8) from attn_tp_size (8) x attn_cp_size (1) x attn_dp_size (None) x pp_size (1) (server_args.py:586)[0m
+[ts] [38;20m[2026-09-02 10:55:03,945 None] - INFO - Parallelism configuration:
+[ts] Mapping(rank=?, world_size=8)
+[ts]   Cluster : 1 node(s) x 8 proc(s)
+[ts]   Pipeline: pp=1
+[ts]   Attention: tp=8  cp=1  dp=1
+[ts]     Vision: tp=1  item_dp=8
+[ts]   Dense   : tp=8  dp=1
+[ts]   MoE     : tp=8  ep=1  dp=1 (server_args.py:693)[0m
+[ts] [38;20m[2026-09-02 10:55:03,945 None] - INFO - Auto-enabled allreduce fusion (server_args.py:760)[0m
+[ts] [38;20m[2026-09-02 10:55:03,945 None] - INFO - EPLB is enabled or init_expert_location is provided. ep_dispatch_algorithm is configured. (server_args.py:941)[0m
+[ts] 2026-09-02 10:55:03,946 [smg_grpc_servicer.tokenspeed.server] INFO Launching TokenSpeed scheduler + AsyncLLM...
+[ts] [38;20m[2026-09-02 10:55:03,948 ] - INFO - server_args=ServerArgs(model='/data/models/sunkist', tokenizer='/data/models/sunkist', tokenizer_mode='auto', skip_tokenizer_init=False, load_format='auto', trust_remote_code=True, dtype='auto', kv_cache_dtype='fp8_e4m3', kv_cache_quant_method='none', quantization=None, quantization_param_path=None, max_model_len=8192, device='cuda', served_model_name='kimi-k3', revision=None, language_model_only=False, zmq_msgpack=False, data_parallel_address='127.0.0.1', data_parallel_rpc_port=30500, zmq_engine_index=0, host='127.0.0.1', port=44173, gpu_memory_utilization=0.92, max_num_seqs=16, max_total_tokens=None, chunked_prefill_size=8192, max_prefill_tokens=8192, enable_mixed_batch=False, prefix_granularity=64, mamba_ssm_dtype='float32', stream_interval=1, stream_output=False, enable_inline_detokenizer=True, seed=424094171, distributed_timeout_seconds=None, download_dir=None, ext_yaml=None, base_gpu_id=0, gpu_id_step=1, log_level='info', log_level_http=None, enable_log_requests=False, log_requests_level=0, enable_log_request_stats=True, enable_metrics=False, decode_log_interval=40, metrics_reporters=['prometheus'], app_key=None, api_key=None, enable_cache_report=True, kv_events_config=None, rl_control_port=59477, weight_version='default', data_parallel_size=None, pipeline_parallel_size=1, pp_layer_partition=None, load_balance_method='shortest_queue', load_watch_interval=0.02, ep_size=1, init_expert_location='trivial', ep_num_redundant_experts=0, ep_dispatch_algorithm='static', eplb_algorithm='auto', expert_distribution_recorder_mode=None, expert_distribution_recorder_buffer_size=None, enable_expert_distribution_metrics=False, enable_eplb=False, moe_backend='auto', draft_moe_backend=None, all2all_backend='none', deepep_mode='auto', disable_flashinfer_cutlass_moe_fp4_allgather=False, enable_kvstore=False, kvstore_ratio=0.0, kvstore_size=0, kvstore_io_backend='kernel', kvstore_mem_layout='layer_first', kvstore_storage_backend=None, kvstore_storage_backend_extra_config=None, dist_init_addr=None, nnodes=1, node_rank=0, hf_overrides='{}', preferred_sampling_params=None, attention_backend='mla', kda_backend='auto', drafter_attention_backend=None, sampling_backend='greedy', dp_sampling=False, dp_sampling_min_bs=None, attention_use_fp4_indexer_cache=None, use_trtllm_ragged_deepseek_prefill=None, deepseek_v4_mega_moe_max_num_tokens=0, deepseek_v4_indexer_prefill_max_logits_mb=512, deepseek_v4_prefill_chunk_size=4, grammar_backend='none', reasoning_parser='kimi_k3', grammar_compile_timeout_secs=30.0, grammar_compile_max_retries=2, disable_any_whitespace=False, disable_capturable_grammar=False, draft_model_path_use_base=False, speculative_config=None, speculative_algorithm=None, speculative_draft_model_path=None, speculative_draft_model_quantization=None, speculative_num_steps=3, speculative_eagle_topk=1, speculative_num_draft_tokens=4, enable_replay_ssm=False, eagle3_layers_to_capture=None, enable_output_logprobs=False, disable_pdl=False, enable_prefix_caching=False, disable_kvstore=True, enforce_eager=True, disable_cuda_graph_padding=False, disable_autotune=False, enable_cudagraph_gc=False, disable_nccl_nvls=False, disable_symm_mem=False, disable_overlap_schedule=False, disable_tf32=False, force_deterministic_rsag=False, disable_sampling_tp_sync=False, low_latency_max_num_tokens_per_gpu=256, max_cudagraph_capture_size=160, disable_prefill_graph=True, prefill_graph_max_tokens=None, prefill_graph_capture_sizes=None, cudagraph_capture_sizes=None, enable_nan_detection=False, enable_nvtx=False, enable_p2p_check=False, triton_attention_reduce_in_fp32=False, delete_ckpt_after_loading=False, weight_loader_prefetch_checkpoints=True, weight_loader_prefetch_num_threads=4, enable_memory_saver=False, enable_custom_logit_processor=False, mla_disable_ragged=False, warmups=None, nprocs_per_node=None, world_size=None, attn_tp_size=8, dense_tp_size=None, moe_tp_size=None, mapping=Mapping(rank=?, world_size=8)
+[ts]   Cluster : 1 node(s) x 8 proc(s)
+[ts]   Pipeline: pp=1
+[ts]   Attention: tp=8  cp=1  dp=1
+[ts]     Vision: tp=1  item_dp=8
+[ts]   Dense   : tp=8  dp=1
+[ts]   MoE     : tp=8  ep=1  dp=1, mla_chunk_multiplier=4, mm_attention_backend=None, mm_encoder_tp_mode='data', disaggregation_mode='null', disaggregation_bootstrap_port=8998, disaggregation_transfer_backend='mooncake', disaggregation_ib_device=None, disaggregation_layerwise_interval=1, pdlb_url=None, skip_server_warmup=False, comm_fusion_max_num_tokens=2048, enable_allreduce_fusion=True, enable_expert_parallel=False) (engine.py:529)[0m
+[ts] [2026-09-02 10:55:04] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:55:04] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] [38;20m[2026-09-02 10:55:09,310  ATTN TP RANK 0] - INFO - Init torch distributed begin. Avail mem=287.3652 GB (distributed_initializer.py:131)[0m
+[ts] [38;20m[2026-09-02 10:55:09,417  ATTN TP RANK 6] - INFO - Init torch distributed begin. Avail mem=287.3652 GB (distributed_initializer.py:131)[0m
+[ts] [38;20m[2026-09-02 10:55:09,512  ATTN TP RANK 5] - INFO - Init torch distributed begin. Avail mem=287.3652 GB (distributed_initializer.py:131)[0m
+[ts] [38;20m[2026-09-02 10:55:09,549  ATTN TP RANK 2] - INFO - Init torch distributed begin. Avail mem=287.3652 GB (distributed_initializer.py:131)[0m
+[ts] [38;20m[2026-09-02 10:55:09,575  ATTN TP RANK 1] - INFO - Init torch distributed begin. Avail mem=287.3652 GB (distributed_initializer.py:131)[0m
+[ts] [38;20m[2026-09-02 10:55:09,766  ATTN TP RANK 3] - INFO - Init torch distributed begin. Avail mem=287.3652 GB (distributed_initializer.py:131)[0m
+[ts] [38;20m[2026-09-02 10:55:09,767  ATTN TP RANK 4] - INFO - Init torch distributed begin. Avail mem=287.3652 GB (distributed_initializer.py:131)[0m
+[ts] [38;20m[2026-09-02 10:55:09,778  ATTN TP RANK 7] - INFO - Init torch distributed begin. Avail mem=287.3652 GB (distributed_initializer.py:131)[0m
+[ts] [38;20m[2026-09-02 10:55:26,182  ATTN TP RANK 3] - INFO - trtllm one-shot all-reduce for group (0, 1, 2, 3, 4, 5, 6, 7): unavailable (NCCL fallback) (distributed_initializer.py:204)[0m
+[ts] [38;20m[2026-09-02 10:55:26,182  ATTN TP RANK 4] - INFO - trtllm one-shot all-reduce for group (0, 1, 2, 3, 4, 5, 6, 7): unavailable (NCCL fallback) (distributed_initializer.py:204)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 6] - INFO - trtllm one-shot all-reduce for group (0, 1, 2, 3, 4, 5, 6, 7): unavailable (NCCL fallback) (distributed_initializer.py:204)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 5] - INFO - trtllm one-shot all-reduce for group (0, 1, 2, 3, 4, 5, 6, 7): unavailable (NCCL fallback) (distributed_initializer.py:204)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 3] - INFO - Init comm buff end. Avail mem=280.9336 GB (distributed_initializer.py:210)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 4] - INFO - Init comm buff end. Avail mem=281.0312 GB (distributed_initializer.py:210)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 3] - INFO - Current Process distributed state:  global rank: 3  attn_tp_rank: 3  attn_dp_rank: 0 (distributed_initializer.py:215)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 4] - INFO - Current Process distributed state:  global rank: 4  attn_tp_rank: 4  attn_dp_rank: 0 (distributed_initializer.py:215)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 1] - INFO - trtllm one-shot all-reduce for group (0, 1, 2, 3, 4, 5, 6, 7): unavailable (NCCL fallback) (distributed_initializer.py:204)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 2] - INFO - trtllm one-shot all-reduce for group (0, 1, 2, 3, 4, 5, 6, 7): unavailable (NCCL fallback) (distributed_initializer.py:204)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 6] - INFO - Init comm buff end. Avail mem=281.1680 GB (distributed_initializer.py:210)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 5] - INFO - Init comm buff end. Avail mem=281.2031 GB (distributed_initializer.py:210)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 6] - INFO - Current Process distributed state:  global rank: 6  attn_tp_rank: 6  attn_dp_rank: 0 (distributed_initializer.py:215)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 5] - INFO - Current Process distributed state:  global rank: 5  attn_tp_rank: 5  attn_dp_rank: 0 (distributed_initializer.py:215)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 1] - INFO - Init comm buff end. Avail mem=280.9219 GB (distributed_initializer.py:210)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 2] - INFO - Init comm buff end. Avail mem=280.9102 GB (distributed_initializer.py:210)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 0] - INFO - trtllm one-shot all-reduce for group (0, 1, 2, 3, 4, 5, 6, 7): unavailable (NCCL fallback) (distributed_initializer.py:204)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 2] - INFO - Current Process distributed state:  global rank: 2  attn_tp_rank: 2  attn_dp_rank: 0 (distributed_initializer.py:215)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 1] - INFO - Current Process distributed state:  global rank: 1  attn_tp_rank: 1  attn_dp_rank: 0 (distributed_initializer.py:215)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 0] - INFO - Init comm buff end. Avail mem=281.7539 GB (distributed_initializer.py:210)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 0] - INFO - Current Process distributed state:  global rank: 0  attn_tp_rank: 0  attn_dp_rank: 0 (distributed_initializer.py:215)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 7] - INFO - trtllm one-shot all-reduce for group (0, 1, 2, 3, 4, 5, 6, 7): unavailable (NCCL fallback) (distributed_initializer.py:204)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 7] - INFO - Init comm buff end. Avail mem=281.1875 GB (distributed_initializer.py:210)[0m
+[ts] [38;20m[2026-09-02 10:55:26,183  ATTN TP RANK 7] - INFO - Current Process distributed state:  global rank: 7  attn_tp_rank: 7  attn_dp_rank: 0 (distributed_initializer.py:215)[0m
+[ts] [38;20m[2026-09-02 10:55:26,239  ATTN TP RANK 4] - INFO - Load weight begin. avail mem=281.03 GB (weight_loader.py:65)[0m
+[ts] [38;20m[2026-09-02 10:55:26,239  ATTN TP RANK 3] - INFO - Load weight begin. avail mem=280.93 GB (weight_loader.py:65)[0m
+[ts] [38;20m[2026-09-02 10:55:26,241  ATTN TP RANK 6] - INFO - Load weight begin. avail mem=281.17 GB (weight_loader.py:65)[0m
+[ts] [38;20m[2026-09-02 10:55:26,244  ATTN TP RANK 5] - INFO - Load weight begin. avail mem=281.20 GB (weight_loader.py:65)[0m
+[ts] [38;20m[2026-09-02 10:55:26,260  ATTN TP RANK 1] - INFO - Load weight begin. avail mem=280.92 GB (weight_loader.py:65)[0m
+[ts] [38;20m[2026-09-02 10:55:26,260  ATTN TP RANK 0] - INFO - Load weight begin. avail mem=281.75 GB (weight_loader.py:65)[0m
+[ts] [38;20m[2026-09-02 10:55:26,260  ATTN TP RANK 7] - INFO - Load weight begin. avail mem=281.19 GB (weight_loader.py:65)[0m
+[ts] [38;20m[2026-09-02 10:55:26,260  ATTN TP RANK 2] - INFO - Load weight begin. avail mem=280.91 GB (weight_loader.py:65)[0m
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 1] K3 comm negotiated: multimem=False latent_tail=False
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 7] K3 comm negotiated: multimem=False latent_tail=False
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 2] K3 comm negotiated: multimem=False latent_tail=False
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 0] K3 comm negotiated: multimem=False latent_tail=False
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 6] K3 comm negotiated: multimem=False latent_tail=False
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 4] K3 comm negotiated: multimem=False latent_tail=False
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 3] K3 comm negotiated: multimem=False latent_tail=False
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 5] K3 comm negotiated: multimem=False latent_tail=False
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 0] multimodal encoder attention backend: triton_attn (auto)
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 6] multimodal encoder attention backend: triton_attn (auto)
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 2] multimodal encoder attention backend: triton_attn (auto)
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 4] multimodal encoder attention backend: triton_attn (auto)
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 3] multimodal encoder attention backend: triton_attn (auto)
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 5] multimodal encoder attention backend: triton_attn (auto)
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 1] multimodal encoder attention backend: triton_attn (auto)
+[ts] [2026-09-02 10:55:26 ATTN TP RANK 7] multimodal encoder attention backend: triton_attn (auto)
+[ts] [38;20m[2026-09-02 10:55:26,983  ATTN TP RANK 0] - INFO - Prefetching 96 checkpoint shards into the OS page cache (window 80.0 GiB, 4 reader threads). (weight_utils.py:487)[0m
+[ts] [38;20m[2026-09-02 10:55:26,984  ATTN TP RANK 6] - INFO - Prefetching 96 checkpoint shards into the OS page cache (window 80.0 GiB, 4 reader threads). (weight_utils.py:487)[0m
+[ts] Loading safetensors checkpoint shards:   0% Completed | 0/96 [00:00<?, ?it/s]
+[ts] [38;20m[2026-09-02 10:55:27,006  ATTN TP RANK 3] - INFO - Prefetching 96 checkpoint shards into the OS page cache (window 80.0 GiB, 4 reader threads). (weight_utils.py:487)[0m
+[ts] [38;20m[2026-09-02 10:55:27,015  ATTN TP RANK 5] - INFO - Prefetching 96 checkpoint shards into the OS page cache (window 80.0 GiB, 4 reader threads). (weight_utils.py:487)[0m
+[ts] [38;20m[2026-09-02 10:55:27,024  ATTN TP RANK 1] - INFO - Prefetching 96 checkpoint shards into the OS page cache (window 80.0 GiB, 4 reader threads). (weight_utils.py:487)[0m
+[ts] [38;20m[2026-09-02 10:55:27,073  ATTN TP RANK 4] - INFO - Prefetching 96 checkpoint shards into the OS page cache (window 80.0 GiB, 4 reader threads). (weight_utils.py:487)[0m
+[ts] [38;20m[2026-09-02 10:55:27,095  ATTN TP RANK 2] - INFO - Prefetching 96 checkpoint shards into the OS page cache (window 80.0 GiB, 4 reader threads). (weight_utils.py:487)[0m
+[ts] [38;20m[2026-09-02 10:55:27,116  ATTN TP RANK 7] - INFO - Prefetching 96 checkpoint shards into the OS page cache (window 80.0 GiB, 4 reader threads). (weight_utils.py:487)[0m
+[ts] Loading safetensors checkpoint shards:   1% Completed | 1/96 [00:03<05:54,  3.73s/it]
+[ts] Loading safetensors checkpoint shards:   2% Completed | 2/96 [00:05<03:42,  2.37s/it]
+[ts] Loading safetensors checkpoint shards:   3% Completed | 3/96 [00:06<02:58,  1.92s/it]
+[ts] Loading safetensors checkpoint shards:   4% Completed | 4/96 [00:07<02:36,  1.70s/it]
+[ts] Loading safetensors checkpoint shards:   5% Completed | 5/96 [00:09<02:25,  1.60s/it]
+[ts] Loading safetensors checkpoint shards:   6% Completed | 6/96 [00:10<02:17,  1.52s/it]
+[ts] Loading safetensors checkpoint shards:   7% Completed | 7/96 [00:12<02:11,  1.48s/it]
+[ts] Loading safetensors checkpoint shards:   8% Completed | 8/96 [00:13<02:10,  1.49s/it]
+[ts] Loading safetensors checkpoint shards:   9% Completed | 9/96 [00:15<02:09,  1.49s/it]
+[ts] Loading safetensors checkpoint shards:  10% Completed | 10/96 [00:16<02:07,  1.48s/it]
+[ts] Loading safetensors checkpoint shards:  11% Completed | 11/96 [00:18<02:06,  1.49s/it]
+[ts] Loading safetensors checkpoint shards:  12% Completed | 12/96 [00:19<02:05,  1.50s/it]
+[ts] Loading safetensors checkpoint shards:  14% Completed | 13/96 [00:21<02:08,  1.55s/it]
+[ts] Loading safetensors checkpoint shards:  15% Completed | 14/96 [00:22<02:04,  1.51s/it]
+[ts] Loading safetensors checkpoint shards:  16% Completed | 15/96 [00:24<02:03,  1.52s/it]
+[ts] Loading safetensors checkpoint shards:  17% Completed | 16/96 [00:25<02:01,  1.52s/it]
+[ts] Loading safetensors checkpoint shards:  18% Completed | 17/96 [00:25<01:29,  1.13s/it]
+[ts] Loading safetensors checkpoint shards:  19% Completed | 18/96 [00:27<01:36,  1.23s/it]
+[ts] Loading safetensors checkpoint shards:  20% Completed | 19/96 [00:28<01:36,  1.25s/it]
+[ts] Loading safetensors checkpoint shards:  21% Completed | 20/96 [00:30<01:39,  1.31s/it]
+[ts] Loading safetensors checkpoint shards:  22% Completed | 21/96 [00:31<01:40,  1.34s/it]
+[ts] Loading safetensors checkpoint shards:  23% Completed | 22/96 [00:33<01:42,  1.38s/it]
+[ts] Loading safetensors checkpoint shards:  24% Completed | 23/96 [00:34<01:46,  1.45s/it]
+[ts] Loading safetensors checkpoint shards:  25% Completed | 24/96 [00:36<01:45,  1.47s/it]
+[ts] Loading safetensors checkpoint shards:  26% Completed | 25/96 [00:37<01:45,  1.48s/it]
+[ts] Loading safetensors checkpoint shards:  27% Completed | 26/96 [00:39<01:47,  1.53s/it]
+[ts] Loading safetensors checkpoint shards:  28% Completed | 27/96 [00:40<01:47,  1.55s/it]
+[ts] Loading safetensors checkpoint shards:  29% Completed | 28/96 [00:42<01:42,  1.50s/it]
+[ts] Loading safetensors checkpoint shards:  30% Completed | 29/96 [00:43<01:40,  1.50s/it]
+[ts] Loading safetensors checkpoint shards:  32% Completed | 31/96 [00:45<01:15,  1.16s/it]
+[ts] Loading safetensors checkpoint shards:  33% Completed | 32/96 [00:46<01:18,  1.22s/it]
+[ts] Loading safetensors checkpoint shards:  34% Completed | 33/96 [00:48<01:21,  1.29s/it]
+[ts] Loading safetensors checkpoint shards:  35% Completed | 34/96 [00:49<01:25,  1.38s/it]
+[ts] Loading safetensors checkpoint shards:  36% Completed | 35/96 [00:51<01:23,  1.37s/it]
+[ts] Loading safetensors checkpoint shards:  38% Completed | 36/96 [00:52<01:23,  1.39s/it]
+[ts] Loading safetensors checkpoint shards:  39% Completed | 37/96 [00:54<01:23,  1.42s/it]
+[ts] Loading safetensors checkpoint shards:  40% Completed | 38/96 [00:55<01:17,  1.34s/it]
+[ts] Loading safetensors checkpoint shards:  41% Completed | 39/96 [00:56<01:20,  1.40s/it]
+[ts] Loading safetensors checkpoint shards:  42% Completed | 40/96 [00:58<01:20,  1.44s/it]
+[ts] Loading safetensors checkpoint shards:  43% Completed | 41/96 [00:58<00:58,  1.07s/it]
+[ts] Loading safetensors checkpoint shards:  44% Completed | 42/96 [00:59<01:00,  1.12s/it]
+[ts] Loading safetensors checkpoint shards:  45% Completed | 43/96 [01:01<01:02,  1.18s/it]
+[ts] Loading safetensors checkpoint shards:  46% Completed | 44/96 [01:02<01:04,  1.24s/it]
+[ts] Loading safetensors checkpoint shards:  47% Completed | 45/96 [01:03<01:04,  1.26s/it]
+[ts] Loading safetensors checkpoint shards:  48% Completed | 46/96 [01:05<01:02,  1.25s/it]
+[ts] Loading safetensors checkpoint shards:  49% Completed | 47/96 [01:06<01:01,  1.27s/it]
+[ts] Loading safetensors checkpoint shards:  50% Completed | 48/96 [01:07<01:01,  1.29s/it]
+[ts] Loading safetensors checkpoint shards:  51% Completed | 49/96 [01:09<01:02,  1.34s/it]
+[ts] Loading safetensors checkpoint shards:  52% Completed | 50/96 [01:10<00:59,  1.30s/it]
+[ts] Loading safetensors checkpoint shards:  53% Completed | 51/96 [01:11<00:58,  1.30s/it]
+[ts] Loading safetensors checkpoint shards:  54% Completed | 52/96 [01:12<00:56,  1.29s/it]
+[ts] Loading safetensors checkpoint shards:  55% Completed | 53/96 [01:14<00:53,  1.25s/it]
+[ts] Loading safetensors checkpoint shards:  56% Completed | 54/96 [01:15<00:57,  1.37s/it]
+[ts] Loading safetensors checkpoint shards:  57% Completed | 55/96 [01:17<00:55,  1.37s/it]
+[ts] Loading safetensors checkpoint shards:  58% Completed | 56/96 [01:18<00:52,  1.32s/it]
+[ts] Loading safetensors checkpoint shards:  59% Completed | 57/96 [01:19<00:50,  1.31s/it]
+[ts] Loading safetensors checkpoint shards:  60% Completed | 58/96 [01:20<00:49,  1.31s/it]
+[ts] Loading safetensors checkpoint shards:  61% Completed | 59/96 [01:22<00:48,  1.32s/it]
+[ts] Loading safetensors checkpoint shards:  62% Completed | 60/96 [01:23<00:46,  1.29s/it]
+[ts] Loading safetensors checkpoint shards:  64% Completed | 61/96 [01:24<00:46,  1.33s/it]
+[ts] Loading safetensors checkpoint shards:  65% Completed | 62/96 [01:26<00:43,  1.29s/it]
+[ts] Loading safetensors checkpoint shards:  66% Completed | 63/96 [01:27<00:43,  1.33s/it]
+[ts] Loading safetensors checkpoint shards:  67% Completed | 64/96 [01:28<00:42,  1.31s/it]
+[ts] Loading safetensors checkpoint shards:  68% Completed | 65/96 [01:30<00:43,  1.40s/it]
+[ts] Loading safetensors checkpoint shards:  69% Completed | 66/96 [01:31<00:41,  1.39s/it]
+[ts] Loading safetensors checkpoint shards:  70% Completed | 67/96 [01:33<00:40,  1.40s/it]
+[ts] Loading safetensors checkpoint shards:  71% Completed | 68/96 [01:34<00:38,  1.38s/it]
+[ts] Loading safetensors checkpoint shards:  72% Completed | 69/96 [01:35<00:35,  1.32s/it]
+[ts] Loading safetensors checkpoint shards:  73% Completed | 70/96 [01:36<00:34,  1.32s/it]
+[ts] Loading safetensors checkpoint shards:  74% Completed | 71/96 [01:38<00:34,  1.37s/it]
+[ts] Loading safetensors checkpoint shards:  75% Completed | 72/96 [01:39<00:33,  1.39s/it]
+[ts] Loading safetensors checkpoint shards:  76% Completed | 73/96 [01:41<00:31,  1.37s/it]
+[ts] Loading safetensors checkpoint shards:  77% Completed | 74/96 [01:42<00:31,  1.43s/it]
+[ts] Loading safetensors checkpoint shards:  78% Completed | 75/96 [01:44<00:29,  1.39s/it]
+[ts] Loading safetensors checkpoint shards:  79% Completed | 76/96 [01:45<00:27,  1.36s/it]
+[ts] Loading safetensors checkpoint shards:  80% Completed | 77/96 [01:47<00:27,  1.46s/it]
+[ts] Loading safetensors checkpoint shards:  81% Completed | 78/96 [01:48<00:25,  1.40s/it]
+[ts] Loading safetensors checkpoint shards:  82% Completed | 79/96 [01:49<00:24,  1.43s/it]
+[ts] Loading safetensors checkpoint shards:  83% Completed | 80/96 [01:51<00:23,  1.48s/it]
+[ts] Loading safetensors checkpoint shards:  84% Completed | 81/96 [01:52<00:22,  1.47s/it]
+[ts] Loading safetensors checkpoint shards:  85% Completed | 82/96 [01:54<00:19,  1.41s/it]
+[ts] Loading safetensors checkpoint shards:  86% Completed | 83/96 [01:55<00:18,  1.46s/it]
+[ts] Loading safetensors checkpoint shards:  88% Completed | 84/96 [01:56<00:16,  1.40s/it]
+[ts] Loading safetensors checkpoint shards:  89% Completed | 85/96 [01:58<00:15,  1.41s/it]
+[ts] Loading safetensors checkpoint shards:  90% Completed | 86/96 [01:59<00:13,  1.39s/it]
+[ts] Loading safetensors checkpoint shards:  91% Completed | 87/96 [02:01<00:12,  1.38s/it]
+[ts] Loading safetensors checkpoint shards:  92% Completed | 88/96 [02:02<00:10,  1.35s/it]
+[ts] Loading safetensors checkpoint shards:  93% Completed | 89/96 [02:03<00:10,  1.43s/it]
+[ts] Loading safetensors checkpoint shards:  94% Completed | 90/96 [02:05<00:08,  1.41s/it]
+[ts] Loading safetensors checkpoint shards:  95% Completed | 91/96 [02:06<00:06,  1.35s/it]
+[ts] Loading safetensors checkpoint shards:  96% Completed | 92/96 [02:06<00:04,  1.01s/it]
+[ts] [38;20m[2026-09-02 10:57:34,530  ATTN TP RANK 7] - INFO - Checkpoint prefetch finished after 127.41s. (weight_utils.py:528)[0m
+[ts] [38;20m[2026-09-02 10:57:35,011  ATTN TP RANK 0] - INFO - Checkpoint prefetch finished after 128.03s. (weight_utils.py:528)[0m
+[ts] Loading safetensors checkpoint shards:  97% Completed | 93/96 [02:08<00:03,  1.11s/it]
+[ts] [38;20m[2026-09-02 10:57:35,416  ATTN TP RANK 2] - INFO - Checkpoint prefetch finished after 128.32s. (weight_utils.py:528)[0m
+[ts] [38;20m[2026-09-02 10:57:36,033  ATTN TP RANK 4] - INFO - Checkpoint prefetch finished after 128.96s. (weight_utils.py:528)[0m
+[ts] Loading safetensors checkpoint shards:  98% Completed | 94/96 [02:09<00:02,  1.14s/it]
+[ts] Loading safetensors checkpoint shards:  99% Completed | 95/96 [02:10<00:01,  1.21s/it]
+[ts] [38;20m[2026-09-02 10:57:37,846  ATTN TP RANK 5] - INFO - Checkpoint prefetch finished after 130.83s. (weight_utils.py:528)[0m
+[ts] [38;20m[2026-09-02 10:57:37,858  ATTN TP RANK 3] - INFO - Checkpoint prefetch finished after 130.85s. (weight_utils.py:528)[0m
+[ts] Loading safetensors checkpoint shards: 100% Completed | 96/96 [02:11<00:00,  1.22s/it]
+[ts] Loading safetensors checkpoint shards: 100% Completed | 96/96 [02:11<00:00,  1.37s/it]
+[ts] 
+[ts] [38;20m[2026-09-02 10:57:38,998  ATTN TP RANK 6] - INFO - Checkpoint prefetch finished after 132.01s. (weight_utils.py:528)[0m
+[ts] [38;20m[2026-09-02 10:57:38,998  ATTN TP RANK 1] - INFO - Checkpoint prefetch finished after 131.97s. (weight_utils.py:528)[0m
+[ts] [33;20m[2026-09-02 10:57:46,995  ATTN TP RANK 7] - WARNING - Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results! (weight_loader.py:109)[0m
+[ts] [38;20m[2026-09-02 10:57:46,998  ATTN TP RANK 7] - INFO - Load weight end. type=KimiK3ForConditionalGeneration, dtype=torch.bfloat16, avail mem=66.69 GB (weight_loader.py:117)[0m
+[ts] [33;20m[2026-09-02 10:57:47,016  ATTN TP RANK 0] - WARNING - Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results! (weight_loader.py:109)[0m
+[ts] [38;20m[2026-09-02 10:57:47,019  ATTN TP RANK 0] - INFO - Load weight end. type=KimiK3ForConditionalGeneration, dtype=torch.bfloat16, avail mem=67.24 GB (weight_loader.py:117)[0m
+[ts] [33;20m[2026-09-02 10:57:47,088  ATTN TP RANK 2] - WARNING - Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results! (weight_loader.py:109)[0m
+[ts] [38;20m[2026-09-02 10:57:47,091  ATTN TP RANK 2] - INFO - Load weight end. type=KimiK3ForConditionalGeneration, dtype=torch.bfloat16, avail mem=66.40 GB (weight_loader.py:117)[0m
+[ts] [33;20m[2026-09-02 10:57:47,718  ATTN TP RANK 4] - WARNING - Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results! (weight_loader.py:109)[0m
+[ts] [38;20m[2026-09-02 10:57:47,721  ATTN TP RANK 4] - INFO - Load weight end. type=KimiK3ForConditionalGeneration, dtype=torch.bfloat16, avail mem=66.53 GB (weight_loader.py:117)[0m
+[ts] [2026-09-02 10:57:48 ATTN TP RANK 0] Multimodal encoder warmup complete: modality=image feature_shapes=[(4096, 3, 14, 14)] elapsed=1704.472 ms
+[ts] [2026-09-02 10:57:48 ATTN TP RANK 7] Multimodal encoder warmup complete: modality=image feature_shapes=[(4096, 3, 14, 14)] elapsed=1735.002 ms
+[ts] [2026-09-02 10:57:48 ATTN TP RANK 2] Multimodal encoder warmup complete: modality=image feature_shapes=[(4096, 3, 14, 14)] elapsed=1668.123 ms
+[ts] [2026-09-02 10:57:49 ATTN TP RANK 4] Multimodal encoder warmup complete: modality=image feature_shapes=[(4096, 3, 14, 14)] elapsed=1740.950 ms
+[ts] [33;20m[2026-09-02 10:57:49,817  ATTN TP RANK 3] - WARNING - Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results! (weight_loader.py:109)[0m
+[ts] [38;20m[2026-09-02 10:57:49,819  ATTN TP RANK 3] - INFO - Load weight end. type=KimiK3ForConditionalGeneration, dtype=torch.bfloat16, avail mem=66.42 GB (weight_loader.py:117)[0m
+[ts] [33;20m[2026-09-02 10:57:50,297  ATTN TP RANK 5] - WARNING - Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results! (weight_loader.py:109)[0m
+[ts] [38;20m[2026-09-02 10:57:50,300  ATTN TP RANK 5] - INFO - Load weight end. type=KimiK3ForConditionalGeneration, dtype=torch.bfloat16, avail mem=66.70 GB (weight_loader.py:117)[0m
+[ts] [2026-09-02 10:57:51 ATTN TP RANK 3] Multimodal encoder warmup complete: modality=image feature_shapes=[(4096, 3, 14, 14)] elapsed=1591.683 ms
+[ts] [33;20m[2026-09-02 10:57:51,782  ATTN TP RANK 1] - WARNING - Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results! (weight_loader.py:109)[0m
+[ts] [38;20m[2026-09-02 10:57:51,784  ATTN TP RANK 1] - INFO - Load weight end. type=KimiK3ForConditionalGeneration, dtype=torch.bfloat16, avail mem=66.42 GB (weight_loader.py:117)[0m
+[ts] [33;20m[2026-09-02 10:57:51,844  ATTN TP RANK 6] - WARNING - Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results! (weight_loader.py:109)[0m
+[ts] [38;20m[2026-09-02 10:57:51,847  ATTN TP RANK 6] - INFO - Load weight end. type=KimiK3ForConditionalGeneration, dtype=torch.bfloat16, avail mem=66.66 GB (weight_loader.py:117)[0m
+[ts] [2026-09-02 10:57:51 ATTN TP RANK 5] Multimodal encoder warmup complete: modality=image feature_shapes=[(4096, 3, 14, 14)] elapsed=1677.973 ms
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 1] Multimodal encoder warmup complete: modality=image feature_shapes=[(4096, 3, 14, 14)] elapsed=1639.176 ms
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 6] Multimodal encoder warmup complete: modality=image feature_shapes=[(4096, 3, 14, 14)] elapsed=1595.777 ms
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 6] Cache profile: parent_bytes=21233664, P=128, parents=2180, token_capacity=3197056, layers=93 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1, 'linear_attention_2': 1}
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 1] Cache profile: parent_bytes=21233664, P=128, parents=2180, token_capacity=3197056, layers=93 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1, 'linear_attention_2': 1}
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 5] Cache profile: parent_bytes=21233664, P=128, parents=2180, token_capacity=3197056, layers=93 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1, 'linear_attention_2': 1}
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 2] Cache profile: parent_bytes=21233664, P=128, parents=2180, token_capacity=3197056, layers=93 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1, 'linear_attention_2': 1}
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 0] Cache profile: parent_bytes=21233664, P=128, parents=2180, token_capacity=3197056, layers=93 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1, 'linear_attention_2': 1}
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 3] Cache profile: parent_bytes=21233664, P=128, parents=2180, token_capacity=3197056, layers=93 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1, 'linear_attention_2': 1}
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 7] Cache profile: parent_bytes=21233664, P=128, parents=2180, token_capacity=3197056, layers=93 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1, 'linear_attention_2': 1}
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 4] Cache profile: parent_bytes=21233664, P=128, parents=2180, token_capacity=3197056, layers=93 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1, 'linear_attention_2': 1}
+[ts] [38;20m[2026-09-02 10:57:53,450  ATTN TP RANK 6] - INFO - Allocated cache arena: 46310621184 bytes, prefix_granularity=128, num_lcm_blocks=2180, device cuda (arena.py:120)[0m
+[ts] [38;20m[2026-09-02 10:57:53,451  ATTN TP RANK 5] - INFO - Allocated cache arena: 46310621184 bytes, prefix_granularity=128, num_lcm_blocks=2180, device cuda (arena.py:120)[0m
+[ts] [38;20m[2026-09-02 10:57:53,451  ATTN TP RANK 1] - INFO - Allocated cache arena: 46310621184 bytes, prefix_granularity=128, num_lcm_blocks=2180, device cuda (arena.py:120)[0m
+[ts] [38;20m[2026-09-02 10:57:53,451  ATTN TP RANK 6] - INFO - Initialized cache view over 3348480 slots as torch.float8_e4m3fn, layers from 0, rank 6 (base.py:151)[0m
+[ts] [38;20m[2026-09-02 10:57:53,451  ATTN TP RANK 0] - INFO - Allocated cache arena: 46310621184 bytes, prefix_granularity=128, num_lcm_blocks=2180, device cuda (arena.py:120)[0m
+[ts] [38;20m[2026-09-02 10:57:53,452  ATTN TP RANK 1] - INFO - Initialized cache view over 3348480 slots as torch.float8_e4m3fn, layers from 0, rank 1 (base.py:151)[0m
+[ts] [38;20m[2026-09-02 10:57:53,452  ATTN TP RANK 5] - INFO - Initialized cache view over 3348480 slots as torch.float8_e4m3fn, layers from 0, rank 5 (base.py:151)[0m
+[ts] [38;20m[2026-09-02 10:57:53,452  ATTN TP RANK 7] - INFO - Allocated cache arena: 46310621184 bytes, prefix_granularity=128, num_lcm_blocks=2180, device cuda (arena.py:120)[0m
+[ts] [38;20m[2026-09-02 10:57:53,452  ATTN TP RANK 3] - INFO - Allocated cache arena: 46310621184 bytes, prefix_granularity=128, num_lcm_blocks=2180, device cuda (arena.py:120)[0m
+[ts] [38;20m[2026-09-02 10:57:53,452  ATTN TP RANK 0] - INFO - Initialized cache view over 3348480 slots as torch.float8_e4m3fn, layers from 0, rank 0 (base.py:151)[0m
+[ts] [38;20m[2026-09-02 10:57:53,452  ATTN TP RANK 4] - INFO - Allocated cache arena: 46310621184 bytes, prefix_granularity=128, num_lcm_blocks=2180, device cuda (arena.py:120)[0m
+[ts] [38;20m[2026-09-02 10:57:53,453  ATTN TP RANK 2] - INFO - Allocated cache arena: 46310621184 bytes, prefix_granularity=128, num_lcm_blocks=2180, device cuda (arena.py:120)[0m
+[ts] [38;20m[2026-09-02 10:57:53,453  ATTN TP RANK 7] - INFO - Initialized cache view over 3348480 slots as torch.float8_e4m3fn, layers from 0, rank 7 (base.py:151)[0m
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 6] KDA prefill routes through auto; decode remains on the platform-selected kernels
+[ts] [38;20m[2026-09-02 10:57:53,453  ATTN TP RANK 3] - INFO - Initialized cache view over 3348480 slots as torch.float8_e4m3fn, layers from 0, rank 3 (base.py:151)[0m
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 1] KDA prefill routes through auto; decode remains on the platform-selected kernels
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 6] Created hybrid_linear_attn backend: 24 full attn layers, 69 linear attn layers, LCM state fields
+[ts] [38;20m[2026-09-02 10:57:53,454  ATTN TP RANK 4] - INFO - Initialized cache view over 3348480 slots as torch.float8_e4m3fn, layers from 0, rank 4 (base.py:151)[0m
+[ts] [38;20m[2026-09-02 10:57:53,454  ATTN TP RANK 2] - INFO - Initialized cache view over 3348480 slots as torch.float8_e4m3fn, layers from 0, rank 2 (base.py:151)[0m
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 5] KDA prefill routes through auto; decode remains on the platform-selected kernels
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 0] KDA prefill routes through auto; decode remains on the platform-selected kernels
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 1] Created hybrid_linear_attn backend: 24 full attn layers, 69 linear attn layers, LCM state fields
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 5] Created hybrid_linear_attn backend: 24 full attn layers, 69 linear attn layers, LCM state fields
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 0] Created hybrid_linear_attn backend: 24 full attn layers, 69 linear attn layers, LCM state fields
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 7] KDA prefill routes through auto; decode remains on the platform-selected kernels
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 3] KDA prefill routes through auto; decode remains on the platform-selected kernels
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 3] Created hybrid_linear_attn backend: 24 full attn layers, 69 linear attn layers, LCM state fields
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 7] Created hybrid_linear_attn backend: 24 full attn layers, 69 linear attn layers, LCM state fields
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 2] KDA prefill routes through auto; decode remains on the platform-selected kernels
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 4] KDA prefill routes through auto; decode remains on the platform-selected kernels
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 2] Created hybrid_linear_attn backend: 24 full attn layers, 69 linear attn layers, LCM state fields
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 4] Created hybrid_linear_attn backend: 24 full attn layers, 69 linear attn layers, LCM state fields
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 1] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=8, tp_group=True)
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 5] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=8, tp_group=True)
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 0] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=8, tp_group=True)
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 6] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=8, tp_group=True)
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 7] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=8, tp_group=True)
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 2] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=8, tp_group=True)
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 4] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=8, tp_group=True)
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 3] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=8, tp_group=True)
+[ts] [38;20m[2026-09-02 10:57:53,480  ATTN TP RANK 1] - INFO - Prewarming Triton RSAG communication states (model_executor.py:547)[0m
+[ts] [38;20m[2026-09-02 10:57:53,481  ATTN TP RANK 6] - INFO - Prewarming Triton RSAG communication states (model_executor.py:547)[0m
+[ts] [38;20m[2026-09-02 10:57:53,481  ATTN TP RANK 5] - INFO - Prewarming Triton RSAG communication states (model_executor.py:547)[0m
+[ts] [38;20m[2026-09-02 10:57:53,481  ATTN TP RANK 0] - INFO - Prewarming Triton RSAG communication states (model_executor.py:547)[0m
+[ts] [38;20m[2026-09-02 10:57:53,483  ATTN TP RANK 2] - INFO - Prewarming Triton RSAG communication states (model_executor.py:547)[0m
+[ts] [38;20m[2026-09-02 10:57:53,483  ATTN TP RANK 7] - INFO - Prewarming Triton RSAG communication states (model_executor.py:547)[0m
+[ts] [38;20m[2026-09-02 10:57:53,484  ATTN TP RANK 4] - INFO - Prewarming Triton RSAG communication states (model_executor.py:547)[0m
+[ts] [38;20m[2026-09-02 10:57:53,485  ATTN TP RANK 3] - INFO - Prewarming Triton RSAG communication states (model_executor.py:547)[0m
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 0] Triton all-reduce AMD path will use Iris
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 3] Triton all-reduce AMD path will use Iris
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 4] Triton all-reduce AMD path will use Iris
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 1] Triton all-reduce AMD path will use Iris
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 6] Triton all-reduce AMD path will use Iris
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 5] Triton all-reduce AMD path will use Iris
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 2] Triton all-reduce AMD path will use Iris
+[ts] [2026-09-02 10:57:53 ATTN TP RANK 7] Triton all-reduce AMD path will use Iris
+[ts] 10:57:54 INFO  [Iris] [0/8] init: heap_size=0.2GB rank=0/8 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 0] init: heap_size=0.2GB rank=0/8 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [0/8] [symmetric_heap] SymmetricHeap: init heap_size=0.2GB device=0 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 0] SymmetricHeap: init heap_size=0.2GB device=0 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [0/8] [torch_allocator] TorchAllocator: init heap_size=0.2GB device=0
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 0] TorchAllocator: init heap_size=0.2GB device=0
+[ts] 10:57:54 INFO  [Iris] [4/8] init: heap_size=0.2GB rank=4/8 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 4] init: heap_size=0.2GB rank=4/8 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [4/8] [symmetric_heap] SymmetricHeap: init heap_size=0.2GB device=4 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 4] SymmetricHeap: init heap_size=0.2GB device=4 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [4/8] [torch_allocator] TorchAllocator: init heap_size=0.2GB device=4
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 4] TorchAllocator: init heap_size=0.2GB device=4
+[ts] 10:57:54 INFO  [Iris] [3/8] init: heap_size=0.2GB rank=3/8 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 3] init: heap_size=0.2GB rank=3/8 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [3/8] [symmetric_heap] SymmetricHeap: init heap_size=0.2GB device=3 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 3] SymmetricHeap: init heap_size=0.2GB device=3 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [3/8] [torch_allocator] TorchAllocator: init heap_size=0.2GB device=3
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 3] TorchAllocator: init heap_size=0.2GB device=3
+[ts] 10:57:54 INFO  [Iris] [1/8] init: heap_size=0.2GB rank=1/8 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 1] init: heap_size=0.2GB rank=1/8 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [1/8] [symmetric_heap] SymmetricHeap: init heap_size=0.2GB device=1 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 1] SymmetricHeap: init heap_size=0.2GB device=1 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [1/8] [torch_allocator] TorchAllocator: init heap_size=0.2GB device=1
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 1] TorchAllocator: init heap_size=0.2GB device=1
+[ts] 10:57:54 INFO  [Iris] [6/8] init: heap_size=0.2GB rank=6/8 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 6] init: heap_size=0.2GB rank=6/8 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [6/8] [symmetric_heap] SymmetricHeap: init heap_size=0.2GB device=6 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 6] SymmetricHeap: init heap_size=0.2GB device=6 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [6/8] [torch_allocator] TorchAllocator: init heap_size=0.2GB device=6
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 6] TorchAllocator: init heap_size=0.2GB device=6
+[ts] 10:57:54 INFO  [Iris] [2/8] init: heap_size=0.2GB rank=2/8 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 2] init: heap_size=0.2GB rank=2/8 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [2/8] [symmetric_heap] SymmetricHeap: init heap_size=0.2GB device=2 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 2] SymmetricHeap: init heap_size=0.2GB device=2 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [2/8] [torch_allocator] TorchAllocator: init heap_size=0.2GB device=2
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 2] TorchAllocator: init heap_size=0.2GB device=2
+[ts] 10:57:54 INFO  [Iris] [7/8] init: heap_size=0.2GB rank=7/8 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 7] init: heap_size=0.2GB rank=7/8 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [7/8] [symmetric_heap] SymmetricHeap: init heap_size=0.2GB device=7 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 7] SymmetricHeap: init heap_size=0.2GB device=7 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [7/8] [torch_allocator] TorchAllocator: init heap_size=0.2GB device=7
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 7] TorchAllocator: init heap_size=0.2GB device=7
+[ts] 10:57:54 INFO  [Iris] [5/8] init: heap_size=0.2GB rank=5/8 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 5] init: heap_size=0.2GB rank=5/8 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [5/8] [symmetric_heap] SymmetricHeap: init heap_size=0.2GB device=5 allocator=torch
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 5] SymmetricHeap: init heap_size=0.2GB device=5 allocator=torch
+[ts] 10:57:54 INFO  [Iris] [5/8] [torch_allocator] TorchAllocator: init heap_size=0.2GB device=5
+[ts] [2026-09-02 10:57:54 ATTN TP RANK 5] TorchAllocator: init heap_size=0.2GB device=5
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 1] Iris all-reduce symmetric-heap buffers allocated: 0.6953125 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 0] Iris all-reduce symmetric-heap buffers allocated: 0.6953125 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 6] Iris all-reduce symmetric-heap buffers allocated: 0.6953125 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 2] Iris all-reduce symmetric-heap buffers allocated: 0.6953125 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 5] Iris all-reduce symmetric-heap buffers allocated: 0.6953125 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 7] Iris all-reduce symmetric-heap buffers allocated: 0.6953125 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 4] Iris all-reduce symmetric-heap buffers allocated: 0.6953125 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 3] Iris all-reduce symmetric-heap buffers allocated: 0.6953125 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 0] Iris all-reduce symmetric-heap buffers allocated: 0.0 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 1] Iris all-reduce symmetric-heap buffers allocated: 0.0 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 2] Iris all-reduce symmetric-heap buffers allocated: 0.0 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 3] Iris all-reduce symmetric-heap buffers allocated: 0.0 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 4] Iris all-reduce symmetric-heap buffers allocated: 0.0 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 5] Iris all-reduce symmetric-heap buffers allocated: 0.0 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 7] Iris all-reduce symmetric-heap buffers allocated: 0.0 GB
+[ts] [2026-09-02 10:57:55 ATTN TP RANK 6] Iris all-reduce symmetric-heap buffers allocated: 0.0 GB
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 1] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:549)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 0] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:549)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 6] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:549)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 3] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:549)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 7] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:549)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 2] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:549)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 4] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:549)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 5] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:549)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 1] - INFO - Kernel tuning with a dummy prefill of 8192 tokens (model_executor.py:658)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 0] - INFO - Kernel tuning with a dummy prefill of 8192 tokens (model_executor.py:658)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 6] - INFO - Kernel tuning with a dummy prefill of 8192 tokens (model_executor.py:658)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 3] - INFO - Kernel tuning with a dummy prefill of 8192 tokens (model_executor.py:658)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 2] - INFO - Kernel tuning with a dummy prefill of 8192 tokens (model_executor.py:658)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 7] - INFO - Kernel tuning with a dummy prefill of 8192 tokens (model_executor.py:658)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 4] - INFO - Kernel tuning with a dummy prefill of 8192 tokens (model_executor.py:658)[0m
+[ts] [38;20m[2026-09-02 10:57:57,155  ATTN TP RANK 5] - INFO - Kernel tuning with a dummy prefill of 8192 tokens (model_executor.py:658)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 1] - INFO - Kernel tuning finished in 1.5s (model_executor.py:679)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 3] - INFO - Kernel tuning finished in 1.5s (model_executor.py:679)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 4] - INFO - Kernel tuning finished in 1.5s (model_executor.py:679)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 2] - INFO - Kernel tuning finished in 1.5s (model_executor.py:679)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 6] - INFO - Kernel tuning finished in 1.5s (model_executor.py:679)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 5] - INFO - Kernel tuning finished in 1.5s (model_executor.py:679)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 0] - INFO - Kernel tuning finished in 1.5s (model_executor.py:679)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 1] - INFO - workspace frozen: 256.00 MB (workspace.py:145)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 3] - INFO - workspace frozen: 256.00 MB (workspace.py:145)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 2] - INFO - workspace frozen: 256.00 MB (workspace.py:145)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 4] - INFO - workspace frozen: 256.00 MB (workspace.py:145)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 6] - INFO - workspace frozen: 256.00 MB (workspace.py:145)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 5] - INFO - workspace frozen: 256.00 MB (workspace.py:145)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 7] - INFO - Kernel tuning finished in 1.5s (model_executor.py:679)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 0] - INFO - workspace frozen: 256.00 MB (workspace.py:145)[0m
+[ts] [38;20m[2026-09-02 10:57:58,698  ATTN TP RANK 7] - INFO - workspace frozen: 256.00 MB (workspace.py:145)[0m
+[ts] [38;20m[2026-09-02 10:57:58,699  ATTN TP RANK 2] - INFO - ModelExecutor initialized (model_executor.py:603)[0m
+[ts] [38;20m[2026-09-02 10:57:58,699  ATTN TP RANK 3] - INFO - ModelExecutor initialized (model_executor.py:603)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 4] - INFO - ModelExecutor initialized (model_executor.py:603)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 0] - INFO - ModelExecutor initialized (model_executor.py:603)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 1] - INFO - ModelExecutor initialized (model_executor.py:603)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 5] - INFO - ModelExecutor initialized (model_executor.py:603)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 2] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=2181 max_scheduled_tokens=8192 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True max_batch_size=16 (global max_num_seqs=16, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 cache_groups=['linear_attention_0', 'full_attention', 'linear_attention_1', 'linear_attention_2'] (event_loop.py:318)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 3] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=2181 max_scheduled_tokens=8192 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True max_batch_size=16 (global max_num_seqs=16, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 cache_groups=['linear_attention_0', 'full_attention', 'linear_attention_1', 'linear_attention_2'] (event_loop.py:318)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 4] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=2181 max_scheduled_tokens=8192 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True max_batch_size=16 (global max_num_seqs=16, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 cache_groups=['linear_attention_0', 'full_attention', 'linear_attention_1', 'linear_attention_2'] (event_loop.py:318)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 2] - INFO - Single-request token limit: cache=3339263 model=8192 effective=8192 max_input=8191 (event_loop.py:369)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 3] - INFO - Single-request token limit: cache=3339263 model=8192 effective=8192 max_input=8191 (event_loop.py:369)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 4] - INFO - Single-request token limit: cache=3339263 model=8192 effective=8192 max_input=8191 (event_loop.py:369)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 6] - INFO - ModelExecutor initialized (model_executor.py:603)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 7] - INFO - ModelExecutor initialized (model_executor.py:603)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 1] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=2181 max_scheduled_tokens=8192 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True max_batch_size=16 (global max_num_seqs=16, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 cache_groups=['linear_attention_0', 'full_attention', 'linear_attention_1', 'linear_attention_2'] (event_loop.py:318)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 5] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=2181 max_scheduled_tokens=8192 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True max_batch_size=16 (global max_num_seqs=16, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 cache_groups=['linear_attention_0', 'full_attention', 'linear_attention_1', 'linear_attention_2'] (event_loop.py:318)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 1] - INFO - Single-request token limit: cache=3339263 model=8192 effective=8192 max_input=8191 (event_loop.py:369)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 5] - INFO - Single-request token limit: cache=3339263 model=8192 effective=8192 max_input=8191 (event_loop.py:369)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 6] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=2181 max_scheduled_tokens=8192 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True max_batch_size=16 (global max_num_seqs=16, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 cache_groups=['linear_attention_0', 'full_attention', 'linear_attention_1', 'linear_attention_2'] (event_loop.py:318)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 7] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=2181 max_scheduled_tokens=8192 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True max_batch_size=16 (global max_num_seqs=16, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 cache_groups=['linear_attention_0', 'full_attention', 'linear_attention_1', 'linear_attention_2'] (event_loop.py:318)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 6] - INFO - Single-request token limit: cache=3339263 model=8192 effective=8192 max_input=8191 (event_loop.py:369)[0m
+[ts] [38;20m[2026-09-02 10:57:58,700  ATTN TP RANK 7] - INFO - Single-request token limit: cache=3339263 model=8192 effective=8192 max_input=8191 (event_loop.py:369)[0m
+[ts] [38;20m[2026-09-02 10:57:58,709  ATTN TP RANK 0] - INFO - Device memory summary (rank 0, cuda 0, GB):
+[ts] +---------------------------------+------------+
+[ts] | Component                       |         GB |
+[ts] +---------------------------------+------------+
+[ts] | Attention weights               |       9.44 |
+[ts] | MoE weights                     |      10.02 |
+[ts] | Dense/MLP weights               |       3.31 |
+[ts] | Other weights (embed/head/norm) |       0.77 |
+[ts] | KV cache                        |      43.13 |
+[ts] | Activations + device graphs     |     187.94 |
+[ts] | Torch allocated (total)         |     254.61 |
+[ts] | Torch reserved (allocator pool) |     260.74 |
+[ts] | Non-torch (context/collectives) |       8.49 |
+[ts] | Device used (driver view)       |     269.23 |
+[ts] | Device free                     |      18.76 |
+[ts] | Device total                    |     287.98 |
+[ts] +---------------------------------+------------+ (scheduler_utils.py:767)[0m
+[ts] [38;20m[2026-09-02 10:57:58,709  ATTN TP RANK 0] - INFO - Device memory summary (rank 0, cuda 0, GB):
+[ts] +---------------------------------+------------+
+[ts] | Component                       |         GB |
+[ts] +---------------------------------+------------+
+[ts] | Attention weights               |       9.44 |
+[ts] | MoE weights                     |      10.02 |
+[ts] | Dense/MLP weights               |       3.31 |
+[ts] | Other weights (embed/head/norm) |       0.77 |
+[ts] | KV cache                        |      43.13 |
+[ts] | Activations + device graphs     |     187.94 |
+[ts] | Torch allocated (total)         |     254.61 |
+[ts] | Torch reserved (allocator pool) |     260.74 |
+[ts] | Non-torch (context/collectives) |       8.49 |
+[ts] | Device used (driver view)       |     269.23 |
+[ts] | Device free                     |      18.76 |
+[ts] | Device total                    |     287.98 |
+[ts] +---------------------------------+------------+ (scheduler_utils.py:767)[0m
+[ts] [38;20m[2026-09-02 10:57:58,709  ATTN TP RANK 0] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=2181 max_scheduled_tokens=8192 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True max_batch_size=16 (global max_num_seqs=16, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 cache_groups=['linear_attention_0', 'full_attention', 'linear_attention_1', 'linear_attention_2'] (event_loop.py:318)[0m
+[ts] [38;20m[2026-09-02 10:57:58,709  ATTN TP RANK 0] - INFO - Single-request token limit: cache=3339263 model=8192 effective=8192 max_input=8191 (event_loop.py:369)[0m
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 1] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 1] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 7] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 7] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 3] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 3] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 4] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 4] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 5] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 5] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 2] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 2] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 6] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 6] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 0] Reloaded tiktoken model from /data/models/sunkist/tiktoken.model
+[ts] [2026-09-02 10:57:58 ATTN TP RANK 0] #words: 163840 - BOS ID: 163584 - EOS ID: 163585
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] /workspace/python/tokenspeed/runtime/utils/hf_transformers_utils.py:824: UserWarning: Using a slow tokenizer. This might cause a significant slowdown. Consider using a fast tokenizer instead.
+[ts]   warnings.warn(
+[ts] [2026-09-02 10:57:58] TokenSpeed engine ready: max_total_num_tokens=3197056 max_req_input_len=8191
+[ts] [2026-09-02 10:57:58] TokenSpeed gRPC health service initialized
+[ts] [2026-09-02 10:57:58] TokenSpeedSchedulerServicer initialized
+[ts] [2026-09-02 10:57:58] TokenSpeed gRPC server listening on 127.0.0.1:44173
+[ts] [2026-09-02 10:57:58] Generate request WARMUP_1788346678.986649 (stream=False)
+[ts] /workspace/python/tokenspeed/runtime/utils/common.py:594: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+[ts]   tensor_data = torch.ByteTensor(
+[ts] [38;20m[2026-09-02 10:57:58,988  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 1, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 10:57:59,153  ATTN TP RANK 0] - INFO - Req: WARMUP_1788346678.986649 Finish! RequestStats(status='finished', reason='length', prompt_tokens=1, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=1.06, prefill_ms=165.18, ttft_ms=166.24, total_ms=166.24, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346678.987, commit_ts=1788346678.989, finish_ts=1788346679.154) (generation_output_processor.py:443)[0m
+[ts] [2026-09-02 10:57:59] Warmup generation succeeded
+[ts] [2026-09-02 10:57:59] TokenSpeed gRPC health status -> SERVING
+[ts] [2026-09-02 10:57:59] TokenSpeed gRPC server is ready to serve
+[ts] [38;20m[2026-09-02 10:59:21,907  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 1, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 10:59:22,032  ATTN TP RANK 0] - INFO - Req: HEALTH_CHECK_1788346761.906858 Finish! RequestStats(status='finished', reason='length', prompt_tokens=1, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=0.97, prefill_ms=124.34, ttft_ms=125.31, total_ms=125.31, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346761.907, commit_ts=1788346761.908, finish_ts=1788346762.032) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 10:59:22,409  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 1, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 10:59:22,529  ATTN TP RANK 0] - INFO - Req: HEALTH_CHECK_1788346762.4082634 Finish! RequestStats(status='finished', reason='length', prompt_tokens=1, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=0.68, prefill_ms=119.86, ttft_ms=120.54, total_ms=120.54, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346762.408, commit_ts=1788346762.409, finish_ts=1788346762.529) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 10:59:22,912  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 1, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 10:59:23,031  ATTN TP RANK 0] - INFO - Req: HEALTH_CHECK_1788346762.911801 Finish! RequestStats(status='finished', reason='length', prompt_tokens=1, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=0.76, prefill_ms=119.02, ttft_ms=119.78, total_ms=119.78, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346762.912, commit_ts=1788346762.913, finish_ts=1788346763.032) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 10:59:23,420  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 1, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 10:59:23,544  ATTN TP RANK 0] - INFO - Req: HEALTH_CHECK_1788346763.4195187 Finish! RequestStats(status='finished', reason='length', prompt_tokens=1, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=0.69, prefill_ms=123.75, ttft_ms=124.44, total_ms=124.44, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346763.42, commit_ts=1788346763.42, finish_ts=1788346763.544) (generation_output_processor.py:443)[0m
+ts serve ready on http://127.0.0.1:21000
+[38;20m[2026-09-02 10:59:23,918 None] - INFO - Starting TokenSpeed HTTP server on 127.0.0.1:21001 (gateway: http://127.0.0.1:21000, engine gRPC: 127.0.0.1:44173, weight transfer: http://127.0.0.1:59477) (control_server.py:517)[0m
+ts control server ready on http://127.0.0.1:21001
+[ts] /opt/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:224: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+[ts]   _warn_once(
+[ts] /opt/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:224: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+[ts]   _warn_once(
+[ts] /opt/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:224: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+[ts]   _warn_once(
+[ts] /opt/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:224: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+[ts]   _warn_once(
+[ts] /opt/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:224: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+[ts]   _warn_once(
+[ts] /opt/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:224: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+[ts]   _warn_once(
+[ts] /opt/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:224: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+[ts]   _warn_once(
+[ts] /opt/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:224: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+[ts]   _warn_once(
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 0] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill (with profile id: 20260902-105944)
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 3] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill (with profile id: 20260902-105944)
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 7] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill (with profile id: 20260902-105944)
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 5] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill (with profile id: 20260902-105944)
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 4] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill (with profile id: 20260902-105944)
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 6] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill (with profile id: 20260902-105944)
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 1] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill (with profile id: 20260902-105944)
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 2] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill (with profile id: 20260902-105944)
+[ts] [2026-09-02 10:59:44] Generate request gnt-vFQfiVCmfF3eMtVAHUisZrID-01a061c6-5a8c-75e2-a3a7-336c25c8e5cf (stream=False)
+[ts] [38;20m[2026-09-02 10:59:44,397  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 4096, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 10:59:44,769  ATTN TP RANK 0] - INFO - Req: gnt-vFQfiVCmfF3eMtVAHUisZrID-01a061c6-5a8c-75e2-a3a7-336c25c8e5cf Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=0.81, prefill_ms=371.53, ttft_ms=372.34, total_ms=372.34, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346784.397, commit_ts=1788346784.398, finish_ts=1788346784.769) (generation_output_processor.py:443)[0m
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 0] Stop profiling...
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 4] Stop profiling...
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 3] Stop profiling...
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 7] Stop profiling...
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 6] Stop profiling...
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 1] Stop profiling...
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 2] Stop profiling...
+[ts] [2026-09-02 10:59:44 ATTN TP RANK 5] Stop profiling...
+[ts] [rank0]:[W902 10:59:44.334432186 collection.cpp:1148] Warning: ROCTracer produced duplicate flow start: 7 (function operator())
+[ts] [rank3]:[W902 10:59:44.335280081 collection.cpp:1148] Warning: ROCTracer produced duplicate flow start: 7 (function operator())
+[ts] [rank1]:[W902 10:59:44.336326556 collection.cpp:1148] Warning: ROCTracer produced duplicate flow start: 7 (function operator())
+[ts] [rank4]:[W902 10:59:44.340067246 collection.cpp:1148] Warning: ROCTracer produced duplicate flow start: 7 (function operator())
+[ts] [rank5]:[W902 10:59:44.343449068 collection.cpp:1148] Warning: ROCTracer produced duplicate flow start: 7 (function operator())
+[ts] [rank2]:[W902 10:59:44.345603217 collection.cpp:1148] Warning: ROCTracer produced duplicate flow start: 7 (function operator())
+[ts] [rank6]:[W902 10:59:44.345646117 collection.cpp:1148] Warning: ROCTracer produced duplicate flow start: 7 (function operator())
+[ts] [rank7]:[W902 10:59:44.347995064 collection.cpp:1148] Warning: ROCTracer produced duplicate flow start: 7 (function operator())
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 0] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 7] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 6] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 5] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 4] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 3] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 1] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 2] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill
+[ts] [2026-09-02 10:59:45] Generate request gnt-SDxZrEwIROvG65XWCjbsTBsS-01a061c6-5e70-7801-adca-3fbe005dca44 (stream=False)
+[ts] [38;20m[2026-09-02 10:59:45,394  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 4096, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 6] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 3] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 7] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 1] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 0] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 5] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 4] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 2] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 0] Stop profiling-EXTEND...
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 5] Stop profiling-EXTEND...
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 7] Stop profiling-EXTEND...
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 3] Stop profiling-EXTEND...
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 6] Stop profiling-EXTEND...
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 1] Stop profiling-EXTEND...
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 2] Stop profiling-EXTEND...
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 4] Stop profiling-EXTEND...
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 0] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 6] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 3] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 4] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 5] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 2] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 1] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 7] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 0] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 6] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 3] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 4] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 2] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 5] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 1] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [2026-09-02 10:59:45 ATTN TP RANK 7] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode (with profile id: 20260902-105945)
+[ts] [38;20m[2026-09-02 10:59:47,869  ATTN TP RANK 0] - INFO - Decode batch. #running-req: 1, #pages(active/cached/total): 7/7/2180, page ratio: 0.00, gen throughput (token/s): 0.28, avg_accept_len: 1.00, accept_rate: 0.00, #queue-req: 0 (batch_log.py:151)[0m
+[ts] [2026-09-02 10:59:51 ATTN TP RANK 0] Stop profiling-DECODE...
+[ts] [2026-09-02 10:59:51 ATTN TP RANK 1] Stop profiling-DECODE...
+[ts] [2026-09-02 10:59:51 ATTN TP RANK 6] Stop profiling-DECODE...
+[ts] [2026-09-02 10:59:51 ATTN TP RANK 3] Stop profiling-DECODE...
+[ts] [2026-09-02 10:59:51 ATTN TP RANK 5] Stop profiling-DECODE...
+[ts] [2026-09-02 10:59:51 ATTN TP RANK 7] Stop profiling-DECODE...
+[ts] [2026-09-02 10:59:51 ATTN TP RANK 4] Stop profiling-DECODE...
+[ts] [2026-09-02 10:59:51 ATTN TP RANK 2] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 7] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 0] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 6] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 5] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 4] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 3] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 1] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [38;20m[2026-09-02 11:00:04,301  ATTN TP RANK 0] - INFO - Req: gnt-SDxZrEwIROvG65XWCjbsTBsS-01a061c6-5e70-7801-adca-3fbe005dca44 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=0.75, prefill_ms=358.38, ttft_ms=359.13, total_ms=18907.64, preempt_ms=0.0, preempt_count=0, decode_tps=3.5, acc_len=None, acc_rate=None, recv_ts=1788346785.394, commit_ts=1788346785.394, finish_ts=1788346804.301) (generation_output_processor.py:443)[0m
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 2] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 0] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill (with profile id: 20260902-110004)
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 6] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill (with profile id: 20260902-110004)
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 5] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill (with profile id: 20260902-110004)
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 4] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill (with profile id: 20260902-110004)
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 2] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill (with profile id: 20260902-110004)
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 7] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill (with profile id: 20260902-110004)
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 3] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill (with profile id: 20260902-110004)
+[ts] [2026-09-02 11:00:04 ATTN TP RANK 1] Profiling starts. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill (with profile id: 20260902-110004)
+[ts] [2026-09-02 11:00:04] Generate request gnt-dh0i7JDcqHl27fcarRk5XDy2-01a061c6-a8cd-7a20-950c-2e4a4a33bc53 (stream=False)
+[ts] [38;20m[2026-09-02 11:00:04,430  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 4096, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [2026-09-02 11:00:04] Generate request gnt-KB9pGxcLzYQvlpPaXsiohqWD-01a061c6-a8cf-75d0-a3b2-a05ad9778c92 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-0mz2cDKFZCF505mFZGK4k9cV-01a061c6-a8d0-75a2-beaf-b73e7a2a1604 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-NYV295aAypAvAkHhHYLrjnY0-01a061c6-a8d1-73d0-85b9-b3e46811bd99 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-MTng8ea9z4imFgdLNt8lTpZc-01a061c6-a8d3-7d32-9d24-1655ea152f6d (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-CQfv4aHtrsA7FwuUtrDtnpUL-01a061c6-a8d5-7ca0-a936-48267393678f (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-9RCY7wD455uZseBWTJjr3rbW-01a061c6-a8d5-7ca0-a936-4831b206f964 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-lLqB39RwhH3Onm1PizojGwtQ-01a061c6-a8d5-7ca0-a936-4846505d9a12 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-r6KRnqC6DJ6AVoP8Bbrwtocd-01a061c6-a8d7-73f3-9ba7-a7a4ab770851 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-8PcOOiYXjY1HQQlh5HMrELdg-01a061c6-a8d8-7c33-a00e-579f0cc39bc2 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-PzfgxhcMNk4k6VgyMVjriQBS-01a061c6-a8da-7b63-b8c2-57410ea0d2f8 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-vynUTQLvZy87xOqmLaIjt52e-01a061c6-a8db-7883-a6f7-208eed1817c5 (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-ZDuyhVBjuATb4ioxXmtFRRiq-01a061c6-a8dc-7dc1-b200-d8f19119fd1b (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-MWsChYYlNqJPJ8GE9S824Eq9-01a061c6-a8dd-7b62-8185-a444e1b32a6a (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-QaWALo3rM7b3edlAweWbLOSp-01a061c6-a8dd-7b62-8185-a46dad27cfda (stream=False)
+[ts] [2026-09-02 11:00:04] Generate request gnt-umqRGYWnois8AE9ERxxhBxla-01a061c6-a8de-7751-82fe-11306d335605 (stream=False)
+[ts] [38;20m[2026-09-02 11:00:04,993  ATTN TP RANK 0] - INFO - Req: gnt-dh0i7JDcqHl27fcarRk5XDy2-01a061c6-a8cd-7a20-950c-2e4a4a33bc53 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=0.76, prefill_ms=562.61, ttft_ms=563.37, total_ms=563.37, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.43, commit_ts=1788346804.431, finish_ts=1788346804.993) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:05,013  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 13 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:05,019  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 11 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:05,594  ATTN TP RANK 0] - INFO - Req: gnt-KB9pGxcLzYQvlpPaXsiohqWD-01a061c6-a8cf-75d0-a3b2-a05ad9778c92 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=581.4, prefill_ms=581.16, ttft_ms=1162.55, total_ms=1162.55, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.432, commit_ts=1788346805.014, finish_ts=1788346805.595) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:05,595  ATTN TP RANK 0] - INFO - Req: gnt-0mz2cDKFZCF505mFZGK4k9cV-01a061c6-a8d0-75a2-beaf-b73e7a2a1604 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=580.36, prefill_ms=581.16, ttft_ms=1161.52, total_ms=1161.52, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.433, commit_ts=1788346805.014, finish_ts=1788346805.595) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:05,596  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 9 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:06,167  ATTN TP RANK 0] - INFO - Req: gnt-NYV295aAypAvAkHhHYLrjnY0-01a061c6-a8d1-73d0-85b9-b3e46811bd99 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=585.01, prefill_ms=1148.3, ttft_ms=1733.32, total_ms=1733.32, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.434, commit_ts=1788346805.019, finish_ts=1788346806.167) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:06,167  ATTN TP RANK 0] - INFO - Req: gnt-MTng8ea9z4imFgdLNt8lTpZc-01a061c6-a8d3-7d32-9d24-1655ea152f6d Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=583.51, prefill_ms=1148.3, ttft_ms=1731.81, total_ms=1731.81, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.436, commit_ts=1788346805.019, finish_ts=1788346806.167) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:06,168  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 7 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:06,740  ATTN TP RANK 0] - INFO - Req: gnt-CQfv4aHtrsA7FwuUtrDtnpUL-01a061c6-a8d5-7ca0-a936-48267393678f Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=1158.74, prefill_ms=1144.16, ttft_ms=2302.9, total_ms=2302.9, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.438, commit_ts=1788346805.596, finish_ts=1788346806.741) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:06,740  ATTN TP RANK 0] - INFO - Req: gnt-9RCY7wD455uZseBWTJjr3rbW-01a061c6-a8d5-7ca0-a936-4831b206f964 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=1158.53, prefill_ms=1144.16, ttft_ms=2302.69, total_ms=2302.69, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.438, commit_ts=1788346805.596, finish_ts=1788346806.741) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:06,742  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 5 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:07,314  ATTN TP RANK 0] - INFO - Req: gnt-lLqB39RwhH3Onm1PizojGwtQ-01a061c6-a8d5-7ca0-a936-4846505d9a12 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=1730.05, prefill_ms=1145.81, ttft_ms=2875.86, total_ms=2875.86, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.439, commit_ts=1788346806.169, finish_ts=1788346807.314) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:07,314  ATTN TP RANK 0] - INFO - Req: gnt-r6KRnqC6DJ6AVoP8Bbrwtocd-01a061c6-a8d7-73f3-9ba7-a7a4ab770851 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=1728.24, prefill_ms=1145.81, ttft_ms=2874.05, total_ms=2874.05, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.44, commit_ts=1788346806.169, finish_ts=1788346807.314) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:07,315  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 3 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:07,886  ATTN TP RANK 0] - INFO - Req: gnt-8PcOOiYXjY1HQQlh5HMrELdg-01a061c6-a8d8-7c33-a00e-579f0cc39bc2 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=2301.78, prefill_ms=1143.9, ttft_ms=3445.68, total_ms=3445.68, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.441, commit_ts=1788346806.742, finish_ts=1788346807.886) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:07,886  ATTN TP RANK 0] - INFO - Req: gnt-PzfgxhcMNk4k6VgyMVjriQBS-01a061c6-a8da-7b63-b8c2-57410ea0d2f8 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=2299.62, prefill_ms=1143.9, ttft_ms=3443.52, total_ms=3443.52, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.443, commit_ts=1788346806.742, finish_ts=1788346807.886) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:07,887  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 1 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:08,459  ATTN TP RANK 0] - INFO - Req: gnt-vynUTQLvZy87xOqmLaIjt52e-01a061c6-a8db-7883-a6f7-208eed1817c5 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=2871.4, prefill_ms=1143.88, ttft_ms=4015.28, total_ms=4015.28, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.444, commit_ts=1788346807.315, finish_ts=1788346808.459) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:08,459  ATTN TP RANK 0] - INFO - Req: gnt-ZDuyhVBjuATb4ioxXmtFRRiq-01a061c6-a8dc-7dc1-b200-d8f19119fd1b Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=2870.27, prefill_ms=1143.88, ttft_ms=4014.15, total_ms=4014.15, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.445, commit_ts=1788346807.315, finish_ts=1788346808.459) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:08,460  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 4096, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:09,031  ATTN TP RANK 0] - INFO - Req: gnt-MWsChYYlNqJPJ8GE9S824Eq9-01a061c6-a8dd-7b62-8185-a444e1b32a6a Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=3441.25, prefill_ms=1143.82, ttft_ms=4585.07, total_ms=4585.07, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.446, commit_ts=1788346807.887, finish_ts=1788346809.031) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:09,031  ATTN TP RANK 0] - INFO - Req: gnt-QaWALo3rM7b3edlAweWbLOSp-01a061c6-a8dd-7b62-8185-a46dad27cfda Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=3441.05, prefill_ms=1143.82, ttft_ms=4584.87, total_ms=4584.87, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.446, commit_ts=1788346807.887, finish_ts=1788346809.031) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:09,388  ATTN TP RANK 0] - INFO - Req: gnt-umqRGYWnois8AE9ERxxhBxla-01a061c6-a8de-7751-82fe-11306d335605 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=4013.82, prefill_ms=928.31, ttft_ms=4942.13, total_ms=4942.13, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346804.447, commit_ts=1788346808.46, finish_ts=1788346809.389) (generation_output_processor.py:443)[0m
+[ts] [2026-09-02 11:00:09 ATTN TP RANK 0] Stop profiling...
+[ts] [2026-09-02 11:00:09 ATTN TP RANK 4] Stop profiling...
+[ts] [2026-09-02 11:00:09 ATTN TP RANK 2] Stop profiling...
+[ts] [2026-09-02 11:00:09 ATTN TP RANK 6] Stop profiling...
+[ts] [2026-09-02 11:00:09 ATTN TP RANK 3] Stop profiling...
+[ts] [2026-09-02 11:00:09 ATTN TP RANK 7] Stop profiling...
+[ts] [2026-09-02 11:00:09 ATTN TP RANK 1] Stop profiling...
+[ts] [2026-09-02 11:00:09 ATTN TP RANK 5] Stop profiling...
+[ts] [2026-09-02 11:00:12 ATTN TP RANK 0] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill
+[ts] [2026-09-02 11:00:12 ATTN TP RANK 7] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill
+[ts] [2026-09-02 11:00:12 ATTN TP RANK 6] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill
+[ts] [2026-09-02 11:00:12 ATTN TP RANK 4] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill
+[ts] [2026-09-02 11:00:12 ATTN TP RANK 5] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill
+[ts] [2026-09-02 11:00:12 ATTN TP RANK 3] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill
+[ts] [2026-09-02 11:00:12 ATTN TP RANK 2] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill
+[ts] [2026-09-02 11:00:12 ATTN TP RANK 1] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill
+[ts] [2026-09-02 11:00:12] Generate request gnt-C0U1xqAHy46CPtFItFXw7OEr-01a061c6-c9f4-7760-a9ef-ec50674cbed3 (stream=False)
+[ts] [38;20m[2026-09-02 11:00:12,918  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 4096, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [2026-09-02 11:00:12] Generate request gnt-tSSJOHETunJEuad6HA2xKTUL-01a061c6-c9f5-7742-8e7e-c9f7a2db4ede (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-UDeHVsh585gxZs2cminZ2xHG-01a061c6-c9f7-7c21-a413-7df2c43883ca (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-zvCIJA1pv0U2mD5A0hNrYagn-01a061c6-c9f8-77f3-bb21-18ad8c78496f (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-WrTf2rovFCATt8H2MO54amJD-01a061c6-c9fb-71e0-87b9-115dc648cf22 (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-eJuZUILBhD777UrGV0NB8kfW-01a061c6-c9fb-71e0-87b9-116007d0d230 (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-6TyMTo90SLHqyMaFmN8lJsYn-01a061c6-c9fb-71e0-87b9-11783242c669 (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-QBqmBFnfsL214PsIPO1RFCv4-01a061c6-c9fb-71e0-87b9-118427418648 (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-Ao7c4XidKGzhL6il6KEr5nYP-01a061c6-c9fe-72b1-a009-d41c5acaf579 (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-Mh1u79DHGNtCfQB3AU9lImgE-01a061c6-c9ff-7641-be98-8a6f8e1f3389 (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-Yew0Va4z7govWeApOHF7RTCN-01a061c6-ca00-7f80-bd49-8dea632f145a (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-pB9tqDOTgR84E2Zl7VyPleZO-01a061c6-ca01-7432-95fc-29a496a68ce7 (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-htxcDGusV213qAbz0SLLp0Cl-01a061c6-ca01-7432-95fc-29c5e9b9167e (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-IlESZX0JxBs3lOlOdX7SFHgQ-01a061c6-ca02-74e2-a31d-be4f7f13515f (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-Qy3nWNIbbYzpcIwqQlrE0qsP-01a061c6-ca03-76c1-bd10-55d649bcbea4 (stream=False)
+[ts] [2026-09-02 11:00:12] Generate request gnt-zPLXLwgtg0B2YlIF0gt2ZpzO-01a061c6-ca03-76c1-bd10-55e1ce8894ac (stream=False)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 0] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 6] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 4] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 3] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 1] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 5] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 2] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 7] Profiling starts for EXTEND. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 3] Stop profiling-EXTEND...
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 5] Stop profiling-EXTEND...
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 6] Stop profiling-EXTEND...
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 0] Stop profiling-EXTEND...
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 1] Stop profiling-EXTEND...
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 4] Stop profiling-EXTEND...
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 7] Stop profiling-EXTEND...
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 2] Stop profiling-EXTEND...
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 7] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 0] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 6] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 4] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 3] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 5] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 2] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 1] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 6] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 7] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 4] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 2] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 1] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 3] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 5] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [2026-09-02 11:00:13 ATTN TP RANK 0] Profiling starts for DECODE. Traces will be saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode (with profile id: 20260902-110012)
+[ts] [38;20m[2026-09-02 11:00:13,408  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 13 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:13,427  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 11 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:14,000  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 9 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:14,571  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 7 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:15,144  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 5 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:15,718  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 3 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:16,291  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 2, #new-token: 8192, #cached-token: 0, #running-req: 2, #queue-req: 1 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:16,861  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 4096, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:20,990  ATTN TP RANK 0] - INFO - Decode batch. #running-req: 16, #pages(active/cached/total): 107/107/2180, page ratio: 0.05, gen throughput (token/s): 9.57, avg_accept_len: 1.00, accept_rate: 0.00, #queue-req: 0 (batch_log.py:151)[0m
+[ts] [38;20m[2026-09-02 11:00:24,957  ATTN TP RANK 0] - INFO - Decode batch. #running-req: 16, #pages(active/cached/total): 107/107/2180, page ratio: 0.05, gen throughput (token/s): 161.35, avg_accept_len: 1.00, accept_rate: 0.00, #queue-req: 1 (batch_log.py:151)[0m
+[ts] [2026-09-02 11:00:25 ATTN TP RANK 3] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:25 ATTN TP RANK 2] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:25 ATTN TP RANK 1] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:25 ATTN TP RANK 5] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:25 ATTN TP RANK 0] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:25 ATTN TP RANK 7] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:25 ATTN TP RANK 6] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:25 ATTN TP RANK 4] Stop profiling-DECODE...
+[ts] [2026-09-02 11:00:43 ATTN TP RANK 7] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:43 ATTN TP RANK 0] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:43 ATTN TP RANK 5] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:43 ATTN TP RANK 6] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:43 ATTN TP RANK 1] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:43 ATTN TP RANK 2] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:43 ATTN TP RANK 3] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [2026-09-02 11:00:43 ATTN TP RANK 4] Profiling done. Traces are saved to: /data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode
+[ts] [38;20m[2026-09-02 11:00:43,227  ATTN TP RANK 0] - INFO - Req: gnt-C0U1xqAHy46CPtFItFXw7OEr-01a061c6-c9f4-7760-a9ef-ec50674cbed3 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=0.77, prefill_ms=358.99, ttft_ms=359.75, total_ms=30309.79, preempt_ms=0.0, preempt_count=0, decode_tps=2.2, acc_len=None, acc_rate=None, recv_ts=1788346812.917, commit_ts=1788346812.918, finish_ts=1788346843.227) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,228  ATTN TP RANK 0] - INFO - Prefill batch. #new-seq: 1, #new-token: 1, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:126)[0m
+[ts] [38;20m[2026-09-02 11:00:43,355  ATTN TP RANK 0] - INFO - Req: HEALTH_CHECK_1788346823.420713 Finish! RequestStats(status='aborted', reason='abort', prompt_tokens=1, cache_tokens=0, output_tokens=1, cache_hit_rate=0.0, queue_ms=19807.39, prefill_ms=127.43, ttft_ms=19934.82, total_ms=19934.82, preempt_ms=0.0, preempt_count=0, decode_tps=0.0, acc_len=None, acc_rate=None, recv_ts=1788346823.421, commit_ts=1788346843.228, finish_ts=1788346843.356) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,451  ATTN TP RANK 0] - INFO - Req: gnt-tSSJOHETunJEuad6HA2xKTUL-01a061c6-c9f5-7742-8e7e-c9f7a2db4ede Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=489.8, prefill_ms=590.91, ttft_ms=1080.71, total_ms=30533.27, preempt_ms=0.0, preempt_count=0, decode_tps=2.2, acc_len=None, acc_rate=None, recv_ts=1788346812.918, commit_ts=1788346813.408, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,451  ATTN TP RANK 0] - INFO - Req: gnt-UDeHVsh585gxZs2cminZ2xHG-01a061c6-c9f7-7c21-a413-7df2c43883ca Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=488.37, prefill_ms=590.91, ttft_ms=1079.27, total_ms=30531.84, preempt_ms=0.0, preempt_count=0, decode_tps=2.2, acc_len=None, acc_rate=None, recv_ts=1788346812.92, commit_ts=1788346813.408, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,451  ATTN TP RANK 0] - INFO - Req: gnt-zvCIJA1pv0U2mD5A0hNrYagn-01a061c6-c9f8-77f3-bb21-18ad8c78496f Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=506.55, prefill_ms=1143.22, ttft_ms=1649.77, total_ms=30530.84, preempt_ms=0.0, preempt_count=0, decode_tps=2.3, acc_len=None, acc_rate=None, recv_ts=1788346812.921, commit_ts=1788346813.427, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,451  ATTN TP RANK 0] - INFO - Req: gnt-WrTf2rovFCATt8H2MO54amJD-01a061c6-c9fb-71e0-87b9-115dc648cf22 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=503.55, prefill_ms=1143.22, ttft_ms=1646.78, total_ms=30527.84, preempt_ms=0.0, preempt_count=0, decode_tps=2.3, acc_len=None, acc_rate=None, recv_ts=1788346812.924, commit_ts=1788346813.427, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,451  ATTN TP RANK 0] - INFO - Req: gnt-eJuZUILBhD777UrGV0NB8kfW-01a061c6-c9fb-71e0-87b9-116007d0d230 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=1076.85, prefill_ms=1142.84, ttft_ms=2219.68, total_ms=30527.67, preempt_ms=0.0, preempt_count=0, decode_tps=2.3, acc_len=None, acc_rate=None, recv_ts=1788346812.924, commit_ts=1788346814.001, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,451  ATTN TP RANK 0] - INFO - Req: gnt-6TyMTo90SLHqyMaFmN8lJsYn-01a061c6-c9fb-71e0-87b9-11783242c669 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=1076.68, prefill_ms=1142.84, ttft_ms=2219.51, total_ms=30527.5, preempt_ms=0.0, preempt_count=0, decode_tps=2.3, acc_len=None, acc_rate=None, recv_ts=1788346812.924, commit_ts=1788346814.001, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,451  ATTN TP RANK 0] - INFO - Req: gnt-QBqmBFnfsL214PsIPO1RFCv4-01a061c6-c9fb-71e0-87b9-118427418648 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=1647.45, prefill_ms=1146.08, ttft_ms=2793.53, total_ms=30527.35, preempt_ms=0.0, preempt_count=0, decode_tps=2.3, acc_len=None, acc_rate=None, recv_ts=1788346812.924, commit_ts=1788346814.572, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,451  ATTN TP RANK 0] - INFO - Req: gnt-Ao7c4XidKGzhL6il6KEr5nYP-01a061c6-c9fe-72b1-a009-d41c5acaf579 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=1644.77, prefill_ms=1146.08, ttft_ms=2790.86, total_ms=30524.68, preempt_ms=0.0, preempt_count=0, decode_tps=2.3, acc_len=None, acc_rate=None, recv_ts=1788346812.927, commit_ts=1788346814.572, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,452  ATTN TP RANK 0] - INFO - Req: gnt-Mh1u79DHGNtCfQB3AU9lImgE-01a061c6-c9ff-7641-be98-8a6f8e1f3389 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=2216.7, prefill_ms=1145.91, ttft_ms=3362.61, total_ms=30523.93, preempt_ms=0.0, preempt_count=0, decode_tps=2.4, acc_len=None, acc_rate=None, recv_ts=1788346812.928, commit_ts=1788346815.144, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,452  ATTN TP RANK 0] - INFO - Req: gnt-Yew0Va4z7govWeApOHF7RTCN-01a061c6-ca00-7f80-bd49-8dea632f145a Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=2215.67, prefill_ms=1145.91, ttft_ms=3361.58, total_ms=30522.9, preempt_ms=0.0, preempt_count=0, decode_tps=2.4, acc_len=None, acc_rate=None, recv_ts=1788346812.929, commit_ts=1788346815.144, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,452  ATTN TP RANK 0] - INFO - Req: gnt-pB9tqDOTgR84E2Zl7VyPleZO-01a061c6-ca01-7432-95fc-29a496a68ce7 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=2789.28, prefill_ms=1142.1, ttft_ms=3931.38, total_ms=30521.94, preempt_ms=0.0, preempt_count=0, decode_tps=2.4, acc_len=None, acc_rate=None, recv_ts=1788346812.93, commit_ts=1788346815.719, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,452  ATTN TP RANK 0] - INFO - Req: gnt-htxcDGusV213qAbz0SLLp0Cl-01a061c6-ca01-7432-95fc-29c5e9b9167e Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=2788.5, prefill_ms=1142.1, ttft_ms=3930.6, total_ms=30521.15, preempt_ms=0.0, preempt_count=0, decode_tps=2.4, acc_len=None, acc_rate=None, recv_ts=1788346812.93, commit_ts=1788346815.719, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,452  ATTN TP RANK 0] - INFO - Req: gnt-IlESZX0JxBs3lOlOdX7SFHgQ-01a061c6-ca02-74e2-a31d-be4f7f13515f Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=3359.51, prefill_ms=1141.68, ttft_ms=4501.19, total_ms=30519.99, preempt_ms=0.0, preempt_count=0, decode_tps=2.5, acc_len=None, acc_rate=None, recv_ts=1788346812.932, commit_ts=1788346816.291, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,452  ATTN TP RANK 0] - INFO - Req: gnt-Qy3nWNIbbYzpcIwqQlrE0qsP-01a061c6-ca03-76c1-bd10-55d649bcbea4 Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=3359.33, prefill_ms=1141.68, ttft_ms=4501.01, total_ms=30519.81, preempt_ms=0.0, preempt_count=0, decode_tps=2.5, acc_len=None, acc_rate=None, recv_ts=1788346812.932, commit_ts=1788346816.291, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [38;20m[2026-09-02 11:00:43,452  ATTN TP RANK 0] - INFO - Req: gnt-zPLXLwgtg0B2YlIF0gt2ZpzO-01a061c6-ca03-76c1-bd10-55e1ce8894ac Finish! RequestStats(status='finished', reason='length', prompt_tokens=4096, cache_tokens=0, output_tokens=66, cache_hit_rate=0.0, queue_ms=3929.99, prefill_ms=974.08, ttft_ms=4904.07, total_ms=30519.62, preempt_ms=0.0, preempt_count=0, decode_tps=2.5, acc_len=None, acc_rate=None, recv_ts=1788346812.932, commit_ts=1788346816.862, finish_ts=1788346843.452) (generation_output_processor.py:443)[0m
+[ts] [2026-09-02 11:00:52] Received shutdown signal
+[ts] [2026-09-02 11:00:52] Shutting down TokenSpeed gRPC server
+[ts] [2026-09-02 11:00:52] TokenSpeed gRPC health status -> NOT_SERVING
+[ts] ERROR:    Traceback (most recent call last):
+[ts]   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 645, in lifespan
+[ts]     await receive()
+[ts]   File "/opt/venv/lib/python3.12/site-packages/uvicorn/lifespan/on.py", line 137, in receive
+[ts]     return await self.receive_queue.get()
+[ts]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[ts]   File "/usr/lib/python3.12/asyncio/queues.py", line 158, in get
+[ts]     await getter
+[ts] asyncio.exceptions.CancelledError
+[ts] 
+[ts] nanobind: leaked 1 instances!
+[ts]  - leaked instance 0x7b1dfe595188 of type "tokenspeed_scheduler.tokenspeed_scheduler_ext.SchedulerConfig"
+[ts] nanobind: leaked 11 types!
+[ts]  - leaked type "tokenspeed_scheduler.tokenspeed_scheduler_ext.CacheGroupConfig"
+[ts]  - leaked type "tokenspeed_scheduler.tokenspeed_scheduler_ext.RequestSpec"
+[ts]  - leaked type "tokenspeed_scheduler.tokenspeed_scheduler_ext.Scheduler"
+[ts]  - leaked type "Role"
+[ts]  - leaked type "CacheRetention"
+[ts]  - leaked type "tokenspeed_scheduler.tokenspeed_scheduler_ext.ExecutionEvent"
+[ts]  - leaked type "CacheGroupFamily"
+[ts]  - leaked type "CacheTransferPolicy"
+[ts]  - leaked type "tokenspeed_scheduler.tokenspeed_scheduler_ext.Cache.LoadBackDoneEvent"
+[ts]  - leaked type "tokenspeed_scheduler.tokenspeed_scheduler_ext.Cache.WriteBackDoneEvent"
+[ts]  - ... skipped remainder
+[ts] nanobind: leaked 83 functions!
+[ts]  - leaked function "active_kv_pages"
+[ts]  - leaked function "available_kv_pages"
+[ts]  - leaked function ""
+[ts]  - leaked function "decoding_size"
+[ts]  - leaked function "prefilling_size"
+[ts]  - leaked function ""
+[ts]  - leaked function ""
+[ts]  - leaked function "__init__"
+[ts]  - leaked function "__init__"
+[ts]  - leaked function "drain_kv_events"
+[ts]  - ... skipped remainder
+[ts] nanobind: this is likely caused by a reference counting issue in the binding code.
+[ts] See https://nanobind.readthedocs.io/en/latest/refleaks.html
+
+---
+exit_code: 0
+elapsed_ms: 360209
+ended_at: 2026-09-02T11:00:56.818Z
+---

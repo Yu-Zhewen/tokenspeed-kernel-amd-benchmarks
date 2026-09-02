@@ -1,0 +1,253 @@
+{
+  "experiment": "real Kimi-K3 TP8/EP1 HTTP serving",
+  "format": "tokenspeed_real_serving_v1",
+  "generated_at": "2026-09-02T10:55:27.356078+00:00",
+  "hardware": {
+    "architecture": "gfx950:sramecc+:xnack-",
+    "device": "AMD Instinct MI355X",
+    "gpu_count": 8
+  },
+  "metric_notes": {
+    "evalscope_no_spec_fields": "EvalScope 1.9.1 emitted decoded-tokens-per-iteration and speculative-acceptance fields even though speculative decoding was disabled. They are semantically invalid and omitted here.",
+    "output_throughput": "Completed output tokens divided by end-to-end measured wall time; includes prefill and decode."
+  },
+  "runs": [
+    {
+      "concurrency": 1,
+      "derived": {
+        "mean_post_ttft_s": 12.686309999999999,
+        "mean_post_ttft_share_pct": 96.90271773170993,
+        "mean_ttft_share_pct": 3.097282268290075,
+        "overall_output_tps_per_gpu": 9.7770125,
+        "steady_output_tps": 78.4954983395945,
+        "steady_output_tps_per_gpu": 9.811937292449313
+      },
+      "p50": {
+        "Decode (tok/s)": 80.93,
+        "ITL (ms)": 24.76,
+        "Input tokens": 4096.0,
+        "Latency (s)": 13.05,
+        "Output (tok/s)": 78.49,
+        "Output tokens": 1024.0,
+        "Percentiles": "50%",
+        "TPOT (ms)": 12.36,
+        "TTFT (ms)": 405.61,
+        "Total (tok/s)": 392.45
+      },
+      "p90": {
+        "Decode (tok/s)": 80.94,
+        "ITL (ms)": 24.84,
+        "Input tokens": 4096.0,
+        "Latency (s)": 13.19,
+        "Output (tok/s)": 78.5,
+        "Output tokens": 1024.0,
+        "Percentiles": "90%",
+        "TPOT (ms)": 12.49,
+        "TTFT (ms)": 405.81,
+        "Total (tok/s)": 392.52
+      },
+      "request_count": 3,
+      "source_files": {
+        "args": "c1/kimi-k3/parallel_1_number_3/benchmark_args.json",
+        "percentiles": "c1/kimi-k3/parallel_1_number_3/benchmark_percentile.json",
+        "summary": "c1/kimi-k3/parallel_1_number_3/benchmark_summary.json",
+        "workload_throughput": "c1/kimi-k3/parallel_1_number_3/workload_throughput.json"
+      },
+      "summary": {
+        "Avg Input Tokens": 4096.0,
+        "Avg Latency (s)": 13.0918,
+        "Avg Output Tokens": 1024.0,
+        "Concurrency": 1,
+        "Failed Requests": 0,
+        "ITL (ms)": 20.27,
+        "Input Throughput (tok/s)": 0.0,
+        "Output Throughput (tok/s)": 78.2161,
+        "Req Throughput (req/s)": 0.0764,
+        "Request Rate (req/s)": -1.0,
+        "Success Requests": 3,
+        "TPOT (ms)": 12.4,
+        "TTFT (ms)": 405.49,
+        "Test Duration (s)": 39.2758,
+        "Total Requests": 3,
+        "Total Throughput (tok/s)": 391.0807
+      },
+      "warmup_requests": 1,
+      "workload_throughput": {
+        "last_window_s": 30.0,
+        "n_samples": 3,
+        "rows": [
+          {
+            "last_window": 313.981993358378,
+            "metric": "Total Prompt tok/s",
+            "overall": 312.86456335469984,
+            "steady_state": 313.981993358378
+          },
+          {
+            "last_window": 313.981993358378,
+            "metric": "New Prompt tok/s",
+            "overall": 312.86456335469984,
+            "steady_state": 313.981993358378
+          },
+          {
+            "last_window": 0.0,
+            "metric": "Cached Prompt tok/s",
+            "overall": 0.0,
+            "steady_state": 0.0
+          },
+          {
+            "last_window": 78.4954983395945,
+            "metric": "Completion tok/s",
+            "overall": 78.21614083867496,
+            "steady_state": 78.4954983395945
+          }
+        ],
+        "wall_time_s": 39.2758,
+        "warmup_frac": 0.2
+      }
+    },
+    {
+      "concurrency": 16,
+      "derived": {
+        "mean_post_ttft_s": 25.42704,
+        "mean_post_ttft_share_pct": 86.32034925958868,
+        "mean_ttft_share_pct": 13.679650740411317,
+        "overall_output_tps_per_gpu": 69.5163125,
+        "steady_output_tps": 816.8444564504758,
+        "steady_output_tps_per_gpu": 102.10555705630948
+      },
+      "p50": {
+        "Decode (tok/s)": 41.18,
+        "ITL (ms)": 24.37,
+        "Input tokens": 4096.0,
+        "Latency (s)": 29.46,
+        "Output (tok/s)": 34.75,
+        "Output tokens": 1024.0,
+        "Percentiles": "50%",
+        "TPOT (ms)": 24.28,
+        "TTFT (ms)": 4596.48,
+        "Total (tok/s)": 173.77
+      },
+      "p90": {
+        "Decode (tok/s)": 41.35,
+        "ITL (ms)": 48.66,
+        "Input tokens": 4096.0,
+        "Latency (s)": 29.57,
+        "Output (tok/s)": 34.9,
+        "Output tokens": 1024.0,
+        "Percentiles": "90%",
+        "TPOT (ms)": 27.6,
+        "TTFT (ms)": 4727.2,
+        "Total (tok/s)": 174.51
+      },
+      "request_count": 48,
+      "source_files": {
+        "args": "c16/kimi-k3/parallel_16_number_48/benchmark_args.json",
+        "percentiles": "c16/kimi-k3/parallel_16_number_48/benchmark_percentile.json",
+        "summary": "c16/kimi-k3/parallel_16_number_48/benchmark_summary.json",
+        "workload_throughput": "c16/kimi-k3/parallel_16_number_48/workload_throughput.json"
+      },
+      "summary": {
+        "Avg Input Tokens": 4096.0,
+        "Avg Latency (s)": 29.4566,
+        "Avg Output Tokens": 1024.0,
+        "Concurrency": 16,
+        "Failed Requests": 0,
+        "ITL (ms)": 33.93,
+        "Input Throughput (tok/s)": 0.0,
+        "Output Throughput (tok/s)": 556.1305,
+        "Req Throughput (req/s)": 0.5431,
+        "Request Rate (req/s)": -1.0,
+        "Success Requests": 48,
+        "TPOT (ms)": 24.86,
+        "TTFT (ms)": 4029.56,
+        "Test Duration (s)": 88.3821,
+        "Total Requests": 48,
+        "Total Throughput (tok/s)": 2780.6526
+      },
+      "warmup_requests": 16,
+      "workload_throughput": {
+        "last_window_s": 30.0,
+        "n_samples": 48,
+        "rows": [
+          {
+            "last_window": 2224.758332654445,
+            "metric": "Total Prompt tok/s",
+            "overall": 2224.6033252122993,
+            "steady_state": 3267.3778258019033
+          },
+          {
+            "last_window": 2224.758332654445,
+            "metric": "New Prompt tok/s",
+            "overall": 2224.6033252122993,
+            "steady_state": 3267.3778258019033
+          },
+          {
+            "last_window": 0.0,
+            "metric": "Cached Prompt tok/s",
+            "overall": 0.0,
+            "steady_state": 0.0
+          },
+          {
+            "last_window": 556.1895831636112,
+            "metric": "Completion tok/s",
+            "overall": 556.1508313030748,
+            "steady_state": 816.8444564504758
+          }
+        ],
+        "wall_time_s": 88.3789,
+        "warmup_frac": 0.2
+      }
+    }
+  ],
+  "server": {
+    "cache_token_capacity": 3197056,
+    "checkpoint": "full source safetensors",
+    "chunked_prefill_size": 8192,
+    "decode_cuda_graph_sizes": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "decode_cuda_graphs": true,
+    "kv_cache_dtype": "fp8_e4m3",
+    "kvstore": false,
+    "max_model_len": 8192,
+    "max_num_seqs": 16,
+    "max_prefill_tokens": 8192,
+    "prefix_caching": false,
+    "torch_nccl_blocking_wait": true
+  },
+  "software": {
+    "evalscope": "1.9.1",
+    "hip": "7.2.26015",
+    "model_revision": "eaf5a944bfc8c57438bbce226feef9f6bdbdaae1",
+    "pytorch": "2.11.0+rocm7.2",
+    "tokenspeed_revision": "0b1061eb9fe1df36a4e48e5c9c291cd753af9e89",
+    "transformers": "5.12.0",
+    "triton": "3.6.0"
+  },
+  "status": "passed",
+  "topology": {
+    "attention_tp": 8,
+    "collectives": "RCCL plus Iris all-reduce",
+    "dense_tp": 8,
+    "expert_parallel": 1,
+    "moe_tp": 8,
+    "physical_ranks": 8
+  },
+  "workload": {
+    "api": "OpenAI completions streaming",
+    "concurrencies": [
+      1,
+      16
+    ],
+    "dataset": "EvalScope random",
+    "ignore_eos": true,
+    "measurement": "one full-concurrency warmup plus three saturated waves",
+    "output_tokens": 1024,
+    "prompt_tokens": 4096,
+    "temperature": 0
+  }
+}

@@ -1,5 +1,10 @@
 # Kimi-K3 one-GPU TP8/EP1 gfx950 results
 
+The revision-organized report, including real eight-GPU serving and kernel
+hotspots, is
+[`results/gfx950_0b1061eb/README.md`](../results/gfx950_0b1061eb/README.md).
+This page retains the detailed one-GPU artifact validation.
+
 ## Outcome
 
 Overall: **PASS** for full-depth TP8/EP1 rank-0 export, direct rank-state
@@ -40,8 +45,8 @@ steady-state compute regression against loading the full checkpoint.
 
 Raw outputs:
 
-- [rank-local checkpoint result](../results/gfx950-rank-local-4k-1k.json)
-- [full source checkpoint result](../results/gfx950-full-source-4k-1k.json)
+- [rank-local checkpoint result](../results/gfx950_0b1061eb/one_gpu_rank_local_4k_1k.json)
+- [full source checkpoint result](../results/gfx950_0b1061eb/one_gpu_full_source_4k_1k.json)
 
 ## Rank-local artifact
 
@@ -55,12 +60,12 @@ The MI355X export completed in 193.88 seconds and produced:
 - all 93 layers and all 896 experts, with TP rank-0 slicing.
 
 The direct loader rebuilt architecture-neutral derived weights, then applied
-gfx950 kernel preprocessing. It completed in 43.39 seconds, used 214.28 GiB
+gfx950 kernel preprocessing. It completed in 46.70 seconds, used 214.28 GiB
 peak HBM during load, and retained 209.95 GiB after loading.
 
-The full source path completed in 134.82 seconds with the same 214.28 GiB load
+The full source path completed in 138.00 seconds with the same 214.28 GiB load
 peak and 209.95 GiB retained allocation. On this filesystem run, the artifact
-loaded 3.11 times faster and saved 91.43 seconds (67.82%). Load time depends
+loaded 2.96 times faster and saved 91.30 seconds (66.16%). Load time depends
 strongly on storage and page-cache state and is outside request latency.
 
 With the 32 GiB cache, runtime peak allocation was 244.69 GiB. The cache arena
@@ -71,25 +76,25 @@ scheduler-visible token slots after reserved/null capacity.
 
 Rank-local versus full-source measurements:
 
-- first-token latency: 277.16 ms versus 278.05 ms;
-- prefill model latency: 269.61 ms versus 270.31 ms (`-0.26%`);
-- eager decode model p50: 65.05 ms versus 62.95 ms (`+3.35%`);
-- eager decode step-wall p50: 66.11 ms versus 63.90 ms;
-- full eager-workload output rate: 15.06 versus 15.57 tok/s;
-- graph decode p50: 10.699 ms versus 10.744 ms (`-0.42%`);
-- graph decode rate: 93.46 versus 93.07 tok/s.
+- first-token latency: 277.93 ms versus 278.02 ms;
+- prefill model latency: 270.36 ms versus 270.57 ms (`-0.08%`);
+- eager decode model p50: 62.96 ms versus 62.51 ms (`+0.73%`);
+- eager decode step-wall p50: 63.91 ms versus 63.45 ms;
+- full eager-workload output rate: 15.01 versus 15.70 tok/s;
+- graph decode p50: 10.736 ms versus 10.691 ms (`+0.42%`);
+- graph decode rate: 93.13 versus 93.51 tok/s.
 
 The eager result covers all 1,023 decode steps after the first token. The
-rank-local p95 was 66.60 ms and the source p95 was 64.11 ms. The graph result
-uses 20 replays at sequence length 4,097 and was stable within 0.05 ms in each
+rank-local p95 was 82.10 ms and the source p95 was 63.49 ms. The graph result
+uses 20 replays at sequence length 4,097 and was stable within 0.03 ms in each
 run.
 
 Sampled eager component p50, shown as rank-local versus full source:
 
-- KDA attention: 17.054 ms versus 16.220 ms;
-- MLA attention: 11.012 ms versus 10.779 ms;
-- MoE: 30.843 ms versus 30.424 ms;
-- dense FFN: 0.149 ms versus 0.136 ms.
+- KDA attention: 15.517 ms versus 15.657 ms;
+- MLA attention: 10.520 ms versus 10.509 ms;
+- MoE: 29.225 ms versus 29.503 ms;
+- dense FFN: 0.129 ms versus 0.130 ms.
 
 These values are category totals across the complete 93-layer forward, not
 single-layer latency.
@@ -99,25 +104,25 @@ single-layer latency.
 The scheduler processed the 65,536 prompt tokens in eight 8,192-token prefill
 steps. Rank-local versus full-source measurements:
 
-- first-token latency p50: 1,954.76 ms versus 1,956.18 ms;
-- first-token latency maximum: 3,474.08 ms versus 3,477.46 ms;
-- prefill model step p50: 427.246 ms versus 427.496 ms (`-0.06%`);
-- eager decode model p50: 79.651 ms versus 76.536 ms (`+4.07%`);
-- eager decode step-wall p50: 81.372 ms versus 78.416 ms;
-- full eager-workload aggregate output: 188.25 versus 194.25 tok/s;
-- graph decode p50: 18.514 ms versus 18.568 ms (`-0.29%`);
-- graph per-user decode: 54.03 versus 53.83 tok/s;
-- graph aggregate decode: 864.46 versus 861.34 tok/s.
+- first-token latency p50: 1,951.35 ms versus 1,953.36 ms;
+- first-token latency maximum: 3,467.16 ms versus 3,472.67 ms;
+- prefill model step p50: 426.831 ms versus 427.394 ms (`-0.13%`);
+- eager decode model p50: 76.176 ms versus 76.276 ms (`-0.13%`);
+- eager decode step-wall p50: 77.303 ms versus 77.409 ms;
+- full eager-workload aggregate output: 198.66 versus 196.52 tok/s;
+- graph decode p50: 18.470 ms versus 18.546 ms (`-0.41%`);
+- graph per-user decode: 54.13 versus 53.92 tok/s;
+- graph aggregate decode: 866.11 versus 863.05 tok/s.
 
-The source eager run had one 497.71 ms decode outlier; its p95 remained
-78.10 ms. Medians are used for the direct comparison.
+The source eager run had one 348.72 ms decode outlier; its p95 remained
+77.62 ms. Medians are used for the direct comparison.
 
 Sampled eager component p50, shown as rank-local versus full source:
 
-- KDA attention: 14.021 ms versus 13.297 ms;
-- MLA attention: 14.644 ms versus 13.983 ms;
-- MoE: 38.631 ms versus 36.745 ms;
-- dense FFN: 0.122 ms versus 0.121 ms.
+- KDA attention: 12.956 ms versus 13.360 ms;
+- MLA attention: 13.943 ms versus 14.323 ms;
+- MoE: 36.496 ms versus 37.417 ms;
+- dense FFN: 0.116 ms versus 0.117 ms.
 
 The component hooks add event overhead, so those values explain the eager
 profile and must not be summed to predict the separately captured graph.
@@ -145,8 +150,8 @@ include RCCL transfer, cross-rank synchronization, or communication overlap.
 Use the graph-decode result as the best rank-compute estimate for a
 production-shaped decode graph. Use the eager 1,024-token workload to validate
 scheduler progression, sequence growth from 4,096 to 5,120, cache allocation,
-and long-run stability. The 3–4% eager decode difference between the two load
-paths is consistent with run-to-run launch/operating variance; it is not
+and long-run stability. The sub-1% median eager decode difference between the
+two load paths is consistent with run-to-run launch/operating variance; it is not
 present in graph decode, prefill, model allocation, cache geometry, or
 collective traces.
 
@@ -157,7 +162,7 @@ sampling, tokenization, HTTP, or real collective latency.
 
 ```text
 python3 -m pytest -q -p no:cacheprovider toy_e2e/tests
-5 passed
+8 passed
 
 python3 -m ruff check toy_e2e
 All checks passed!
