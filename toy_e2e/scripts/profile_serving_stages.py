@@ -6,12 +6,22 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import json
-import random
+import sys
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from toy_e2e.workload import (  # noqa: E402
+    DEFAULT_PROMPT_SEED,
+    DEFAULT_SYNTHETIC_VOCAB_SIZE,
+    synthetic_prompt,
+)
 
 
 def _post(url: str, payload: dict[str, Any], timeout_s: float) -> Any:
@@ -30,8 +40,12 @@ def _post(url: str, payload: dict[str, Any], timeout_s: float) -> Any:
 
 
 def _prompt(length: int, seed: int, vocabulary_size: int) -> list[int]:
-    rng = random.Random(seed)
-    return [rng.randrange(vocabulary_size) for _ in range(length)]
+    return synthetic_prompt(
+        length=length,
+        seed=seed,
+        request_index=0,
+        vocabulary_size=vocabulary_size,
+    )
 
 
 def _generate(
@@ -202,8 +216,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--profile-steps", type=int, default=64)
     parser.add_argument("--activity", choices=("GPU", "PROTON"), default="GPU")
     parser.add_argument("--tp-size", type=int, default=8)
-    parser.add_argument("--vocabulary-size", type=int, default=160000)
-    parser.add_argument("--seed", type=int, default=7)
+    parser.add_argument(
+        "--vocabulary-size",
+        type=int,
+        default=DEFAULT_SYNTHETIC_VOCAB_SIZE,
+    )
+    parser.add_argument("--seed", type=int, default=DEFAULT_PROMPT_SEED)
     parser.add_argument("--timeout-s", type=float, default=900)
     return parser.parse_args()
 

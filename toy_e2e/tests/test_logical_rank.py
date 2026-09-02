@@ -22,7 +22,11 @@ from __future__ import annotations
 
 import torch
 
-from toy_e2e.logical_rank import LogicalRankCommBackend
+from toy_e2e.logical_rank import (
+    DEFAULT_CUDAGRAPH_CAPTURE_SIZES,
+    LogicalRankCommBackend,
+    build_server_args,
+)
 
 
 def test_logical_collectives_preserve_tp8_shapes_and_record_volume():
@@ -62,3 +66,20 @@ def test_logical_all_gather_into_tensor_fills_caller_buffer():
     event = backend.snapshot()[0]
     assert event["operation"] == "all_gather_into_tensor"
     assert event["output_bytes"] == output.numel() * output.element_size()
+
+
+def test_graph_server_args_match_real_decode_capture_contract(tmp_path):
+    server_args = build_server_args(
+        tmp_path,
+        enforce_eager=False,
+        max_num_seqs=16,
+    )
+
+    assert server_args.enforce_eager is False
+    assert server_args.disable_prefill_graph is True
+    assert server_args.cudagraph_capture_sizes == list(
+        DEFAULT_CUDAGRAPH_CAPTURE_SIZES
+    )
+    assert server_args.max_cudagraph_capture_size == 16
+    assert server_args.sampling_backend == "greedy"
+    assert server_args.disable_sampling_tp_sync is True

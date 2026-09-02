@@ -29,6 +29,8 @@ from unittest import mock
 
 import torch
 
+DEFAULT_CUDAGRAPH_CAPTURE_SIZES = (1, 2, 4, 8, 16)
+
 
 @dataclass(frozen=True)
 class CollectiveEvent:
@@ -152,10 +154,16 @@ def logical_rank_runtime():
     original_backend = registry._global_backend
     registry._global_backend = backend
     try:
-        with mock.patch.object(
-            kimi_k3.KimiLinearDecoderLayer,
-            "_reduce_attn_accumulate",
-            new=local_reduce_attn,
+        with (
+            mock.patch.object(
+                kimi_k3.KimiLinearDecoderLayer,
+                "_reduce_attn_accumulate",
+                new=local_reduce_attn,
+            ),
+            # CudaGraphWrapper brackets capture with a distributed barrier.
+            # This process intentionally emulates TP8 in one rank and has no
+            # torch.distributed process group to join.
+            mock.patch.object(torch.distributed, "barrier", return_value=None),
         ):
             yield backend
     finally:
@@ -170,6 +178,7 @@ def build_server_args(
     max_num_seqs: int = 16,
     chunked_prefill_size: int = 8192,
     enforce_eager: bool = True,
+    cudagraph_capture_sizes: tuple[int, ...] = DEFAULT_CUDAGRAPH_CAPTURE_SIZES,
 ):
     from tokenspeed.runtime.utils.server_args import ServerArgs
 
@@ -186,8 +195,12 @@ def build_server_args(
         kv_cache_dtype="fp8_e4m3",
         device="cuda",
         enforce_eager=enforce_eager,
+        cudagraph_capture_sizes=list(cudagraph_capture_sizes),
+        max_cudagraph_capture_size=max(cudagraph_capture_sizes),
         disable_prefill_graph=True,
         disable_autotune=True,
+        sampling_backend="greedy",
+        disable_sampling_tp_sync=True,
         moe_backend="auto",
         enable_allreduce_fusion=False,
         comm_fusion_max_num_tokens=0,
@@ -215,6 +228,8 @@ def load_logical_rank(
     max_model_len: int = 8192,
     max_num_seqs: int = 16,
     chunked_prefill_size: int = 8192,
+    enforce_eager: bool = True,
+    cudagraph_capture_sizes: tuple[int, ...] = DEFAULT_CUDAGRAPH_CAPTURE_SIZES,
 ):
     from tokenspeed.runtime.configs.model_config import ModelConfig
     from tokenspeed.runtime.execution.model_runner import ModelRunner
@@ -225,6 +240,8 @@ def load_logical_rank(
         max_model_len=max_model_len,
         max_num_seqs=max_num_seqs,
         chunked_prefill_size=chunked_prefill_size,
+        enforce_eager=enforce_eager,
+        cudagraph_capture_sizes=cudagraph_capture_sizes,
     )
     model_config = ModelConfig(
         str(checkpoint),
@@ -242,6 +259,45 @@ def load_logical_rank(
         global_rank=0,
     )
     return server_args, model_config, runner
+
+
+def create_logical_executor(
+    *,
+    server_args,
+    model_config,
+    runner,
+    backend,
+    pool,
+    overlap_schedule_depth: int = 1,
+):
+    """Build the production executor around an already-loaded logical rank."""
+    from tokenspeed.runtime.engine.scheduler_utils import (
+        scheduler_cache_geometry_from_pool,
+    )
+    from tokenspeed.runtime.execution.device import DeviceHandle
+    from tokenspeed.runtime.execution.factory import create_model_executor
+    from tokenspeed.runtime.execution.model_executor import ModelExecutorConfig
+
+    geometry = scheduler_cache_geometry_from_pool(pool)
+    per_rank_max_batch = server_args.max_num_seqs // max(
+        server_args.mapping.attn.dp_size, 1
+    )
+    executor = create_model_executor(
+        server_args=server_args,
+        config=ModelExecutorConfig.from_server_args(
+            server_args=server_args,
+            model_config=model_config,
+            max_req_pool_size=per_rank_max_batch + 1,
+            gpu_id=0,
+            global_rank=0,
+            prefix_granularity=geometry.prefix_granularity,
+            overlap_schedule_depth=overlap_schedule_depth,
+        ),
+        model_runner=runner,
+        attn_backend=backend,
+        token_to_kv_pool=pool,
+    )
+    return executor, DeviceHandle(executor)
 
 
 def model_summary(server_args, runner) -> dict[str, Any]:

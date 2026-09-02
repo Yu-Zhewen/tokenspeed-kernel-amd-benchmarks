@@ -42,7 +42,14 @@ All targets use:
 - 8192-token prefill budget;
 - FP8 E4M3 KV cache;
 - no prefix cache or host KV store;
+- decode graphs for batches 1, 2, 4, 8, and 16 with eager prefill;
+- one full warmup wave and three measured closed-loop waves;
 - unprofiled performance plus separate eager C1/C16 prefill/decode profiles.
+
+Toy performance uses TokenSpeed's production `ModelExecutor` graph wrapper,
+persistent input/runtime buffers, rolling KV metadata, greedy rank-local
+sampling, and depth-1 dispatch/commit overlap. Prompts are deterministic varied
+synthetic token IDs (seed 7, range 160,000), not repeated token 1.
 
 Every hotspot result uses
 [`scripts/summarize_gpu_hotspots.py`](scripts/summarize_gpu_hotspots.py).
@@ -60,26 +67,29 @@ hooks and the real report used GPU kernels.
 
 | Target | C1 primary decode | C16 primary decode | C1 overall output | C16 overall output |
 |---|---:|---:|---:|---:|
-| toy 1-GPU logical rank | 10.711 ms graph | 18.553 ms graph | 15.20 tok/s eager | 196.90 tok/s eager |
+| toy 1-GPU logical rank | 12.531 ms TPOT | 25.418 ms TPOT | 78.12 tok/s | 586.09 tok/s |
 | real 8-GPU serving | 12.36 ms TPOT | 24.28 ms TPOT | 78.22 tok/s | 556.13 tok/s |
 
-The units share a table shape but not an execution scope. Toy graph latency
+The units share a table shape but not an execution scope. Toy rolling TPOT
 excludes physical communication and serving; real TPOT includes the physical
-TP8 path. Each result README labels its scope.
+TP8 path. Rank-local toy outputs and MoE routes are not semantically equivalent
+to the real model because seven TP contributions are absent.
 
 The unified eager hotspot results show:
 
-- toy prefill is MoE-heavy: 45.45% at C1 and 36.79% at C16;
-- toy decode is led by GEMM/quant: 30.47% at C1 and 37.57% at C16;
+- toy C1 prefill is MoE-heavy (45.99%); varied-token C16 prefill is led by a
+  generic direct-copy kernel (41.07%);
+- toy decode is led by GEMM/quant: 30.56% at C1 and 36.36% at C16;
 - real prefill is split between MoE and communication;
 - real decode is communication-dominated: 88.55% at C1 and 62.52% at C16.
 
 ## Package files
 
-- `benchmark_logical_rank.py`: one-GPU scheduler, eager, graph, and logical
-  collective benchmark.
+- `benchmark_logical_rank.py`: one-GPU production-wrapper rolling graph and
+  logical-collective benchmark.
 - `logical_rank.py`: TP8/EP1 rank-0 model configuration and local collective
   substitutes.
+- `workload.py`: shared deterministic varied synthetic-token generator.
 - `rank_checkpoint.py`: portable raw rank-state writer and loader.
 - `scripts/export_rank_local_checkpoint.py`: one-time rank-0 checkpoint export.
 - `scripts/profile_logical_rank_stages.py`: toy prefill/decode GPU traces.

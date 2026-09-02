@@ -17,6 +17,12 @@ the same environment, correctness, unprofiled performance, category hotspot,
 exact-kernel, command, artifact, and limitation sections. Both collected
 gfx950 results now use the same eager GPU-kernel hotspot methodology.
 
+The gfx950 toy performance uses the same graph buckets, full 4K/1K trajectory,
+warmup counts, measured request counts, and depth-1 scheduling pattern as the
+real run. It remains rank-local synthetic compute: it does not reproduce
+physical communication, HTTP, exact EvalScope text, or valid full-TP MoE
+routing.
+
 Use [`../RUNBOOK.md`](../RUNBOOK.md) to collect any target and
 [`../TEST_PLAN.md`](../TEST_PLAN.md) for the required metric contract. A new
 TokenSpeed revision gets a new revision-suffixed directory; never overwrite an

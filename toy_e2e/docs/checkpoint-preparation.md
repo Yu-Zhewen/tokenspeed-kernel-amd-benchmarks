@@ -137,9 +137,10 @@ python3 toy_e2e/benchmark_logical_rank.py \
   --output-tokens 2 \
   --concurrency 1 \
   --cache-gib 4 \
-  --warmup-output-tokens 1 \
-  --profile-output-tokens 1 \
-  --decode-graph-replays 3 \
+  --warmup-waves 1 \
+  --measurement-waves 1 \
+  --prompt-seed 7 \
+  --synthetic-vocabulary-size 160000 \
   --output /data/results/kimi-k3-rank-local-smoke.json
 ```
 

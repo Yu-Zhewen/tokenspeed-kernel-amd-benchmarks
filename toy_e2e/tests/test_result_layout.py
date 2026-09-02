@@ -100,6 +100,45 @@ def test_collected_results_have_complete_common_profile_contract(
     }
 
 
+def test_toy_result_uses_complete_rolling_graph_contract():
+    result = json.loads(
+        (RESULTS / "gfx950_toy_1gpu_0b1061eb" / "result.json").read_text()
+    )
+
+    assert result["format"] == "tokenspeed_logical_rank_benchmark_v2"
+    assert result["cuda_graph"] == {
+        "capture_sizes": [1, 2, 4, 8, 16],
+        "capture_wall_s": result["cuda_graph"]["capture_wall_s"],
+        "decode": "rolling replay",
+        "overlap_schedule_depth": 1,
+        "prefill": "eager",
+    }
+    assert result["workload"]["warmup_waves"] == 1
+    assert result["workload"]["measurement_waves"] == 3
+    expected_contexts = [4097, 4224, 4352, 4480, 4608, 4736, 4864, 4992, 5119]
+    for run in result["runs"]:
+        concurrency = run["concurrency"]
+        benchmark = run["benchmark"]
+        assert "graph_decode" not in run
+        assert benchmark["request_count"] == 3 * concurrency
+        assert benchmark["completed_output_tokens"] == 3 * concurrency * 1024
+        assert benchmark["decode_input_context"] == {
+            "first": 4097,
+            "last": 5119,
+            "final_completed": 5120,
+        }
+        assert [
+            sample["decode_input_tokens"]
+            for sample in benchmark["decode_context_samples"]
+        ] == expected_contexts
+        assert all(
+            sample["step_wall_ms"]["count"] == 3 * concurrency
+            for sample in benchmark["decode_context_samples"]
+        )
+        assert benchmark["steady_decode_step_ms"]["count"] > 0
+        assert benchmark["steady_decode_capacity_tps"] > 0
+
+
 @pytest.mark.parametrize(
     "directory",
     [

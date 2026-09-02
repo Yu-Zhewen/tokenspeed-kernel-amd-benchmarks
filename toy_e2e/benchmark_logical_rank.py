@@ -29,8 +29,7 @@ import platform
 import statistics
 import sys
 import time
-from collections import defaultdict
-from contextlib import contextmanager
+from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,11 +43,18 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from toy_e2e.logical_rank import (  # noqa: E402
+    DEFAULT_CUDAGRAPH_CAPTURE_SIZES,
+    create_logical_executor,
     load_logical_rank,
     logical_rank_runtime,
     model_summary,
 )
 from toy_e2e.rank_checkpoint import RawRankStateLoader  # noqa: E402
+from toy_e2e.workload import (  # noqa: E402
+    DEFAULT_PROMPT_SEED,
+    DEFAULT_SYNTHETIC_VOCAB_SIZE,
+    synthetic_prompt,
+)
 
 
 def _percentile(values: list[float], quantile: float) -> float:
@@ -227,21 +233,6 @@ def _execute_forward(runner, prepared: PreparedForward):
         )
 
 
-@contextmanager
-def _tokenspeed_graph_phase(*, capture: bool):
-    from tokenspeed.runtime.execution import cuda_graph_wrapper
-
-    previous_graph_phase = cuda_graph_wrapper._is_cuda_graph_phase
-    previous_capture_mode = cuda_graph_wrapper._is_capture_mode
-    cuda_graph_wrapper._is_cuda_graph_phase = True
-    cuda_graph_wrapper._is_capture_mode = capture
-    try:
-        yield
-    finally:
-        cuda_graph_wrapper._is_capture_mode = previous_capture_mode
-        cuda_graph_wrapper._is_cuda_graph_phase = previous_graph_phase
-
-
 def _create_cache(server_args, model_config, cache_bytes: int):
     from tokenspeed.runtime.layers.attention import registry as attention_registry
 
@@ -261,7 +252,13 @@ def _create_cache(server_args, model_config, cache_bytes: int):
     return backend, pool, storage
 
 
-def _new_scheduler(pool, *, concurrency: int, chunked_prefill_size: int):
+def _new_scheduler(
+    pool,
+    *,
+    concurrency: int,
+    chunked_prefill_size: int,
+    overlap_schedule_depth: int = 0,
+):
     from tokenspeed.runtime.engine.scheduler_utils import (
         aligned_max_scheduled_tokens,
         make_config,
@@ -286,6 +283,7 @@ def _new_scheduler(pool, *, concurrency: int, chunked_prefill_size: int):
         role="null",
         disable_prefix_cache=True,
         cache_groups=cache_groups,
+        overlap_schedule_depth=overlap_schedule_depth,
     )
     scheduler = Scheduler(config)
     bind_scheduler = getattr(pool, "bind_paged_cache_scheduler", None)
@@ -437,6 +435,9 @@ def _run_workload(
     prompt_tokens: int,
     output_tokens: int,
     chunked_prefill_size: int,
+    prompt_seed: int = DEFAULT_PROMPT_SEED,
+    synthetic_vocabulary_size: int = DEFAULT_SYNTHETIC_VOCAB_SIZE,
+    request_index_offset: int = 0,
     breakdown: LayerBreakdown | None = None,
     hotspot_top_k: int = 10,
     before_forward: Callable[[str], None] | None = None,
@@ -460,10 +461,15 @@ def _run_workload(
         [
             make_spec(
                 request_id,
-                [1] * prompt_tokens,
+                synthetic_prompt(
+                    length=prompt_tokens,
+                    seed=prompt_seed,
+                    request_index=request_index_offset + index,
+                    vocabulary_size=synthetic_vocabulary_size,
+                ),
                 max_new_tokens=output_tokens,
             )
-            for request_id in requests
+            for index, request_id in enumerate(requests)
         ]
     )
     cached_lengths = {request_id: 0 for request_id in requests}
@@ -561,6 +567,8 @@ def _run_workload(
         "concurrency": concurrency,
         "prompt_tokens": prompt_tokens,
         "output_tokens": output_tokens,
+        "prompt_seed": prompt_seed,
+        "synthetic_vocabulary_size": synthetic_vocabulary_size,
         "effective_chunked_prefill_size": effective_chunk,
         "cache_token_capacity": geometry.token_capacity,
         "wall_ms": wall_ms,
@@ -587,157 +595,399 @@ def _run_workload(
     }
 
 
-def _prepare_full_decode_batch(
+@dataclass
+class _PendingRound:
+    forward_op: Any
+    pending: Any
+    phase: str
+    dispatched_at: float
+    decode_contexts: tuple[tuple[str, int], ...]
+
+
+def _context_checkpoints(prompt_tokens: int, output_tokens: int) -> list[int]:
+    """Decode-input lengths sampled across a complete generation."""
+    if output_tokens <= 1:
+        return []
+    offsets = {1, output_tokens - 1}
+    offsets.update(range(128, output_tokens, 128))
+    return sorted(prompt_tokens + offset for offset in offsets)
+
+
+def _context_sample_summary(
+    samples: dict[int, list[float]],
+    checkpoints: list[int],
+) -> list[dict[str, Any]]:
+    return [
+        {
+            "decode_input_tokens": context,
+            "resulting_context_tokens": context + 1,
+            "step_wall_ms": _summary(samples[context]),
+        }
+        for context in checkpoints
+        if samples.get(context)
+    ]
+
+
+def _make_sampling_params(
     *,
-    runner,
-    backend,
-    pool,
-    concurrency: int,
-    prompt_tokens: int,
-    chunked_prefill_size: int,
-) -> tuple[PreparedForward, int]:
-    from tokenspeed.runtime.engine.scheduler_utils import (
-        advance_scheduler,
-        make_extend_result_event,
-        make_spec,
+    request_id: str,
+    output_tokens: int,
+    seed: int,
+    vocabulary_size: int,
+):
+    from tokenspeed.runtime.sampling.sampling_params import SamplingParams
+
+    params = SamplingParams(
+        max_new_tokens=output_tokens,
+        temperature=0.0,
+        ignore_eos=True,
+        seed=seed,
     )
-
-    pool.clear_kv_buffers()
-    scheduler, _geometry, effective_chunk = _new_scheduler(
-        pool,
-        concurrency=concurrency,
-        chunked_prefill_size=chunked_prefill_size,
-    )
-    request_ids = [f"graph-request-{index}" for index in range(concurrency)]
-    request_set = set(request_ids)
-    scheduler.submit_requests(
-        [
-            make_spec(
-                request_id,
-                [1] * prompt_tokens,
-                max_new_tokens=1024,
-            )
-            for request_id in request_ids
-        ]
-    )
-    cached_lengths = {request_id: 0 for request_id in request_ids}
-
-    max_steps = prompt_tokens * concurrency + concurrency + 100
-    for _ in range(max_steps):
-        plan = scheduler.next_execution_plan()
-        if len(plan.forward) != 1:
-            raise RuntimeError(
-                "graph preparation requires exactly one forward operation per plan"
-            )
-        forward_op = plan.forward[0]
-        pages_to_zero = dict(plan.pages_to_zero)
-        zero_new_blocks = getattr(pool, "zero_new_blocks", None)
-        if callable(zero_new_blocks):
-            zero_new_blocks(pages_to_zero)
-        else:
-            pool.zero_new_pages(pages_to_zero)
-        prepared = _prepare_forward(backend, pool, forward_op, cached_lengths)
-        if (
-            prepared.ctx.num_extends == 0
-            and len(forward_op.request_ids) == concurrency
-            and set(forward_op.request_ids) == request_set
-        ):
-            return prepared, effective_chunk
-
-        _execute_forward(runner, prepared)
-        torch.cuda.synchronize()
-        events = []
-        num_extends = int(forward_op.num_extends())
-        for index, (request_id, length) in enumerate(
-            zip(forward_op.request_ids, forward_op.input_lengths)
-        ):
-            cached_lengths[request_id] += int(length)
-            final_prefill = (
-                index < num_extends
-                and int(forward_op.extend_prefix_lens[index]) + int(length)
-                == int(forward_op.prefill_lengths[index])
-            )
-            produces_token = final_prefill or index >= num_extends
-            events.append(
-                make_extend_result_event(request_id, [1] if produces_token else [])
-            )
-        advance_scheduler(scheduler, events)
-    raise RuntimeError("could not prepare a full decode batch for graph capture")
+    params.resolve_seed(request_id)
+    params.normalize(None)
+    params.verify(vocabulary_size)
+    return params
 
 
-def _benchmark_decode_graph(
+def _run_rolling_phase(
     *,
-    runner,
-    backend,
+    device_handle,
     pool,
     logical_backend,
     concurrency: int,
+    total_requests: int,
     prompt_tokens: int,
+    output_tokens: int,
     chunked_prefill_size: int,
-    replays: int,
+    prompt_seed: int,
+    synthetic_vocabulary_size: int,
+    request_index_offset: int,
+    run_label: str,
 ) -> dict[str, Any]:
-    prepared, effective_chunk = _prepare_full_decode_batch(
-        runner=runner,
-        backend=backend,
-        pool=pool,
-        concurrency=concurrency,
-        prompt_tokens=prompt_tokens,
-        chunked_prefill_size=chunked_prefill_size,
+    """Run one closed-loop phase through the production executor."""
+    from tokenspeed.runtime.engine.scheduler_utils import (
+        advance_scheduler,
+        make_extend_result_event,
+        make_finish_event,
+        make_spec,
     )
-    sequence_lengths = [int(value) for value in prepared.seq_lens.cpu().tolist()]
-    capture_stream = torch.cuda.Stream()
-    capture_stream.wait_stream(torch.cuda.current_stream())
-    with torch.cuda.stream(capture_stream), _tokenspeed_graph_phase(capture=False):
-        for _ in range(4):
-            _execute_forward(runner, prepared)
-    torch.cuda.synchronize()
+    from tokenspeed.runtime.execution.types import PlannedForward
 
-    logical_backend.snapshot(reset=True)
-    graph = torch.cuda.CUDAGraph()
-    capture_started = time.perf_counter()
-    with _tokenspeed_graph_phase(capture=True):
-        with torch.cuda.graph(graph, stream=capture_stream):
-            captured_output = _execute_forward(runner, prepared)
-    torch.cuda.synchronize()
-    capture_wall_ms = (time.perf_counter() - capture_started) * 1e3
-    collectives = _collective_summary(logical_backend.snapshot(reset=True))
+    if total_requests <= 0:
+        raise ValueError("total requests must be positive")
+    if total_requests % concurrency:
+        raise ValueError("total requests must be a whole number of waves")
 
-    for _ in range(3):
-        graph.replay()
-    torch.cuda.synchronize()
-
-    starts: list[torch.cuda.Event] = []
-    ends: list[torch.cuda.Event] = []
-    wall_started = time.perf_counter()
-    for _ in range(replays):
-        start = torch.cuda.Event(enable_timing=True)
-        end = torch.cuda.Event(enable_timing=True)
-        start.record()
-        graph.replay()
-        end.record()
-        starts.append(start)
-        ends.append(end)
-    torch.cuda.synchronize()
-    wall_ms = (time.perf_counter() - wall_started) * 1e3
-    model_ms = [float(start.elapsed_time(end)) for start, end in zip(starts, ends)]
-    mean_model_ms = statistics.fmean(model_ms)
-    result = {
-        "scope": "static first full decode batch after prefill",
-        "concurrency": concurrency,
-        "prompt_tokens": prompt_tokens,
-        "sequence_lengths": sequence_lengths,
-        "effective_chunked_prefill_size": effective_chunk,
-        "replays": replays,
-        "capture_wall_ms": capture_wall_ms,
-        "replay_wall_ms": wall_ms,
-        "model_ms": _summary(model_ms),
-        "per_user_decode_tps": 1e3 / mean_model_ms,
-        "aggregate_decode_tps": concurrency * 1e3 / mean_model_ms,
-        "collectives_per_replay": collectives,
+    request_ids = [
+        f"{run_label}-c{concurrency}-request-{index}"
+        for index in range(total_requests)
+    ]
+    prompts = {
+        request_id: synthetic_prompt(
+            length=prompt_tokens,
+            seed=prompt_seed,
+            request_index=request_index_offset + index,
+            vocabulary_size=synthetic_vocabulary_size,
+        )
+        for index, request_id in enumerate(request_ids)
     }
-    del captured_output, graph, capture_stream
-    torch.cuda.empty_cache()
-    return result
+    sampling_params = {
+        request_id: _make_sampling_params(
+            request_id=request_id,
+            output_tokens=output_tokens,
+            seed=prompt_seed + request_index_offset + index,
+            vocabulary_size=synthetic_vocabulary_size,
+        )
+        for index, request_id in enumerate(request_ids)
+    }
+
+    # Clear once between phases, on the executor-owned forward thread. The
+    # timed loop itself never calls torch.cuda.synchronize().
+    device_handle.run_kv_repair()
+    scheduler, geometry, effective_chunk = _new_scheduler(
+        pool,
+        concurrency=concurrency,
+        chunked_prefill_size=chunked_prefill_size,
+        overlap_schedule_depth=1,
+    )
+    logical_backend.snapshot(reset=True)
+
+    active: set[str] = set()
+    generated = {request_id: 0 for request_id in request_ids}
+    scheduled_lengths = {request_id: 0 for request_id in request_ids}
+    submitted_at: dict[str, float] = {}
+    first_token_at: dict[str, float] = {}
+    last_output_at: dict[str, float] = {}
+    finished_at: dict[str, float] = {}
+    in_flight: deque[_PendingRound] = deque()
+    forward_wall_ms: dict[str, list[float]] = defaultdict(list)
+    decode_batch_step_ms: list[float] = []
+    steady_decode_batch_step_ms: list[float] = []
+    context_samples: dict[int, list[float]] = defaultdict(list)
+    checkpoints = _context_checkpoints(prompt_tokens, output_tokens)
+    checkpoint_set = set(checkpoints)
+    next_to_submit = 0
+    completed = 0
+
+    def submit_available() -> None:
+        nonlocal next_to_submit
+        slots = min(concurrency - len(active), total_requests - next_to_submit)
+        if slots <= 0:
+            return
+        batch_ids = request_ids[next_to_submit : next_to_submit + slots]
+        submitted = time.perf_counter()
+        scheduler.submit_requests(
+            [
+                make_spec(
+                    request_id,
+                    prompts[request_id],
+                    max_new_tokens=output_tokens,
+                )
+                for request_id in batch_ids
+            ]
+        )
+        for request_id in batch_ids:
+            active.add(request_id)
+            submitted_at[request_id] = submitted
+        next_to_submit += slots
+
+    phase_started = time.perf_counter()
+    submit_available()
+    max_rounds = total_requests * (prompt_tokens + output_tokens + 10)
+    for _ in range(max_rounds):
+        if completed >= total_requests and not in_flight:
+            break
+
+        execution_plan = scheduler.next_execution_plan()
+        forward_ops = list(execution_plan.forward)
+        if len(forward_ops) > 1:
+            raise RuntimeError("logical-rank run received multiple forward operations")
+        forward_op = (
+            forward_ops[0]
+            if forward_ops and list(forward_ops[0].request_ids)
+            else None
+        )
+        planned = None
+        pending_round = None
+        if forward_op is not None:
+            num_extends = int(forward_op.num_extends())
+            phase = "prefill" if num_extends else "decode"
+            decode_contexts = []
+            for index, (request_id, input_length) in enumerate(
+                zip(forward_op.request_ids, forward_op.input_lengths)
+            ):
+                next_length = scheduled_lengths[request_id] + int(input_length)
+                if index >= num_extends:
+                    decode_contexts.append((request_id, next_length))
+                scheduled_lengths[request_id] = next_length
+            planned = PlannedForward(
+                forward_op=forward_op,
+                sampling_params_list=[
+                    sampling_params[request_id]
+                    for request_id in forward_op.request_ids
+                ],
+                dp_metadata=None,
+                grammar_inputs=None,
+                multimodal_context=None,
+            )
+            pending_round = _PendingRound(
+                forward_op=forward_op,
+                pending=None,
+                phase=phase,
+                dispatched_at=time.perf_counter(),
+                decode_contexts=tuple(decode_contexts),
+            )
+
+        pending = device_handle.execute(execution_plan, planned)
+        if pending is not None:
+            if pending_round is None:
+                raise RuntimeError("executor returned a result for an empty round")
+            pending_round.pending = pending
+            in_flight.append(pending_round)
+        elif forward_op is not None:
+            raise RuntimeError("executor dropped a non-empty forward operation")
+
+        # Match TokenSpeed's depth-1 event loop: dispatch the current forward,
+        # then commit the previous result while the current GPU step can run.
+        effective_depth = 1 if forward_op is not None else 0
+        scheduler_events = []
+        while len(in_flight) > effective_depth:
+            current = in_flight.popleft()
+            results = current.pending.result()
+            committed_at = time.perf_counter()
+            elapsed_ms = (committed_at - current.dispatched_at) * 1e3
+            active_before_commit = set(active)
+            if current.phase == "prefill" and any(
+                request_id in active_before_commit
+                for request_id in current.forward_op.request_ids
+            ):
+                forward_wall_ms["prefill"].append(elapsed_ms)
+
+            if results.output_lengths is None:
+                raise RuntimeError("model executor returned no output lengths")
+            output_lengths = [
+                int(value) for value in results.output_lengths.reshape(-1).tolist()
+            ]
+            output_ids = [
+                int(value) for value in results.output_tokens.reshape(-1).tolist()
+            ]
+            cursor = 0
+            num_extends = int(current.forward_op.num_extends())
+            decode_context_by_request = dict(current.decode_contexts)
+            current_decode_intervals: list[tuple[int, float]] = []
+            for index, request_id in enumerate(current.forward_op.request_ids):
+                result_length = output_lengths[index]
+                model_ids = output_ids[cursor : cursor + result_length]
+                cursor += result_length
+                if request_id not in active:
+                    # Overlap scheduling may return one already-dispatched
+                    # result after its request has committed a Finish event.
+                    continue
+                is_mid_prefill = (
+                    index < num_extends
+                    and int(current.forward_op.extend_prefix_lens[index])
+                    + int(current.forward_op.input_lengths[index])
+                    < int(current.forward_op.prefill_lengths[index])
+                )
+                new_ids = [] if is_mid_prefill else model_ids
+                if not is_mid_prefill and not new_ids:
+                    raise RuntimeError(
+                        f"executor produced no token for active request {request_id}"
+                    )
+                remaining = output_tokens - generated[request_id]
+                new_ids = new_ids[:remaining]
+                if new_ids:
+                    if (
+                        current.phase == "decode"
+                        and request_id in decode_context_by_request
+                        and request_id in last_output_at
+                    ):
+                        interval_ms = (
+                            committed_at - last_output_at[request_id]
+                        ) * 1e3
+                        context = decode_context_by_request[request_id]
+                        current_decode_intervals.append((context, interval_ms))
+                        if (
+                            context <= prompt_tokens + output_tokens - 1
+                            and context in checkpoint_set
+                        ):
+                            context_samples[context].append(interval_ms)
+                    generated[request_id] += len(new_ids)
+                    first_token_at.setdefault(request_id, committed_at)
+                    last_output_at[request_id] = committed_at
+                scheduler_events.append(
+                    make_extend_result_event(request_id, new_ids)
+                )
+                if generated[request_id] >= output_tokens:
+                    scheduler_events.append(make_finish_event(request_id))
+                    finished_at[request_id] = committed_at
+                    active.remove(request_id)
+                    completed += 1
+            if current_decode_intervals:
+                decode_step_ms = float(
+                    statistics.median(
+                        interval for _context, interval in current_decode_intervals
+                    )
+                )
+                forward_wall_ms["decode"].append(decode_step_ms)
+                decode_batch_step_ms.append(decode_step_ms)
+                if all(
+                    context > prompt_tokens + 1
+                    for context, _interval in current_decode_intervals
+                ):
+                    steady_decode_batch_step_ms.append(decode_step_ms)
+
+        if scheduler_events:
+            advance_scheduler(scheduler, scheduler_events)
+        submit_available()
+
+        if forward_op is None and not in_flight and completed < total_requests:
+            raise RuntimeError("scheduler became idle before all requests completed")
+    else:
+        raise RuntimeError("rolling workload exceeded its safety round limit")
+
+    measured_end = max(finished_at.values())
+    wall_ms = (measured_end - phase_started) * 1e3
+    ttft_ms = [
+        (first_token_at[request_id] - submitted_at[request_id]) * 1e3
+        for request_id in request_ids
+    ]
+    request_latency_ms = [
+        (finished_at[request_id] - submitted_at[request_id]) * 1e3
+        for request_id in request_ids
+    ]
+    tpot_ms = (
+        [
+            (finished_at[request_id] - first_token_at[request_id])
+            * 1e3
+            / (output_tokens - 1)
+            for request_id in request_ids
+        ]
+        if output_tokens > 1
+        else []
+    )
+    mean_decode_step_ms = (
+        statistics.fmean(decode_batch_step_ms) if decode_batch_step_ms else 0.0
+    )
+    mean_steady_decode_step_ms = (
+        statistics.fmean(steady_decode_batch_step_ms)
+        if steady_decode_batch_step_ms
+        else 0.0
+    )
+    collective_events = logical_backend.snapshot(reset=True)
+    return {
+        "execution_mode": "tokenspeed_model_executor_rolling_cuda_graph",
+        "scheduling": "depth-1 dispatch/commit overlap",
+        "concurrency": concurrency,
+        "request_count": total_requests,
+        "wave_count": total_requests // concurrency,
+        "prompt_tokens": prompt_tokens,
+        "output_tokens": output_tokens,
+        "prompt_seed": prompt_seed,
+        "prompt_index_range": [
+            request_index_offset,
+            request_index_offset + total_requests - 1,
+        ],
+        "synthetic_vocabulary_size": synthetic_vocabulary_size,
+        "effective_chunked_prefill_size": effective_chunk,
+        "cache_token_capacity": geometry.token_capacity,
+        "wall_ms": wall_ms,
+        "request_latency_ms": _summary(request_latency_ms),
+        "time_to_first_token_ms": _summary(ttft_ms),
+        "time_per_output_token_ms": _summary(tpot_ms),
+        "step_wall_ms": {
+            phase: _summary(values) for phase, values in forward_wall_ms.items()
+        },
+        "steady_decode_step_ms": _summary(steady_decode_batch_step_ms),
+        "decode_input_context": {
+            "first": prompt_tokens + 1 if output_tokens > 1 else None,
+            "last": prompt_tokens + output_tokens - 1
+            if output_tokens > 1
+            else None,
+            "final_completed": prompt_tokens + output_tokens,
+        },
+        "decode_context_samples": _context_sample_summary(
+            context_samples, checkpoints
+        ),
+        "per_user_decode_tps": (
+            1e3 / mean_decode_step_ms if mean_decode_step_ms else 0.0
+        ),
+        "aggregate_decode_tps": (
+            concurrency * 1e3 / mean_decode_step_ms
+            if mean_decode_step_ms
+            else 0.0
+        ),
+        "steady_decode_capacity_tps": (
+            concurrency * 1e3 / mean_steady_decode_step_ms
+            if mean_steady_decode_step_ms
+            else 0.0
+        ),
+        "aggregate_output_tps": (
+            total_requests * output_tokens * 1e3 / wall_ms
+        ),
+        "completed_output_tokens": total_requests * output_tokens,
+        "python_observed_collectives": _collective_summary(collective_events),
+    }
 
 
 def _parse_args() -> argparse.Namespace:
@@ -769,19 +1019,13 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--chunked-prefill-size", type=int, default=8192)
     parser.add_argument("--cache-gib", type=float, default=32.0)
-    parser.add_argument("--warmup-output-tokens", type=int, default=2)
-    parser.add_argument("--profile-output-tokens", type=int, default=8)
+    parser.add_argument("--warmup-waves", type=int, default=1)
+    parser.add_argument("--measurement-waves", type=int, default=3)
+    parser.add_argument("--prompt-seed", type=int, default=DEFAULT_PROMPT_SEED)
     parser.add_argument(
-        "--hotspot-top-k",
+        "--synthetic-vocabulary-size",
         type=int,
-        default=10,
-        help="slowest layer components retained per profiled phase",
-    )
-    parser.add_argument(
-        "--decode-graph-replays",
-        type=int,
-        default=20,
-        help="steady-state decode graph replays per batch size; zero disables",
+        default=DEFAULT_SYNTHETIC_VOCAB_SIZE,
     )
     return parser.parse_args()
 
@@ -793,19 +1037,14 @@ def main() -> int:
             "logical-rank benchmark requires exactly one visible GPU; set "
             "ROCR_VISIBLE_DEVICES and HIP_VISIBLE_DEVICES"
         )
-    if min(
-        args.prompt_tokens,
-        args.output_tokens,
-        args.warmup_output_tokens,
-        args.profile_output_tokens,
-    ) <= 0:
+    if min(args.prompt_tokens, args.output_tokens) <= 0:
         raise ValueError("token counts must be positive")
     if args.cache_gib <= 0:
         raise ValueError("--cache-gib must be positive")
-    if args.decode_graph_replays < 0:
-        raise ValueError("--decode-graph-replays cannot be negative")
-    if args.hotspot_top_k <= 0:
-        raise ValueError("--hotspot-top-k must be positive")
+    if min(args.warmup_waves, args.measurement_waves) <= 0:
+        raise ValueError("warmup and measurement waves must be positive")
+    if args.synthetic_vocabulary_size <= 0:
+        raise ValueError("--synthetic-vocabulary-size must be positive")
 
     torch.cuda.set_device(0)
     architecture = torch.cuda.get_device_properties(0).gcnArchName
@@ -826,9 +1065,19 @@ def main() -> int:
             args.checkpoint,
             load_format=load_format,
             max_model_len=args.prompt_tokens + args.output_tokens,
-            max_num_seqs=max(concurrencies),
+            max_num_seqs=max(
+                max(concurrencies),
+                max(DEFAULT_CUDAGRAPH_CAPTURE_SIZES),
+            ),
             chunked_prefill_size=args.chunked_prefill_size,
+            enforce_eager=False,
+            cudagraph_capture_sizes=DEFAULT_CUDAGRAPH_CAPTURE_SIZES,
         )
+        if args.synthetic_vocabulary_size > model_config.vocab_size:
+            raise ValueError(
+                "--synthetic-vocabulary-size exceeds model vocabulary: "
+                f"{args.synthetic_vocabulary_size} > {model_config.vocab_size}"
+            )
         load_wall_s = time.perf_counter() - load_started
         loaded_model_summary = model_summary(server_args, runner)
         load_peak_gib = torch.cuda.max_memory_allocated() / (1 << 30)
@@ -842,86 +1091,84 @@ def main() -> int:
             model_config,
             int(args.cache_gib * (1 << 30)),
         )
-        breakdown = LayerBreakdown(runner)
+        print(
+            "Capturing production decode graphs for "
+            f"{list(DEFAULT_CUDAGRAPH_CAPTURE_SIZES)}",
+            flush=True,
+        )
+        graph_capture_started = time.perf_counter()
+        executor, device_handle = create_logical_executor(
+            server_args=server_args,
+            model_config=model_config,
+            runner=runner,
+            backend=backend,
+            pool=pool,
+            overlap_schedule_depth=1,
+        )
+        graph_capture_wall_s = time.perf_counter() - graph_capture_started
+        captured_batch_sizes = list(executor.forward_step.capture_bs)
+        if captured_batch_sizes != list(DEFAULT_CUDAGRAPH_CAPTURE_SIZES):
+            raise RuntimeError(
+                "unexpected CUDA graph capture sizes: "
+                f"{captured_batch_sizes}"
+            )
         runs = []
         try:
             for concurrency in concurrencies:
-                print(f"Starting concurrency {concurrency} warmup", flush=True)
-                warmup = _run_workload(
-                    runner=runner,
-                    backend=backend,
-                    pool=pool,
-                    logical_backend=logical_backend,
-                    concurrency=concurrency,
-                    prompt_tokens=args.prompt_tokens,
-                    output_tokens=args.warmup_output_tokens,
-                    chunked_prefill_size=args.chunked_prefill_size,
-                )
-                print(f"Profiling concurrency {concurrency} breakdown", flush=True)
-                profile = _run_workload(
-                    runner=runner,
-                    backend=backend,
-                    pool=pool,
-                    logical_backend=logical_backend,
-                    concurrency=concurrency,
-                    prompt_tokens=args.prompt_tokens,
-                    output_tokens=args.profile_output_tokens,
-                    chunked_prefill_size=args.chunked_prefill_size,
-                    breakdown=breakdown,
-                    hotspot_top_k=args.hotspot_top_k,
-                )
-                if args.decode_graph_replays:
-                    print(
-                        f"Capturing concurrency {concurrency} decode graph",
-                        flush=True,
-                    )
-                graph_decode = (
-                    _benchmark_decode_graph(
-                        runner=runner,
-                        backend=backend,
-                        pool=pool,
-                        logical_backend=logical_backend,
-                        concurrency=concurrency,
-                        prompt_tokens=args.prompt_tokens,
-                        chunked_prefill_size=args.chunked_prefill_size,
-                        replays=args.decode_graph_replays,
-                    )
-                    if args.decode_graph_replays
-                    else None
-                )
                 print(
-                    f"Running concurrency {concurrency} "
-                    f"{args.prompt_tokens}/{args.output_tokens} workload",
+                    f"Running C{concurrency} full 4K/1K warmup "
+                    f"({args.warmup_waves * concurrency} requests)",
                     flush=True,
                 )
-                benchmark = _run_workload(
-                    runner=runner,
-                    backend=backend,
+                warmup = _run_rolling_phase(
+                    device_handle=device_handle,
                     pool=pool,
                     logical_backend=logical_backend,
                     concurrency=concurrency,
+                    total_requests=args.warmup_waves * concurrency,
                     prompt_tokens=args.prompt_tokens,
                     output_tokens=args.output_tokens,
                     chunked_prefill_size=args.chunked_prefill_size,
+                    prompt_seed=args.prompt_seed,
+                    synthetic_vocabulary_size=args.synthetic_vocabulary_size,
+                    request_index_offset=0,
+                    run_label="warmup",
+                )
+                print(
+                    f"Measuring C{concurrency} full 4K/1K rolling graph "
+                    f"({args.measurement_waves * concurrency} requests)",
+                    flush=True,
+                )
+                benchmark = _run_rolling_phase(
+                    device_handle=device_handle,
+                    pool=pool,
+                    logical_backend=logical_backend,
+                    concurrency=concurrency,
+                    total_requests=args.measurement_waves * concurrency,
+                    prompt_tokens=args.prompt_tokens,
+                    output_tokens=args.output_tokens,
+                    chunked_prefill_size=args.chunked_prefill_size,
+                    prompt_seed=args.prompt_seed,
+                    synthetic_vocabulary_size=args.synthetic_vocabulary_size,
+                    request_index_offset=args.warmup_waves * concurrency,
+                    run_label="measure",
                 )
                 runs.append(
                     {
                         "concurrency": concurrency,
                         "warmup": warmup,
-                        "profile": profile,
-                        "graph_decode": graph_decode,
                         "benchmark": benchmark,
                     }
                 )
                 print(f"Completed concurrency {concurrency}", flush=True)
         finally:
-            breakdown.close()
+            executor.forward_thread.shutdown()
         import transformers
         import triton
 
         device = torch.cuda.get_device_name(0)
         result = {
-            "format": "tokenspeed_logical_rank_benchmark_v1",
+            "format": "tokenspeed_logical_rank_benchmark_v2",
             "status": "passed",
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "experiment": "toy one-GPU Kimi-K3 TP8/EP1 logical rank 0",
@@ -954,9 +1201,22 @@ def main() -> int:
                 "output_tokens": args.output_tokens,
                 "concurrencies": list(concurrencies),
                 "chunked_prefill_size": args.chunked_prefill_size,
-                "measurement": (
-                    "full eager scheduler workload plus static decode graph replay"
+                "warmup_waves": args.warmup_waves,
+                "measurement_waves": args.measurement_waves,
+                "prompt_source": "deterministic varied synthetic token IDs",
+                "prompt_seed": args.prompt_seed,
+                "synthetic_vocabulary_size": args.synthetic_vocabulary_size,
+                "measurement": "full rolling ModelExecutor CUDA-graph workload",
+                "decode_semantics": (
+                    "rank-local greedy outputs; not semantically valid TP8 text"
                 ),
+            },
+            "cuda_graph": {
+                "capture_sizes": captured_batch_sizes,
+                "capture_wall_s": graph_capture_wall_s,
+                "prefill": "eager",
+                "decode": "rolling replay",
+                "overlap_schedule_depth": 1,
             },
             "checkpoint": str(args.checkpoint),
             "load_format": args.load_format,
@@ -973,7 +1233,7 @@ def main() -> int:
     if args.output is not None:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(encoded, encoding="utf-8")
-    del runner
+    del device_handle, executor, runner
     torch.cuda.empty_cache()
     return 0
 

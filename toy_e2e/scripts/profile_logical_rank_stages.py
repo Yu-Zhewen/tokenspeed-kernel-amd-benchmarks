@@ -29,6 +29,10 @@ from toy_e2e.logical_rank import (  # noqa: E402
     model_summary,
 )
 from toy_e2e.rank_checkpoint import RawRankStateLoader  # noqa: E402
+from toy_e2e.workload import (  # noqa: E402
+    DEFAULT_PROMPT_SEED,
+    DEFAULT_SYNTHETIC_VOCAB_SIZE,
+)
 
 
 class StageTrace:
@@ -89,6 +93,8 @@ def _profile_stage(
     concurrency: int,
     prompt_tokens: int,
     chunked_prefill_size: int,
+    prompt_seed: int,
+    synthetic_vocabulary_size: int,
     phase: str,
     steps: int,
     output: Path,
@@ -109,6 +115,8 @@ def _profile_stage(
             prompt_tokens=prompt_tokens,
             output_tokens=output_tokens,
             chunked_prefill_size=chunked_prefill_size,
+            prompt_seed=prompt_seed,
+            synthetic_vocabulary_size=synthetic_vocabulary_size,
             before_forward=trace.before_forward,
             after_forward=trace.after_forward,
         )
@@ -140,6 +148,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("token and step counts must be positive")
     if args.chunked_prefill_size <= 0 or args.cache_gib <= 0:
         raise ValueError("prefill size and cache GiB must be positive")
+    if args.synthetic_vocabulary_size <= 0:
+        raise ValueError("synthetic vocabulary size must be positive")
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     torch.cuda.set_device(0)
@@ -162,6 +172,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             max_num_seqs=max(concurrencies),
             chunked_prefill_size=args.chunked_prefill_size,
         )
+        if args.synthetic_vocabulary_size > model_config.vocab_size:
+            raise ValueError(
+                "--synthetic-vocabulary-size exceeds model vocabulary: "
+                f"{args.synthetic_vocabulary_size} > {model_config.vocab_size}"
+            )
         load_wall_s = time.perf_counter() - load_started
         loaded_model = model_summary(server_args, runner)
         backend, pool, _cache_storage = _create_cache(
@@ -181,6 +196,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 prompt_tokens=args.prompt_tokens,
                 output_tokens=2,
                 chunked_prefill_size=args.chunked_prefill_size,
+                prompt_seed=args.prompt_seed,
+                synthetic_vocabulary_size=args.synthetic_vocabulary_size,
             )
             prefill_steps = math.ceil(
                 concurrency * args.prompt_tokens / args.chunked_prefill_size
@@ -203,6 +220,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 concurrency=concurrency,
                 prompt_tokens=args.prompt_tokens,
                 chunked_prefill_size=args.chunked_prefill_size,
+                prompt_seed=args.prompt_seed,
+                synthetic_vocabulary_size=args.synthetic_vocabulary_size,
                 phase="prefill",
                 steps=prefill_steps,
                 output=prefill_path,
@@ -225,6 +244,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 concurrency=concurrency,
                 prompt_tokens=args.prompt_tokens,
                 chunked_prefill_size=args.chunked_prefill_size,
+                prompt_seed=args.prompt_seed,
+                synthetic_vocabulary_size=args.synthetic_vocabulary_size,
                 phase="decode",
                 steps=args.decode_steps,
                 output=decode_path,
@@ -238,7 +259,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             )
 
     result = {
-        "format": "tokenspeed_logical_rank_profile_v1",
+        "format": "tokenspeed_logical_rank_profile_v2",
         "status": "passed",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "hardware": {
@@ -276,6 +297,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "concurrencies": list(concurrencies),
             "chunked_prefill_size": args.chunked_prefill_size,
             "decode_profile_steps": args.decode_steps,
+            "prompt_source": "deterministic varied synthetic token IDs",
+            "prompt_seed": args.prompt_seed,
+            "synthetic_vocabulary_size": args.synthetic_vocabulary_size,
+            "decode_input": "deterministic rank-local token ID 1",
         },
         "model": loaded_model,
         "runs": runs,
@@ -320,6 +345,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--chunked-prefill-size", type=int, default=8192)
     parser.add_argument("--cache-gib", type=float, default=32.0)
     parser.add_argument("--decode-steps", type=int, default=64)
+    parser.add_argument("--prompt-seed", type=int, default=DEFAULT_PROMPT_SEED)
+    parser.add_argument(
+        "--synthetic-vocabulary-size",
+        type=int,
+        default=DEFAULT_SYNTHETIC_VOCAB_SIZE,
+    )
     return parser.parse_args()
 
 

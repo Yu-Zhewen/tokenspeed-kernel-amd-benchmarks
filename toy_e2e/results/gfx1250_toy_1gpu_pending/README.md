@@ -39,9 +39,12 @@
 | Attention / dense / MoE / EP | TP8 / TP8 / TP8 / EP1 required |
 | KV cache | FP8 E4M3, capacity unavailable |
 | Prefix cache / host KV | disabled / disabled required |
-| Sampling | deterministic token substitute; no HTTP sampler |
-| Performance measurement | complete eager scheduler run plus 20 unprofiled decode-graph replays |
-| Hotspot measurement | separate eager PyTorch/roctracer run |
+| Sampling | rank-local greedy, `ignore_eos=true` |
+| Prompt source | deterministic varied IDs, seed 7, vocabulary range 160,000 |
+| Warmup / measured requests | C1: 1 / 3; C16: 16 / 48 |
+| Decode graphs / scheduling | buckets 1/2/4/8/16; depth-1 dispatch/commit overlap |
+| Performance measurement | complete rolling `ModelExecutor` CUDA-graph workload |
+| Hotspot measurement | separate eager PyTorch/roctracer run; varied prompts and deterministic decode input ID 1 |
 
 One physical gfx1250 GPU must execute logical TP8 rank 0. Rank-spanning
 collectives remain local substitutes. FFM or AM output must not be entered as
@@ -61,8 +64,14 @@ physical performance.
 | 1 | unavailable | unavailable | unavailable | unavailable | unavailable | physical gfx1250 pending |
 | 16 | unavailable | unavailable | unavailable | unavailable | unavailable | physical gfx1250 pending |
 
-Primary decode will be the static first full decode batch after prefill.
-Steady capacity will be `concurrency / mean graph latency`.
+Primary decode will be request TPOT from the complete rolling graph workload.
+Steady capacity will be `concurrency / mean rolling decode-step latency` after
+the first decode transition.
+
+| C | Decode input context | Resulting context | Step p50 / p90 | Samples |
+|---:|---:|---:|---:|---:|
+| 1 | 4097–5119 required | 4098–5120 required | unavailable | unavailable |
+| 16 | 4097–5119 required | 4098–5120 required | unavailable | unavailable |
 
 ## Stage hotspot summary
 
@@ -104,8 +113,9 @@ python3 toy_e2e/benchmark_logical_rank.py \
   --container-image "<physical-gfx1250-image-and-ID>" \
   --prompt-tokens 4096 --output-tokens 1024 \
   --concurrency 1 16 --chunked-prefill-size 8192 --cache-gib 32 \
-  --warmup-output-tokens 2 --profile-output-tokens 8 \
-  --decode-graph-replays 20 --output result.json
+  --warmup-waves 1 --measurement-waves 3 \
+  --prompt-seed 7 --synthetic-vocabulary-size 160000 \
+  --output result.json
 ```
 
 ### Stage profiles
@@ -116,20 +126,30 @@ python3 toy_e2e/scripts/profile_logical_rank_stages.py \
   --checkpoint /data/models/kimi-k3-tp8ep1-rank0 \
   --load-format raw-rank-state \
   --expected-arch gfx1250 \
-  --output-dir /data/results/kimi-k3-toy-1gpu-gfx1250-0b1061eb/eager-profile \
+  --output-dir /data/results/kimi-k3-toy-1gpu-gfx1250-0b1061eb-rolling/eager-profile \
   --tokenspeed-revision 0b1061eb9fe1df36a4e48e5c9c291cd753af9e89 \
   --model-revision eaf5a944bfc8c57438bbce226feef9f6bdbdaae1 \
   --container-image "<physical-gfx1250-image-and-ID>" \
   --prompt-tokens 4096 --concurrency 1 16 \
-  --chunked-prefill-size 8192 --cache-gib 32 --decode-steps 64
+  --chunked-prefill-size 8192 --cache-gib 32 \
+  --prompt-seed 7 --synthetic-vocabulary-size 160000 \
+  --decode-steps 64
 ```
 
 ### Hotspot aggregation
 
 ```bash
 python3 toy_e2e/scripts/summarize_gpu_hotspots.py \
-  --input /data/results/kimi-k3-toy-1gpu-gfx1250-0b1061eb/eager-profile \
-  --top-k 15 --csv-dir hotspots/csv --output hotspots/hotspots.json
+  --input /data/results/kimi-k3-toy-1gpu-gfx1250-0b1061eb-rolling/eager-profile \
+  --top-k 15 \
+  --csv-dir toy_e2e/results/gfx1250_toy_1gpu_pending/hotspots/csv \
+  --output toy_e2e/results/gfx1250_toy_1gpu_pending/hotspots/hotspots.json
+
+python3 toy_e2e/scripts/update_result_readme_hotspots.py \
+  --readme toy_e2e/results/gfx1250_toy_1gpu_pending/README.md \
+  --hotspots toy_e2e/results/gfx1250_toy_1gpu_pending/hotspots/hotspots.json \
+  --csv-dir toy_e2e/results/gfx1250_toy_1gpu_pending/hotspots/csv \
+  --profile-manifest /data/results/kimi-k3-toy-1gpu-gfx1250-0b1061eb-rolling/eager-profile/profile_manifest.json
 ```
 
 See [`../../RUNBOOK.md`](../../RUNBOOK.md), section 4, for physical setup,

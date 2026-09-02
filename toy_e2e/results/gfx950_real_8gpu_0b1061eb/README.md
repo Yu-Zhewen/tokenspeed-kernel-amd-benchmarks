@@ -40,6 +40,9 @@
 | KV cache | FP8 E4M3, 3,197,056 scheduler-visible tokens |
 | Prefix cache / host KV | disabled / disabled |
 | Sampling | greedy streaming, `ignore_eos=true` |
+| Prompt source | EvalScope random text, seed 1, exact 4096-token re-encode |
+| Warmup / measured requests | C1: 1 / 3; C16: 16 / 48 |
+| Decode graphs / scheduling | buckets 1/2/4/8/16; production overlap scheduler |
 | Performance measurement | graph decode, eager prefill, EvalScope OpenAI completions |
 | Hotspot measurement | separate otherwise-matched fully eager server |
 
@@ -67,6 +70,11 @@ disabled. Those semantically invalid fields are intentionally absent from
 Primary decode is request-level TPOT. Overall output is all completed output
 tokens divided by measured wall time, including prefill and wave boundaries.
 Steady capacity is EvalScope's final 30-second completion window.
+
+The toy result now matches graph buckets, request counts, warmup waves, and
+rolling 4K/1K execution. It does not match prompt text, physical collectives,
+HTTP, or full-model MoE semantics, so the two measurements remain diagnostic
+rather than interchangeable.
 
 ## Stage hotspot summary
 

@@ -103,15 +103,19 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
   --concurrency 1 16 \
   --chunked-prefill-size 8192 \
   --cache-gib 32 \
-  --warmup-output-tokens 2 \
-  --profile-output-tokens 8 \
-  --decode-graph-replays 20 \
+  --warmup-waves 1 \
+  --measurement-waves 3 \
+  --prompt-seed 7 \
+  --synthetic-vocabulary-size 160000 \
   --output "$RESULT_DIR/result.json" \
   2>&1 | tee "$RESULT_DIR/run.log"
 ```
 
 Require `status: passed`, gfx950, one physical rank, logical TP8 rank 0,
-93 layers, 896 experts, and full C1/C16 graph batches.
+93 layers, 896 experts, graph captures for 1/2/4/8/16, C1 and C16 exact graph
+buckets, and rolling decode-input contexts 4097–5119 ending at context 5120.
+The harness runs a complete 4K/1K warmup wave before three measured
+closed-loop waves, matching the real request counts.
 
 ### 2.3 Stage-separated kernel hotspots
 
@@ -134,6 +138,8 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/profile_logical_rank_stages.py" \
   --concurrency 1 16 \
   --chunked-prefill-size 8192 \
   --cache-gib 32 \
+  --prompt-seed 7 \
+  --synthetic-vocabulary-size 160000 \
   --decode-steps 64
 
 python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/summarize_gpu_hotspots.py" \
@@ -141,9 +147,18 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/summarize_gpu_hotspots.py" \
   --top-k 15 \
   --csv-dir "$RESULT_DIR/hotspots/csv" \
   --output "$RESULT_DIR/hotspots/hotspots.json"
+
+python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/update_result_readme_hotspots.py" \
+  --readme "$RESULT_DIR/README.md" \
+  --hotspots "$RESULT_DIR/hotspots/hotspots.json" \
+  --csv-dir "$RESULT_DIR/hotspots/csv" \
+  --profile-manifest "$RAW_PROFILE_DIR/profile_manifest.json"
 ```
 
 Require four traces: C1/C16 × `EXTEND`/`DECODE`, each with rank count 1.
+The eager profiler uses the same varied prompts as performance collection;
+its bare-runner decode input is deterministic token ID 1 because sampling is
+outside this attribution-only path.
 
 ## 3. GFX950 real 8-GPU TP8/EP1
 
@@ -350,7 +365,7 @@ directory:
 
 ```bash
 export RESULT_DIR="$BENCHMARKS_ROOT/toy_e2e/results/gfx1250_toy_1gpu_${TS_SHORT_SHA}"
-export RAW_PROFILE_DIR="/data/results/kimi-k3-toy-1gpu-gfx1250-${TS_SHORT_SHA}/eager-profile"
+export RAW_PROFILE_DIR="/data/results/kimi-k3-toy-1gpu-gfx1250-${TS_SHORT_SHA}-rolling/eager-profile"
 mkdir -p "$RESULT_DIR"
 set -o pipefail
 
@@ -366,9 +381,10 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/benchmark_logical_rank.py" \
   --concurrency 1 16 \
   --chunked-prefill-size 8192 \
   --cache-gib 32 \
-  --warmup-output-tokens 2 \
-  --profile-output-tokens 8 \
-  --decode-graph-replays 20 \
+  --warmup-waves 1 \
+  --measurement-waves 3 \
+  --prompt-seed 7 \
+  --synthetic-vocabulary-size 160000 \
   --output "$RESULT_DIR/result.json" \
   2>&1 | tee "$RESULT_DIR/run.log"
 
@@ -385,6 +401,8 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/profile_logical_rank_stages.py" \
   --concurrency 1 16 \
   --chunked-prefill-size 8192 \
   --cache-gib 32 \
+  --prompt-seed 7 \
+  --synthetic-vocabulary-size 160000 \
   --decode-steps 64
 
 python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/summarize_gpu_hotspots.py" \
@@ -392,6 +410,12 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/summarize_gpu_hotspots.py" \
   --top-k 15 \
   --csv-dir "$RESULT_DIR/hotspots/csv" \
   --output "$RESULT_DIR/hotspots/hotspots.json"
+
+python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/update_result_readme_hotspots.py" \
+  --readme "$RESULT_DIR/README.md" \
+  --hotspots "$RESULT_DIR/hotspots/hotspots.json" \
+  --csv-dir "$RESULT_DIR/hotspots/csv" \
+  --profile-manifest "$RAW_PROFILE_DIR/profile_manifest.json"
 ```
 
 Copy [`RESULT_TEMPLATE.md`](RESULT_TEMPLATE.md) into the completed result

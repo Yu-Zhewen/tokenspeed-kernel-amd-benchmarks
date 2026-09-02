@@ -40,6 +40,9 @@
 | KV cache | `<dtype and capacity>` |
 | Prefix cache / host KV | `<enabled or disabled>` |
 | Sampling | `<greedy, ignore_eos=true>` |
+| Prompt source | `<EvalScope text or deterministic varied synthetic IDs>` |
+| Warmup / measured requests | `<C1 and C16 counts>` |
+| Decode graphs / scheduling | `<capture buckets and overlap mode>` |
 | Performance measurement | `<unprofiled scope>` |
 | Hotspot measurement | `<separate eager scope>` |
 
@@ -61,12 +64,22 @@ the physical TP ranks and collective implementation.
 | 1 | `<ms>` | `<ms>` | `<tok/s>` | `<tok/s>` | `<tok/s>` | `<scope>` |
 | 16 | `<ms>` | `<ms>` | `<tok/s>` | `<tok/s>` | `<tok/s>` | `<scope>` |
 
-For toy runs, the primary decode metric is the median and p90 of unprofiled
-CUDA-graph replays and steady capacity is `batch / mean graph latency`.
-Overall output is the complete eager scheduler workload. For real runs, the
-primary decode metric is request TPOT, overall output is measured service
-throughput, and steady capacity is EvalScope's final window. These scopes must
-be stated; do not present toy latency as physical TP8 service latency.
+For toy runs, the primary decode metric is request TPOT from the complete
+rolling `ModelExecutor` CUDA-graph workload. Steady capacity is
+`batch / mean rolling decode-step latency` after the first decode transition;
+the 4097-context sample separately preserves any prefill interference. Overall
+output includes eager prefill plus all 1024 generated tokens across three
+measured closed-loop waves. For real runs, primary decode is EvalScope request
+TPOT, overall output is measured service throughput, and steady capacity is
+EvalScope's final window. These scopes must be stated; do not present toy
+latency as physical TP8 service latency.
+
+For each toy result, report the sampled rolling decode contexts. A model
+forward consumes contexts 4097–5119; its last output completes context 5120.
+
+| C | Decode input context | Resulting context | Step p50 / p90 | Samples |
+|---:|---:|---:|---:|---:|
+| `<C>` | `<4097..5119 checkpoint>` | `<input + 1>` | `<ms>` | `<N>` |
 
 ## Stage hotspot summary
 
