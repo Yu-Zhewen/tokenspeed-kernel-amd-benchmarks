@@ -124,9 +124,15 @@ It then applies architecture-specific preprocessing and builds the full model.
 A quick physical-GPU validation is:
 
 ```bash
+EXPECTED_ARCH=gfx950  # use gfx1250 on MI450
 python3 toy_e2e/benchmark_logical_rank.py \
   --checkpoint /data/models/kimi-k3-tp8ep1-rank0 \
   --load-format raw-rank-state \
+  --expected-arch "$EXPECTED_ARCH" \
+  --tokenspeed-revision \
+    0b1061eb9fe1df36a4e48e5c9c291cd753af9e89 \
+  --model-revision \
+    eaf5a944bfc8c57438bbce226feef9f6bdbdaae1 \
   --prompt-tokens 128 \
   --output-tokens 2 \
   --concurrency 1 \

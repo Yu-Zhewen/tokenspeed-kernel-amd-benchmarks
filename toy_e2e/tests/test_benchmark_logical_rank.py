@@ -1,6 +1,13 @@
 import pytest
 
-from toy_e2e.benchmark_logical_rank import _hotspot_summary
+from toy_e2e.benchmark_logical_rank import _hotspot_summary, _summary
+
+
+def test_summary_reports_common_p90_metric():
+    result = _summary([1.0, 2.0, 3.0, 4.0, 5.0])
+
+    assert result["p50"] == 3.0
+    assert result["p90"] == pytest.approx(4.6)
 
 
 def test_hotspot_summary_sorts_modules_and_reports_model_share():

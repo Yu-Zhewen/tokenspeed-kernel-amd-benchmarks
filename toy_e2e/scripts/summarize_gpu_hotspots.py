@@ -118,11 +118,13 @@ def _category(kernel_name: str) -> str:
         marker in name
         for marker in (
             "gemm",
+            "gemv",
             "matmul",
             "rocblas",
             "hipblas",
             "mxfp",
             "mfma",
+            "cijk_",
         )
     ):
         return "gemm_or_quant"
@@ -343,7 +345,11 @@ def _write_csvs(result: dict[str, Any], output_dir: Path) -> None:
             f"{profile['setting']}_{str(profile['stage']).lower()}.csv"
         )
         with path.open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=fieldnames)
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=fieldnames,
+                lineterminator="\n",
+            )
             writer.writeheader()
             for kernel in profile["all_kernels"]:
                 writer.writerow(

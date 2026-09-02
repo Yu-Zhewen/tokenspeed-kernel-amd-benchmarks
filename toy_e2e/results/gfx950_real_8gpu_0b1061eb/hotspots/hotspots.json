@@ -1,6 +1,6 @@
 {
   "format": "tokenspeed_gpu_hotspots_v1",
-  "generated_at": "2026-09-02T11:02:36.735098+00:00",
+  "generated_at": "2026-09-02T13:42:16.230282+00:00",
   "profiles": [
     {
       "all_kernels": [
@@ -41,7 +41,7 @@
           "total_ms": 375.0926979999999
         },
         {
-          "avg_us": 293.9672241847827,
+          "avg_us": 293.96722418478265,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
           "gpu_time_pct": 7.469684786994341,
@@ -50,7 +50,7 @@
           "rank_max_ms": 27.295707000000014,
           "rank_mean_ms": 27.044984625000005,
           "rank_min_ms": 26.73170500000001,
-          "total_ms": 216.35987700000007
+          "total_ms": 216.35987700000004
         },
         {
           "avg_us": 314.75754528985505,
@@ -65,16 +65,16 @@
           "total_ms": 173.746165
         },
         {
-          "avg_us": 99.61258244680855,
+          "avg_us": 99.61258244680853,
           "calls": 1504,
           "calls_per_rank_mean": 188.0,
-          "gpu_time_pct": 5.172346192039119,
+          "gpu_time_pct": 5.172346192039118,
           "name": "_attn_res_rmsnorm_kernel",
           "rank_imbalance_pct": 1.7017204232002336,
           "rank_max_ms": 18.84682500000001,
           "rank_mean_ms": 18.7271655,
           "rank_min_ms": 18.528141,
-          "total_ms": 149.81732400000004
+          "total_ms": 149.817324
         },
         {
           "avg_us": 153.77514673913043,
@@ -101,16 +101,16 @@
           "total_ms": 100.63480400000002
         },
         {
-          "avg_us": 115.75728260869562,
+          "avg_us": 115.75728260869563,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
-          "gpu_time_pct": 2.941383738557403,
+          "gpu_time_pct": 2.9413837385574033,
           "name": "gluon_mxfp4_moe_stage2_reduce_kernel",
           "rank_imbalance_pct": 1.3664836563011233,
           "rank_max_ms": 10.68135,
           "rank_mean_ms": 10.649669999999999,
           "rank_min_ms": 10.535823999999996,
-          "total_ms": 85.19735999999997
+          "total_ms": 85.19735999999999
         },
         {
           "avg_us": 150.155,
@@ -137,16 +137,16 @@
           "total_ms": 42.532212
         },
         {
-          "avg_us": 68.7288641304348,
+          "avg_us": 68.72886413043479,
           "calls": 552,
           "calls_per_rank_mean": 69.0,
-          "gpu_time_pct": 1.3097964039516687,
+          "gpu_time_pct": 1.3097964039516685,
           "name": "_preprocess_intra_fwd_kernel",
           "rank_imbalance_pct": 2.9227008999051507,
           "rank_max_ms": 4.809408000000001,
           "rank_mean_ms": 4.742291625,
           "rank_min_ms": 4.670805,
-          "total_ms": 37.93833300000001
+          "total_ms": 37.938333
         },
         {
           "avg_us": 36.09282472826087,
@@ -173,16 +173,16 @@
           "total_ms": 26.359841
         },
         {
-          "avg_us": 54.27302604166665,
+          "avg_us": 54.27302604166666,
           "calls": 384,
           "calls_per_rank_mean": 48.0,
-          "gpu_time_pct": 0.7195165877985438,
+          "gpu_time_pct": 0.7195165877985439,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT192x256x64_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB1024_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT6_8_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW2_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA2_VWB8_WSGRA0_WSGRB0_WS64_WG32_8_1",
           "rank_imbalance_pct": 4.1857425913982045,
           "rank_max_ms": 2.6791720000000003,
           "rank_mean_ms": 2.60510525,
           "rank_min_ms": 2.5701289999999997,
-          "total_ms": 20.840841999999995
+          "total_ms": 20.840842
         },
         {
           "avg_us": 103.20913020833332,
@@ -293,19 +293,19 @@
           "total_ms": 11.261766000000001
         },
         {
-          "avg_us": 14.776177989130435,
+          "avg_us": 14.776177989130437,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
-          "gpu_time_pct": 0.37546155780261214,
+          "gpu_time_pct": 0.37546155780261226,
           "name": "_mxfp4_quantize_cdna4_scale_tiled_kernel",
           "rank_imbalance_pct": 2.6981590428998783,
           "rank_max_ms": 1.3806380000000007,
           "rank_mean_ms": 1.3594083750000001,
           "rank_min_ms": 1.343959,
-          "total_ms": 10.875267
+          "total_ms": 10.875267000000001
         },
         {
-          "avg_us": 14.63643206521739,
+          "avg_us": 14.636432065217388,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
           "gpu_time_pct": 0.37191062451475154,
@@ -314,7 +314,7 @@
           "rank_max_ms": 1.3509539999999998,
           "rank_mean_ms": 1.3465517499999997,
           "rank_min_ms": 1.3434349999999993,
-          "total_ms": 10.772414
+          "total_ms": 10.772413999999998
         },
         {
           "avg_us": 15.256580882352939,
@@ -353,7 +353,7 @@
           "total_ms": 7.703259
         },
         {
-          "avg_us": 10.338864247311829,
+          "avg_us": 10.338864247311827,
           "calls": 744,
           "calls_per_rank_mean": 93.0,
           "gpu_time_pct": 0.26556529423110625,
@@ -362,10 +362,10 @@
           "rank_max_ms": 0.9673159999999995,
           "rank_mean_ms": 0.9615143749999999,
           "rank_min_ms": 0.958634,
-          "total_ms": 7.692115
+          "total_ms": 7.692114999999999
         },
         {
-          "avg_us": 39.87158333333333,
+          "avg_us": 39.871583333333334,
           "calls": 192,
           "calls_per_rank_mean": 24.0,
           "gpu_time_pct": 0.26429579924381447,
@@ -374,7 +374,7 @@
           "rank_max_ms": 0.964462,
           "rank_mean_ms": 0.956918,
           "rank_min_ms": 0.951945,
-          "total_ms": 7.6553439999999995
+          "total_ms": 7.655344
         },
         {
           "avg_us": 13.674246376811595,
@@ -413,28 +413,28 @@
           "total_ms": 7.123114999999999
         },
         {
-          "avg_us": 35.656156249999995,
+          "avg_us": 35.65615625,
           "calls": 192,
           "calls_per_rank_mean": 24.0,
-          "gpu_time_pct": 0.23635309978216096,
+          "gpu_time_pct": 0.236353099782161,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x160x64_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA1024_LBSPPB128_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT8_5_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW8_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA8_VWB1_WSGRA0_WSGRB0_WS64_WG32_8_1",
           "rank_imbalance_pct": 1.7714332290093573,
           "rank_max_ms": 0.8639810000000001,
           "rank_mean_ms": 0.85574775,
           "rank_min_ms": 0.8488220000000002,
-          "total_ms": 6.845981999999999
+          "total_ms": 6.845982
         },
         {
           "avg_us": 9.039179347826087,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
-          "gpu_time_pct": 0.22968485908118852,
+          "gpu_time_pct": 0.22968485908118846,
           "name": "iris_reduce_symmetric_gluon_kernel",
           "rank_imbalance_pct": 14.694725677891398,
           "rank_max_ms": 0.9035150000000002,
           "rank_mean_ms": 0.8316045,
           "rank_min_ms": 0.7813129999999998,
-          "total_ms": 6.652836000000001
+          "total_ms": 6.652836
         },
         {
           "avg_us": 11.08793115942029,
@@ -449,19 +449,19 @@
           "total_ms": 6.120538
         },
         {
-          "avg_us": 10.551164855072463,
+          "avg_us": 10.551164855072464,
           "calls": 552,
           "calls_per_rank_mean": 69.0,
-          "gpu_time_pct": 0.20107822178535562,
+          "gpu_time_pct": 0.20107822178535567,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT192x128x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB512_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT6_4_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW2_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA2_VWB4_WSGRA0_WSGRB0_WS64_WG32_8_1",
           "rank_imbalance_pct": 2.6816188816297,
           "rank_max_ms": 0.7364579999999997,
           "rank_mean_ms": 0.728030375,
           "rank_min_ms": 0.7169350000000002,
-          "total_ms": 5.824242999999999
+          "total_ms": 5.824243
         },
         {
-          "avg_us": 4.6835263605442154,
+          "avg_us": 4.683526360544216,
           "calls": 1176,
           "calls_per_rank_mean": 147.0,
           "gpu_time_pct": 0.1901541640795842,
@@ -470,10 +470,10 @@
           "rank_max_ms": 0.7393389999999997,
           "rank_mean_ms": 0.6884783749999998,
           "rank_min_ms": 0.6265759999999999,
-          "total_ms": 5.507826999999997
+          "total_ms": 5.507826999999998
         },
         {
-          "avg_us": 4.799911971830985,
+          "avg_us": 4.799911971830984,
           "calls": 1136,
           "calls_per_rank_mean": 142.0,
           "gpu_time_pct": 0.18825094006706256,
@@ -482,31 +482,31 @@
           "rank_max_ms": 0.731581,
           "rank_mean_ms": 0.6815874999999998,
           "rank_min_ms": 0.6295460000000003,
-          "total_ms": 5.452699999999999
+          "total_ms": 5.452699999999998
         },
         {
-          "avg_us": 6.815331521739131,
+          "avg_us": 6.815331521739129,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
-          "gpu_time_pct": 0.17317705512046355,
+          "gpu_time_pct": 0.17317705512046352,
           "name": "_moe_sorting_stage1_kernel",
           "rank_imbalance_pct": 6.82604198813262,
           "rank_max_ms": 0.6547510000000001,
           "rank_mean_ms": 0.6270104999999999,
           "rank_min_ms": 0.6119509999999998,
-          "total_ms": 5.016084
+          "total_ms": 5.016083999999999
         },
         {
-          "avg_us": 6.4717038043478246,
+          "avg_us": 6.471703804347826,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
-          "gpu_time_pct": 0.16444550098171376,
+          "gpu_time_pct": 0.1644455009817138,
           "name": "_moe_sorting_stage4_kernel",
           "rank_imbalance_pct": 8.2968205654465,
           "rank_max_ms": 0.6187900000000001,
           "rank_mean_ms": 0.59539675,
           "rank_min_ms": 0.569391,
-          "total_ms": 4.763173999999999
+          "total_ms": 4.763174
         },
         {
           "avg_us": 5.29968070652174,
@@ -557,28 +557,28 @@
           "total_ms": 3.7260109999999997
         },
         {
-          "avg_us": 6.533267605633802,
+          "avg_us": 6.533267605633803,
           "calls": 568,
           "calls_per_rank_mean": 71.0,
-          "gpu_time_pct": 0.12811628376604292,
+          "gpu_time_pct": 0.12811628376604295,
           "name": "void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native::index_kernel_impl<at::native::OpaqueType<4> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_kernel_impl<at::native::OpaqueType<4> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1}>(long, at::native::gpu_index_kernel<at::native::index_kernel_impl<at::native::OpaqueType<4> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_kernel_impl<at::native::OpaqueType<4> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1})",
           "rank_imbalance_pct": 4.9838098399955575,
           "rank_max_ms": 0.477731,
           "rank_mean_ms": 0.463862,
           "rank_min_ms": 0.4546129999999998,
-          "total_ms": 3.7108959999999995
+          "total_ms": 3.710896
         },
         {
-          "avg_us": 4.400086250000001,
+          "avg_us": 4.40008625,
           "calls": 800,
           "calls_per_rank_mean": 100.0,
-          "gpu_time_pct": 0.12152810503987475,
+          "gpu_time_pct": 0.12152810503987474,
           "name": "_attnres_combine_kernel",
           "rank_imbalance_pct": 4.735816258147217,
           "rank_max_ms": 0.44730300000000006,
           "rank_mean_ms": 0.44000862500000004,
           "rank_min_ms": 0.42646500000000004,
-          "total_ms": 3.520069000000001
+          "total_ms": 3.5200690000000003
         },
         {
           "avg_us": 4.682020380434784,
@@ -653,16 +653,16 @@
           "total_ms": 3.067373
         },
         {
-          "avg_us": 4.160815217391304,
+          "avg_us": 4.160815217391305,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
-          "gpu_time_pct": 0.1057259979136519,
+          "gpu_time_pct": 0.10572599791365193,
           "name": "_dynamic_fp8_quantize_kernel",
           "rank_imbalance_pct": 6.813046147415759,
           "rank_max_ms": 0.394111,
           "rank_mean_ms": 0.38279500000000005,
           "rank_min_ms": 0.36803099999999983,
-          "total_ms": 3.06236
+          "total_ms": 3.0623600000000004
         },
         {
           "avg_us": 4.926923913043477,
@@ -689,16 +689,16 @@
           "total_ms": 2.663172
         },
         {
-          "avg_us": 4.754257246376812,
+          "avg_us": 4.754257246376811,
           "calls": 552,
           "calls_per_rank_mean": 69.0,
-          "gpu_time_pct": 0.09060398601885226,
+          "gpu_time_pct": 0.09060398601885224,
           "name": "void at::native::vectorized_elementwise_kernel<16, at::native::bitwise_not_kernel_cuda(at::TensorIteratorBase&)::{lambda(bool)#1}, std::array<char*, 2ul> >(int, at::native::bitwise_not_kernel_cuda(at::TensorIteratorBase&)::{lambda(bool)#1}, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 19.37546440070877,
           "rank_max_ms": 0.355055,
           "rank_mean_ms": 0.32804374999999997,
           "rank_min_ms": 0.29149499999999995,
-          "total_ms": 2.62435
+          "total_ms": 2.6243499999999997
         },
         {
           "avg_us": 4.73208152173913,
@@ -749,7 +749,7 @@
           "total_ms": 2.207697
         },
         {
-          "avg_us": 11.355343750000001,
+          "avg_us": 11.355343749999998,
           "calls": 192,
           "calls_per_rank_mean": 24.0,
           "gpu_time_pct": 0.07527089222929037,
@@ -758,7 +758,7 @@
           "rank_max_ms": 0.27629800000000004,
           "rank_mean_ms": 0.27252824999999997,
           "rank_min_ms": 0.26765900000000004,
-          "total_ms": 2.180226
+          "total_ms": 2.1802259999999998
         },
         {
           "avg_us": 10.202828125000002,
@@ -788,13 +788,13 @@
           "avg_us": 8.111140624999999,
           "calls": 192,
           "calls_per_rank_mean": 24.0,
-          "gpu_time_pct": 0.05376612150917879,
+          "gpu_time_pct": 0.05376612150917878,
           "name": "_rmsnorm_fused_parallel_kernel",
           "rank_imbalance_pct": 2.8982771252758615,
           "rank_max_ms": 0.19729999999999998,
           "rank_mean_ms": 0.19466737499999998,
           "rank_min_ms": 0.191658,
-          "total_ms": 1.557339
+          "total_ms": 1.5573389999999998
         },
         {
           "avg_us": 6.097567708333333,
@@ -809,16 +809,16 @@
           "total_ms": 1.170733
         },
         {
-          "avg_us": 5.480713541666667,
+          "avg_us": 5.480713541666666,
           "calls": 192,
           "calls_per_rank_mean": 24.0,
-          "gpu_time_pct": 0.036329873178379476,
+          "gpu_time_pct": 0.03632987317837947,
           "name": "_fp8_quantize_kernel",
           "rank_imbalance_pct": 10.88818080826989,
           "rank_max_ms": 0.13829799999999998,
           "rank_mean_ms": 0.13153712499999998,
           "rank_min_ms": 0.123976,
-          "total_ms": 1.052297
+          "total_ms": 1.0522969999999998
         },
         {
           "avg_us": 5.115895833333334,
@@ -845,16 +845,16 @@
           "total_ms": 0.901007
         },
         {
-          "avg_us": 54.43431249999999,
+          "avg_us": 54.4343125,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
-          "gpu_time_pct": 0.030068950795104823,
+          "gpu_time_pct": 0.030068950795104826,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x16x128_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA1024_LBSPPB256_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT4_1_MO40_NTn1_NTA4_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW4_SK3_SKFTR0_SKXCCM8_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA4_VWB1_WSGRA0_WSGRB0_WS64_WG64_4_1",
           "rank_imbalance_pct": 5.621454298701749,
           "rank_max_ms": 0.113039,
           "rank_mean_ms": 0.108868625,
           "rank_min_ms": 0.10691900000000001,
-          "total_ms": 0.8709489999999999
+          "total_ms": 0.870949
         },
         {
           "avg_us": 4.4057031250000005,
@@ -869,16 +869,16 @@
           "total_ms": 0.8458950000000001
         },
         {
-          "avg_us": 4.3711093750000005,
+          "avg_us": 4.371109375,
           "calls": 192,
           "calls_per_rank_mean": 24.0,
-          "gpu_time_pct": 0.02897466689971986,
+          "gpu_time_pct": 0.028974666899719857,
           "name": "_mla_rope_set_kv_buffer_kernel",
           "rank_imbalance_pct": 10.180481928572204,
           "rank_max_ms": 0.109217,
           "rank_mean_ms": 0.10490662499999999,
           "rank_min_ms": 0.09853699999999999,
-          "total_ms": 0.839253
+          "total_ms": 0.8392529999999999
         },
         {
           "avg_us": 10.3215625,
@@ -929,7 +929,7 @@
           "total_ms": 0.290146
         },
         {
-          "avg_us": 15.579187500000002,
+          "avg_us": 15.5791875,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
           "gpu_time_pct": 0.008605781920460779,
@@ -938,31 +938,31 @@
           "rank_max_ms": 0.032358,
           "rank_mean_ms": 0.031158375,
           "rank_min_ms": 0.029678,
-          "total_ms": 0.24926700000000002
+          "total_ms": 0.249267
         },
         {
-          "avg_us": 3.7558906249999997,
+          "avg_us": 3.755890625,
           "calls": 64,
           "calls_per_rank_mean": 8.0,
-          "gpu_time_pct": 0.00829886042153434,
+          "gpu_time_pct": 0.008298860421534342,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1}, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 9.322023321698836,
           "rank_max_ms": 0.030913,
           "rank_mean_ms": 0.030047125,
           "rank_min_ms": 0.028111999999999998,
-          "total_ms": 0.24037699999999998
+          "total_ms": 0.240377
         },
         {
-          "avg_us": 14.214124999999997,
+          "avg_us": 14.214125,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
-          "gpu_time_pct": 0.007851735524729357,
+          "gpu_time_pct": 0.00785173552472936,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1} const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 3.2362174949214277,
           "rank_max_ms": 0.028879,
           "rank_mean_ms": 0.02842825,
           "rank_min_ms": 0.027958999999999998,
-          "total_ms": 0.22742599999999996
+          "total_ms": 0.227426
         },
         {
           "avg_us": 3.1104285714285713,
@@ -1004,13 +1004,13 @@
           "avg_us": 3.403,
           "calls": 40,
           "calls_per_rank_mean": 5.0,
-          "gpu_time_pct": 0.004699454941942261,
+          "gpu_time_pct": 0.004699454941942259,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::BUnaryFunctor<int, int, int, at::native::binary_internal::div_floor_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int, int)#1}>, std::array<char*, 2ul> >(int, at::native::BUnaryFunctor<int, int, int, at::native::binary_internal::div_floor_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int, int)#1}>, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 12.694681163679121,
           "rank_max_ms": 0.017835,
           "rank_mean_ms": 0.017015,
           "rank_min_ms": 0.015674999999999998,
-          "total_ms": 0.13612000000000002
+          "total_ms": 0.13612
         },
         {
           "avg_us": 8.279125,
@@ -1037,16 +1037,16 @@
           "total_ms": 0.099504
         },
         {
-          "avg_us": 3.632333333333332,
+          "avg_us": 3.6323333333333334,
           "calls": 24,
           "calls_per_rank_mean": 3.0,
-          "gpu_time_pct": 0.0030096950045456826,
+          "gpu_time_pct": 0.003009695004545684,
           "name": "void rocprim::ROCPRIM_400200_NS::detail::trampoline_kernel<rocprim::ROCPRIM_400200_NS::detail::wrapped_scan_config<rocprim::ROCPRIM_400200_NS::default_config, int>, (rocprim::ROCPRIM_400200_NS::detail::target_arch)950, rocprim::ROCPRIM_400200_NS::detail::scan_impl<(rocprim::ROCPRIM_400200_NS::detail::lookback_scan_determinism)0, false, false, rocprim::ROCPRIM_400200_NS::default_config, int const*, int*, int, std::plus<int>, int>(void*, unsigned long&, int const*, int*, int, unsigned long, std::plus<int>, ihipStream_t*, bool)::{lambda(auto:1, auto:2)#1}::operator()<std::integral_constant<bool, false>, std::integral_constant<bool, true> >(std::integral_constant<bool, false>, std::integral_constant<bool, true>) const::{lambda(auto:1)#2}, rocprim::ROCPRIM_400200_NS::detail::default_config_selector>(rocprim::ROCPRIM_400200_NS::detail::scan_impl<(rocprim::ROCPRIM_400200_NS::detail::lookback_scan_determinism)0, false, false, rocprim::ROCPRIM_400200_NS::default_config, int const*, int*, int, std::plus<int>, int>(void*, unsigned long&, int const*, int*, int, unsigned long, std::plus<int>, ihipStream_t*, bool)::{lambda(auto:1, auto:2)#1}::operator()<std::integral_constant<bool, false>, std::integral_constant<bool, true> >(std::integral_constant<bool, false>, std::integral_constant<bool, true>) const::{lambda(auto:1)#2})",
           "rank_imbalance_pct": 17.986601817013856,
           "rank_max_ms": 0.011477000000000001,
           "rank_mean_ms": 0.010897,
           "rank_min_ms": 0.009517000000000001,
-          "total_ms": 0.08717599999999998
+          "total_ms": 0.087176
         },
         {
           "avg_us": 4.944062499999999,
@@ -1073,7 +1073,7 @@
           "total_ms": 0.069984
         },
         {
-          "avg_us": 4.336499999999999,
+          "avg_us": 4.3365,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
           "gpu_time_pct": 0.002395437714455787,
@@ -1082,7 +1082,7 @@
           "rank_max_ms": 0.009078,
           "rank_mean_ms": 0.008673,
           "rank_min_ms": 0.008438,
-          "total_ms": 0.06938399999999999
+          "total_ms": 0.069384
         },
         {
           "avg_us": 8.408999999999999,
@@ -1109,28 +1109,28 @@
           "total_ms": 0.066104
         },
         {
-          "avg_us": 3.884,
+          "avg_us": 3.8840000000000003,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
-          "gpu_time_pct": 0.0021454813981197454,
+          "gpu_time_pct": 0.002145481398119746,
           "name": "_expand_page_table_kernel",
           "rank_imbalance_pct": 13.903192584963968,
           "rank_max_ms": 0.008278,
           "rank_mean_ms": 0.007768000000000001,
           "rank_min_ms": 0.0071979999999999995,
-          "total_ms": 0.062144
+          "total_ms": 0.062144000000000005
         },
         {
-          "avg_us": 3.604,
+          "avg_us": 3.6039999999999996,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
-          "gpu_time_pct": 0.001990812296298549,
+          "gpu_time_pct": 0.0019908122962985484,
           "name": "void rocprim::ROCPRIM_400200_NS::detail::trampoline_kernel<rocprim::ROCPRIM_400200_NS::detail::wrapped_scan_config<rocprim::ROCPRIM_400200_NS::default_config, long>, (rocprim::ROCPRIM_400200_NS::detail::target_arch)950, rocprim::ROCPRIM_400200_NS::detail::scan_impl<(rocprim::ROCPRIM_400200_NS::detail::lookback_scan_determinism)0, false, false, rocprim::ROCPRIM_400200_NS::default_config, long const*, long*, long, std::plus<long>, long>(void*, unsigned long&, long const*, long*, long, unsigned long, std::plus<long>, ihipStream_t*, bool)::{lambda(auto:1, auto:2)#1}::operator()<std::integral_constant<bool, false>, std::integral_constant<bool, true> >(std::integral_constant<bool, false>, std::integral_constant<bool, true>) const::{lambda(auto:1)#2}, rocprim::ROCPRIM_400200_NS::detail::default_config_selector>(rocprim::ROCPRIM_400200_NS::detail::scan_impl<(rocprim::ROCPRIM_400200_NS::detail::lookback_scan_determinism)0, false, false, rocprim::ROCPRIM_400200_NS::default_config, long const*, long*, long, std::plus<long>, long>(void*, unsigned long&, long const*, long*, long, unsigned long, std::plus<long>, ihipStream_t*, bool)::{lambda(auto:1, auto:2)#1}::operator()<std::integral_constant<bool, false>, std::integral_constant<bool, true> >(std::integral_constant<bool, false>, std::integral_constant<bool, true>) const::{lambda(auto:1)#2})",
           "rank_imbalance_pct": 27.192008879023284,
           "rank_max_ms": 0.008077999999999998,
           "rank_mean_ms": 0.007207999999999999,
           "rank_min_ms": 0.006118,
-          "total_ms": 0.057664
+          "total_ms": 0.05766399999999999
         },
         {
           "avg_us": 2.2823333333333333,
@@ -1145,28 +1145,28 @@
           "total_ms": 0.054776000000000005
         },
         {
-          "avg_us": 5.654000000000001,
+          "avg_us": 5.654,
           "calls": 8,
           "calls_per_rank_mean": 1.0,
-          "gpu_time_pct": 0.0015616055387447276,
+          "gpu_time_pct": 0.0015616055387447274,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 4, at::native::gpu_kernel_impl<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1} const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 21.931376016979122,
           "rank_max_ms": 0.005999,
           "rank_mean_ms": 0.005654,
           "rank_min_ms": 0.004759,
-          "total_ms": 0.04523200000000001
+          "total_ms": 0.045232
         },
         {
           "avg_us": 5.514,
           "calls": 8,
           "calls_per_rank_mean": 1.0,
-          "gpu_time_pct": 0.0015229382632894284,
+          "gpu_time_pct": 0.0015229382632894282,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 4, at::native::gpu_kernel_impl<at::native::CUDAFunctor_add<long> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<long> const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl<at::native::CUDAFunctor_add<long> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<long> const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 18.861080885019952,
           "rank_max_ms": 0.005959,
           "rank_mean_ms": 0.005514,
           "rank_min_ms": 0.004919,
-          "total_ms": 0.044112000000000005
+          "total_ms": 0.044112
         },
         {
           "avg_us": 5.1339999999999995,
@@ -1265,28 +1265,28 @@
           "total_ms": 0.031992
         },
         {
-          "avg_us": 3.9741249999999995,
+          "avg_us": 3.9741250000000004,
           "calls": 8,
           "calls_per_rank_mean": 1.0,
-          "gpu_time_pct": 0.0010976327576342215,
+          "gpu_time_pct": 0.0010976327576342217,
           "name": "triton_poi_fused_bitwise_and_bitwise_not_bitwise_or_ge_lt_1",
           "rank_imbalance_pct": 13.084641273236247,
           "rank_max_ms": 0.004239,
           "rank_mean_ms": 0.003974125,
           "rank_min_ms": 0.0037189999999999996,
-          "total_ms": 0.031792999999999995
+          "total_ms": 0.031793
         },
         {
-          "avg_us": 3.9690000000000003,
+          "avg_us": 3.9689999999999994,
           "calls": 8,
           "calls_per_rank_mean": 1.0,
-          "gpu_time_pct": 0.0010962172591577333,
+          "gpu_time_pct": 0.0010962172591577328,
           "name": "void at::native::(anonymous namespace)::indexSelectSmallIndex<int, long, unsigned int, 1, 1, -2>(at::cuda::detail::TensorInfo<int, unsigned int>, at::cuda::detail::TensorInfo<int const, unsigned int>, at::cuda::detail::TensorInfo<long const, unsigned int>, int, int, unsigned int, long)",
           "rank_imbalance_pct": 25.19526329050139,
           "rank_max_ms": 0.004319,
           "rank_mean_ms": 0.0039689999999999994,
           "rank_min_ms": 0.003319,
-          "total_ms": 0.031752
+          "total_ms": 0.031751999999999996
         },
         {
           "avg_us": 3.9441249999999997,
@@ -1325,19 +1325,19 @@
           "total_ms": 0.028912
         },
         {
-          "avg_us": 3.304,
+          "avg_us": 3.3040000000000003,
           "calls": 8,
           "calls_per_rank_mean": 1.0,
-          "gpu_time_pct": 0.0009125477007450617,
+          "gpu_time_pct": 0.0009125477007450619,
           "name": "compute_position_kernel",
           "rank_imbalance_pct": 43.583535108958834,
           "rank_max_ms": 0.003839,
           "rank_mean_ms": 0.003304,
           "rank_min_ms": 0.002399,
-          "total_ms": 0.026431999999999997
+          "total_ms": 0.026432
         },
         {
-          "avg_us": 3.1939999999999995,
+          "avg_us": 3.194,
           "calls": 8,
           "calls_per_rank_mean": 1.0,
           "gpu_time_pct": 0.0008821662700301837,
@@ -1346,31 +1346,31 @@
           "rank_max_ms": 0.003399,
           "rank_mean_ms": 0.003194,
           "rank_min_ms": 0.0027589999999999997,
-          "total_ms": 0.025551999999999995
+          "total_ms": 0.025552
         },
         {
-          "avg_us": 3.0839999999999996,
+          "avg_us": 3.084,
           "calls": 8,
           "calls_per_rank_mean": 1.0,
-          "gpu_time_pct": 0.0008517848393153057,
+          "gpu_time_pct": 0.0008517848393153059,
           "name": "triton_poi_fused_add_bitwise_and_bitwise_not_bitwise_or_ge_lt_mul_sub_0",
           "rank_imbalance_pct": 53.17769130998703,
           "rank_max_ms": 0.003839,
           "rank_mean_ms": 0.003084,
           "rank_min_ms": 0.002199,
-          "total_ms": 0.024671999999999996
+          "total_ms": 0.024672
         },
         {
-          "avg_us": 3.0091249999999996,
+          "avg_us": 3.009125,
           "calls": 8,
           "calls_per_rank_mean": 1.0,
-          "gpu_time_pct": 0.0008311047518173377,
+          "gpu_time_pct": 0.0008311047518173378,
           "name": "void at::native::(anonymous namespace)::searchsorted_cuda_kernel<long, long>(long*, long const*, long const*, long const*, long, long, long, bool, bool)",
           "rank_imbalance_pct": 41.207992356582054,
           "rank_max_ms": 0.003679,
           "rank_mean_ms": 0.003009125,
           "rank_min_ms": 0.002439,
-          "total_ms": 0.024072999999999997
+          "total_ms": 0.024073
         },
         {
           "avg_us": 2.9589999999999996,
@@ -1417,9 +1417,9 @@
       "profile_id": "20260902-105944",
       "rank_count": 8,
       "rank_kernel_ms": {
-        "imbalance_pct": 0.7535608452295663,
-        "max": 363.17456599999974,
-        "mean": 362.06326499999994,
+        "imbalance_pct": 0.753560845229629,
+        "max": 363.17456599999997,
+        "mean": 362.063265,
         "min": 360.446199,
         "total": 2896.50612
       },
@@ -1438,7 +1438,7 @@
         },
         {
           "kernel_calls": 5558,
-          "kernel_ms": 362.4119930000001,
+          "kernel_ms": 362.411993,
           "rank": 2,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill/20260902-105944-TP2.trace.json.gz"
         },
@@ -1450,25 +1450,25 @@
         },
         {
           "kernel_calls": 5558,
-          "kernel_ms": 362.90788500000014,
+          "kernel_ms": 362.907885,
           "rank": 4,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill/20260902-105944-TP4.trace.json.gz"
         },
         {
           "kernel_calls": 5558,
-          "kernel_ms": 361.0598369999999,
+          "kernel_ms": 361.0598370000001,
           "rank": 5,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill/20260902-105944-TP5.trace.json.gz"
         },
         {
           "kernel_calls": 5558,
-          "kernel_ms": 362.1324849999999,
+          "kernel_ms": 362.132485,
           "rank": 6,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill/20260902-105944-TP6.trace.json.gz"
         },
         {
           "kernel_calls": 5558,
-          "kernel_ms": 363.17456599999974,
+          "kernel_ms": 363.17456599999997,
           "rank": 7,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/prefill/20260902-105944-TP7.trace.json.gz"
         }
@@ -1502,16 +1502,16 @@
           "total_ms": 620.2475849999998
         },
         {
-          "avg_us": 39.26404905660384,
-          "calls": 12720,
-          "calls_per_rank_mean": 1590.0,
-          "gpu_time_pct": 17.242798161255077,
-          "name": "other",
-          "rank_imbalance_pct": 1.4577420495627649,
-          "rank_max_ms": 62.91535700000013,
-          "rank_mean_ms": 62.429838000000096,
-          "rank_min_ms": 62.00529100000021,
-          "total_ms": 499.43870400000077
+          "avg_us": 56.92759023178809,
+          "calls": 8456,
+          "calls_per_rank_mean": 1057.0,
+          "gpu_time_pct": 16.619322834367086,
+          "name": "gemm_or_quant",
+          "rank_imbalance_pct": 1.9303996288354384,
+          "rank_max_ms": 60.782750000000064,
+          "rank_mean_ms": 60.172462875000015,
+          "rank_min_ms": 59.62118099999992,
+          "total_ms": 481.3797030000001
         },
         {
           "avg_us": 112.95348976982098,
@@ -1538,16 +1538,16 @@
           "total_ms": 206.92750399999983
         },
         {
-          "avg_us": 57.950335144927564,
-          "calls": 2208,
-          "calls_per_rank_mean": 276.0,
-          "gpu_time_pct": 4.417540812929477,
-          "name": "gemm_or_quant",
-          "rank_imbalance_pct": 3.0814116973289876,
-          "rank_max_ms": 16.20536400000001,
-          "rank_mean_ms": 15.994292500000006,
-          "rank_min_ms": 15.712513999999997,
-          "total_ms": 127.95434000000006
+          "avg_us": 22.560775803461034,
+          "calls": 6472,
+          "calls_per_rank_mean": 809.0,
+          "gpu_time_pct": 5.041016139817437,
+          "name": "other",
+          "rank_imbalance_pct": 1.2723768850682422,
+          "rank_max_ms": 18.33888599999997,
+          "rank_mean_ms": 18.251667624999975,
+          "rank_min_ms": 18.106655999999987,
+          "total_ms": 146.0133409999998
         },
         {
           "avg_us": 5.900423578751164,
@@ -1562,7 +1562,7 @@
           "total_ms": 50.649235999999995
         },
         {
-          "avg_us": 8.710255395683461,
+          "avg_us": 8.71025539568346,
           "calls": 2224,
           "calls_per_rank_mean": 278.0,
           "gpu_time_pct": 0.6687922344179276,
@@ -1571,7 +1571,7 @@
           "rank_max_ms": 2.4384600000000014,
           "rank_mean_ms": 2.421451000000002,
           "rank_min_ms": 2.3921070000000024,
-          "total_ms": 19.37160800000002
+          "total_ms": 19.371608000000016
         },
         {
           "avg_us": 8.408999999999999,
@@ -1624,7 +1624,7 @@
           "total_ms": 375.0926979999999
         },
         {
-          "avg_us": 293.9672241847827,
+          "avg_us": 293.96722418478265,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
           "gpu_time_pct": 7.469684786994341,
@@ -1633,7 +1633,7 @@
           "rank_max_ms": 27.295707000000014,
           "rank_mean_ms": 27.044984625000005,
           "rank_min_ms": 26.73170500000001,
-          "total_ms": 216.35987700000007
+          "total_ms": 216.35987700000004
         },
         {
           "avg_us": 314.75754528985505,
@@ -1648,16 +1648,16 @@
           "total_ms": 173.746165
         },
         {
-          "avg_us": 99.61258244680855,
+          "avg_us": 99.61258244680853,
           "calls": 1504,
           "calls_per_rank_mean": 188.0,
-          "gpu_time_pct": 5.172346192039119,
+          "gpu_time_pct": 5.172346192039118,
           "name": "_attn_res_rmsnorm_kernel",
           "rank_imbalance_pct": 1.7017204232002336,
           "rank_max_ms": 18.84682500000001,
           "rank_mean_ms": 18.7271655,
           "rank_min_ms": 18.528141,
-          "total_ms": 149.81732400000004
+          "total_ms": 149.817324
         },
         {
           "avg_us": 153.77514673913043,
@@ -1684,16 +1684,16 @@
           "total_ms": 100.63480400000002
         },
         {
-          "avg_us": 115.75728260869562,
+          "avg_us": 115.75728260869563,
           "calls": 736,
           "calls_per_rank_mean": 92.0,
-          "gpu_time_pct": 2.941383738557403,
+          "gpu_time_pct": 2.9413837385574033,
           "name": "gluon_mxfp4_moe_stage2_reduce_kernel",
           "rank_imbalance_pct": 1.3664836563011233,
           "rank_max_ms": 10.68135,
           "rank_mean_ms": 10.649669999999999,
           "rank_min_ms": 10.535823999999996,
-          "total_ms": 85.19735999999997
+          "total_ms": 85.19735999999999
         },
         {
           "avg_us": 150.155,
@@ -1720,16 +1720,16 @@
           "total_ms": 42.532212
         },
         {
-          "avg_us": 68.7288641304348,
+          "avg_us": 68.72886413043479,
           "calls": 552,
           "calls_per_rank_mean": 69.0,
-          "gpu_time_pct": 1.3097964039516687,
+          "gpu_time_pct": 1.3097964039516685,
           "name": "_preprocess_intra_fwd_kernel",
           "rank_imbalance_pct": 2.9227008999051507,
           "rank_max_ms": 4.809408000000001,
           "rank_mean_ms": 4.742291625,
           "rank_min_ms": 4.670805,
-          "total_ms": 37.93833300000001
+          "total_ms": 37.938333
         },
         {
           "avg_us": 36.09282472826087,
@@ -1756,23 +1756,23 @@
           "total_ms": 26.359841
         },
         {
-          "avg_us": 54.27302604166665,
+          "avg_us": 54.27302604166666,
           "calls": 384,
           "calls_per_rank_mean": 48.0,
-          "gpu_time_pct": 0.7195165877985438,
+          "gpu_time_pct": 0.7195165877985439,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT192x256x64_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB1024_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT6_8_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW2_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA2_VWB8_WSGRA0_WSGRB0_WS64_WG32_8_1",
           "rank_imbalance_pct": 4.1857425913982045,
           "rank_max_ms": 2.6791720000000003,
           "rank_mean_ms": 2.60510525,
           "rank_min_ms": 2.5701289999999997,
-          "total_ms": 20.840841999999995
+          "total_ms": 20.840842
         }
       ]
     },
     {
       "all_kernels": [
         {
-          "avg_us": 415.8835654400737,
+          "avg_us": 415.88356544007377,
           "calls": 43345,
           "calls_per_rank_mean": 5418.125,
           "gpu_time_pct": 34.06364858405093,
@@ -1781,25 +1781,25 @@
           "rank_max_ms": 2581.4813499999996,
           "rank_mean_ms": 2253.3091429999995,
           "rank_min_ms": 630.2231529999875,
-          "total_ms": 18026.473143999992
+          "total_ms": 18026.473143999996
         },
         {
-          "avg_us": 3195.490205530497,
+          "avg_us": 3195.4902055304965,
           "calls": 5099,
           "calls_per_rank_mean": 637.375,
-          "gpu_time_pct": 30.78951873321137,
+          "gpu_time_pct": 30.789518733211356,
           "name": "iris_stage_one_shot_allreduce_kernel",
           "rank_imbalance_pct": 109.57069440994577,
           "rank_max_ms": 2332.6984709999997,
           "rank_mean_ms": 2036.7255697500002,
           "rank_min_ms": 101.04412100000012,
-          "total_ms": 16293.804558000003
+          "total_ms": 16293.804558000002
         },
         {
           "avg_us": 264.5756548151934,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 23.454854383705463,
+          "gpu_time_pct": 23.454854383705456,
           "name": "iris_reduce_symmetric_gluon_kernel",
           "rank_imbalance_pct": 85.30102520617999,
           "rank_max_ms": 1773.5873549999947,
@@ -1811,7 +1811,7 @@
           "avg_us": 17.650264718420893,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 1.564710816244923,
+          "gpu_time_pct": 1.5647108162449226,
           "name": "_latent_input_decode_kernel",
           "rank_imbalance_pct": 4.899139486967509,
           "rank_max_ms": 104.83793799999935,
@@ -1823,19 +1823,19 @@
           "avg_us": 17.305387980159157,
           "calls": 43345,
           "calls_per_rank_mean": 5418.125,
-          "gpu_time_pct": 1.417427144886161,
+          "gpu_time_pct": 1.4174271448861604,
           "name": "_linear_attnres_partials_kernel",
           "rank_imbalance_pct": 15.804400116538044,
           "rank_max_ms": 105.73281599999989,
           "rank_mean_ms": 93.76275524999983,
           "rank_min_ms": 90.91417499999963,
-          "total_ms": 750.1020419999987
+          "total_ms": 750.1020419999986
         },
         {
           "avg_us": 12.036136164044859,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 1.0670135968001841,
+          "gpu_time_pct": 1.0670135968001837,
           "name": "_warp_decode_precomputed_situ_stage1_kernel",
           "rank_imbalance_pct": 7.941168592910034,
           "rank_max_ms": 71.94838699999973,
@@ -1847,7 +1847,7 @@
           "avg_us": 11.000997279915687,
           "calls": 47425,
           "calls_per_rank_mean": 5928.125,
-          "gpu_time_pct": 0.98587032568395,
+          "gpu_time_pct": 0.9858703256839498,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x128_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR0_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB256_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT2_1_MO40_NTn1_NTA4_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR0_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW1_SK3_SKFTR0_SKXCCM8_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS64_WG16_4_4",
           "rank_imbalance_pct": 1.7783959150555482,
           "rank_max_ms": 65.61883300000004,
@@ -1859,7 +1859,7 @@
           "avg_us": 10.12441382103406,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.8975378027831012,
+          "gpu_time_pct": 0.897537802783101,
           "name": "_rowcta_gemv_add3_kernel",
           "rank_imbalance_pct": 11.409105814125967,
           "rank_max_ms": 61.98976399999928,
@@ -1871,7 +1871,7 @@
           "avg_us": 5.774803342285936,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.5119411745667317,
+          "gpu_time_pct": 0.5119411745667316,
           "name": "_warp_decode_stage2_fp8_mxfp4_kernel",
           "rank_imbalance_pct": 10.929815349616046,
           "rank_max_ms": 35.461388000000134,
@@ -1883,7 +1883,7 @@
           "avg_us": 5.2192056556782385,
           "calls": 50993,
           "calls_per_rank_mean": 6374.125,
-          "gpu_time_pct": 0.5029159051666602,
+          "gpu_time_pct": 0.5029159051666601,
           "name": "_attnres_combine_kernel",
           "rank_imbalance_pct": 9.808929978285539,
           "rank_max_ms": 34.1351440000001,
@@ -1895,7 +1895,7 @@
           "avg_us": 7.219051497754794,
           "calls": 35186,
           "calls_per_rank_mean": 4398.25,
-          "gpu_time_pct": 0.47998806215836276,
+          "gpu_time_pct": 0.47998806215836265,
           "name": "_kda_fused_decode_kernel",
           "rank_imbalance_pct": 6.6808859222956976,
           "rank_max_ms": 32.866501000000085,
@@ -1904,34 +1904,34 @@
           "total_ms": 254.00954600000017
         },
         {
-          "avg_us": 5.320577418254689,
+          "avg_us": 5.3205774182546905,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.4716736642665166,
+          "gpu_time_pct": 0.4716736642665165,
           "name": "_kimi3_projection_gemv_kernel",
           "rank_imbalance_pct": 24.584249812956376,
           "rank_max_ms": 33.136840000000014,
           "rank_mean_ms": 31.201196125000067,
           "rank_min_ms": 25.466259999999533,
-          "total_ms": 249.60956900000048
+          "total_ms": 249.60956900000053
         },
         {
           "avg_us": 5.3157007289935,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.47124134166081166,
+          "gpu_time_pct": 0.47124134166081155,
           "name": "_kimi3_sigmoid_bias_topk_kernel",
           "rank_imbalance_pct": 4.034132798299183,
           "rank_max_ms": 31.68303300000021,
           "rank_mean_ms": 31.17259800000013,
           "rank_min_ms": 30.42548900000025,
-          "total_ms": 249.38078400000106
+          "total_ms": 249.38078400000103
         },
         {
           "avg_us": 4.948666624493948,
           "calls": 47424,
           "calls_per_rank_mean": 5928.0,
-          "gpu_time_pct": 0.4434725852424419,
+          "gpu_time_pct": 0.44347258524244176,
           "name": "_rmsnorm_kernel",
           "rank_imbalance_pct": 37.60620540250844,
           "rank_max_ms": 31.62631400000012,
@@ -1943,7 +1943,7 @@
           "avg_us": 4.911069169117964,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.4353704134661467,
+          "gpu_time_pct": 0.4353704134661466,
           "name": "_moe_partial_reduce",
           "rank_imbalance_pct": 48.46384471587481,
           "rank_max_ms": 31.783564999999967,
@@ -1955,7 +1955,7 @@
           "avg_us": 4.86680882039477,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.43144669631613275,
+          "gpu_time_pct": 0.43144669631613264,
           "name": "_dynamic_fp8_quantize_kernel",
           "rank_imbalance_pct": 38.877153510255035,
           "rank_max_ms": 30.67830499999995,
@@ -1967,7 +1967,7 @@
           "avg_us": 5.253876964615617,
           "calls": 35185,
           "calls_per_rank_mean": 4398.125,
-          "gpu_time_pct": 0.3493154957196676,
+          "gpu_time_pct": 0.3493154957196675,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT16x16x128_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR0_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB256_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT1_1_MO40_NTn1_NTA4_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR0_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW1_SK3_SKFTR0_SKXCCM8_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS64_WG16_4_4",
           "rank_imbalance_pct": 15.648957064322676,
           "rank_max_ms": 23.97795000000013,
@@ -1976,94 +1976,94 @@
           "total_ms": 184.85766100000046
         },
         {
-          "avg_us": 12.247176893537064,
+          "avg_us": 12.24717689353706,
           "calls": 12239,
           "calls_per_rank_mean": 1529.875,
-          "gpu_time_pct": 0.2832450463839646,
+          "gpu_time_pct": 0.28324504638396447,
           "name": "_mla_decode_gluon",
           "rank_imbalance_pct": 12.140468175213611,
           "rank_max_ms": 20.59786199999999,
           "rank_mean_ms": 18.736649750000012,
           "rank_min_ms": 18.323144999999997,
-          "total_ms": 149.89319800000013
+          "total_ms": 149.8931980000001
         },
         {
-          "avg_us": 11.921464417027558,
+          "avg_us": 11.921464417027556,
           "calls": 12239,
           "calls_per_rank_mean": 1529.875,
-          "gpu_time_pct": 0.2757121719657421,
+          "gpu_time_pct": 0.275712171965742,
           "name": "_mla_reduce_project_value_kernel",
           "rank_imbalance_pct": 6.483815562732966,
           "rank_max_ms": 18.627129000000036,
           "rank_mean_ms": 18.23835037500003,
           "rank_min_ms": 17.444588000000017,
-          "total_ms": 145.90680300000028
+          "total_ms": 145.90680300000025
         },
         {
-          "avg_us": 122.56743036750481,
+          "avg_us": 122.56743036750483,
           "calls": 1034,
           "calls_per_rank_mean": 129.25,
-          "gpu_time_pct": 0.2394837322410979,
+          "gpu_time_pct": 0.23948373224109787,
           "name": "ncclDevKernel_Generic_1(ncclDevKernelArgsStorage<4096ul>)",
           "rank_imbalance_pct": 97.94509749313134,
           "rank_max_ms": 20.630579999999995,
           "rank_mean_ms": 15.841840374999999,
           "rank_min_ms": 5.114274000000003,
-          "total_ms": 126.73472299999997
+          "total_ms": 126.73472299999999
         },
         {
-          "avg_us": 6.673003921889045,
+          "avg_us": 6.673003921889046,
           "calls": 12239,
           "calls_per_rank_mean": 1529.875,
-          "gpu_time_pct": 0.15432906063219018,
+          "gpu_time_pct": 0.15432906063219015,
           "name": "_mla_normalize_project_query_kernel",
           "rank_imbalance_pct": 7.359987912462855,
           "rank_max_ms": 10.506990000000023,
           "rank_mean_ms": 10.208861875000004,
           "rank_min_ms": 9.755618999999994,
-          "total_ms": 81.67089500000002
+          "total_ms": 81.67089500000003
         },
         {
-          "avg_us": 5.162092164392524,
+          "avg_us": 5.162092164392523,
           "calls": 12239,
           "calls_per_rank_mean": 1529.875,
-          "gpu_time_pct": 0.11938563860486431,
+          "gpu_time_pct": 0.11938563860486427,
           "name": "_bmm_a16w16_m1_kernel",
           "rank_imbalance_pct": 19.94195335571681,
           "rank_max_ms": 8.325444000000028,
           "rank_mean_ms": 7.8973557500000116,
           "rank_min_ms": 6.750557000000006,
-          "total_ms": 63.1788460000001
+          "total_ms": 63.17884600000009
         },
         {
           "avg_us": 8.023637160041844,
           "calls": 7648,
           "calls_per_rank_mean": 956.0,
-          "gpu_time_pct": 0.1159576908066678,
+          "gpu_time_pct": 0.11595769080666776,
           "name": "_attnres_partial_kernel",
           "rank_imbalance_pct": 15.068383610356781,
           "rank_max_ms": 8.596176999999999,
           "rank_mean_ms": 7.670597125000003,
           "rank_min_ms": 7.440342,
-          "total_ms": 61.36477700000002
+          "total_ms": 61.364777000000025
         },
         {
-          "avg_us": 4.836519813710279,
+          "avg_us": 4.836519813710278,
           "calls": 12239,
           "calls_per_rank_mean": 1529.875,
-          "gpu_time_pct": 0.11185600492912372,
+          "gpu_time_pct": 0.11185600492912366,
           "name": "_mla_rope_set_kv_buffer_kernel",
           "rank_imbalance_pct": 49.38098798452534,
           "rank_max_ms": 8.106650000000018,
           "rank_mean_ms": 7.399270750000012,
           "rank_min_ms": 4.452817000000014,
-          "total_ms": 59.1941660000001
+          "total_ms": 59.194166000000095
         },
         {
           "avg_us": 11.118444226526107,
           "calls": 4079,
           "calls_per_rank_mean": 509.875,
-          "gpu_time_pct": 0.08569946782002587,
+          "gpu_time_pct": 0.08569946782002585,
           "name": "_rowcta_gemv_kernel",
           "rank_imbalance_pct": 10.633872267179266,
           "rank_max_ms": 5.823489999999995,
@@ -2072,46 +2072,46 @@
           "total_ms": 45.35213399999999
         },
         {
-          "avg_us": 54.723311764705876,
+          "avg_us": 54.72331176470588,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.05273791382668286,
+          "gpu_time_pct": 0.05273791382668285,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x16x128_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA1024_LBSPPB256_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT4_1_MO40_NTn1_NTA4_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW4_SK3_SKFTR0_SKXCCM8_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA4_VWB1_WSGRA0_WSGRB0_WS64_WG64_4_1",
           "rank_imbalance_pct": 6.831715873749073,
           "rank_max_ms": 3.5809760000000006,
           "rank_mean_ms": 3.488611125,
           "rank_min_ms": 3.3426439999999995,
-          "total_ms": 27.908888999999995
+          "total_ms": 27.908889
         },
         {
-          "avg_us": 23.755633333333336,
+          "avg_us": 23.755633333333332,
           "calls": 1020,
           "calls_per_rank_mean": 127.5,
-          "gpu_time_pct": 0.04578752649395111,
+          "gpu_time_pct": 0.04578752649395109,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x16x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB4_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT4_1_MO40_NTn1_NTA4_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW4_SK3_SKFTR0_SKXCCM8_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA4_VWB1_WSGRA0_WSGRB0_WS64_WG64_4_1",
           "rank_imbalance_pct": 131.39914057949355,
           "rank_max_ms": 6.301603000000001,
           "rank_mean_ms": 3.02884325,
           "rank_min_ms": 2.3217289999999995,
-          "total_ms": 24.230746000000003
+          "total_ms": 24.230746
         },
         {
-          "avg_us": 3.772494444444447,
+          "avg_us": 3.7724944444444466,
           "calls": 3060,
           "calls_per_rank_mean": 382.5,
-          "gpu_time_pct": 0.02181375510804527,
+          "gpu_time_pct": 0.02181375510804526,
           "name": "void at::native::_scatter_gather_elementwise_kernel<256, 4, at::native::_cuda_scatter_gather_internal_kernel<false, at::native::OpaqueType<4>, int>::operator()<at::native::TensorAssign>(at::TensorIterator&, long, long, long, at::native::TensorAssign const&)::{lambda(int)#1}>(int, at::native::_cuda_scatter_gather_internal_kernel<false, at::native::OpaqueType<4>, int>::operator()<at::native::TensorAssign>(at::TensorIterator&, long, long, long, at::native::TensorAssign const&)::{lambda(int)#1})",
           "rank_imbalance_pct": 31.456103011885233,
           "rank_max_ms": 1.5364230000000005,
           "rank_mean_ms": 1.4429791250000008,
           "rank_min_ms": 1.082518,
-          "total_ms": 11.543833000000008
+          "total_ms": 11.543833000000006
         },
         {
           "avg_us": 4.200166666666667,
           "calls": 2040,
           "calls_per_rank_mean": 255.0,
-          "gpu_time_pct": 0.016191127370126412,
+          "gpu_time_pct": 0.01619112737012641,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1}, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 37.137088397519314,
           "rank_max_ms": 1.1480280000000005,
@@ -2123,7 +2123,7 @@
           "avg_us": 15.736680392156863,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.015165743221244154,
+          "gpu_time_pct": 0.01516574322124415,
           "name": "_attn_res_rmsnorm_kernel",
           "rank_imbalance_pct": 6.93740750814845,
           "rank_max_ms": 1.028258,
@@ -2135,7 +2135,7 @@
           "avg_us": 3.721574509803921,
           "calls": 1530,
           "calls_per_rank_mean": 191.25,
-          "gpu_time_pct": 0.010759659976803688,
+          "gpu_time_pct": 0.010759659976803684,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::where_kernel_impl(at::TensorIterator&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(bool, int, int)#1}, std::array<char*, 4ul> >(int, at::native::(anonymous namespace)::where_kernel_impl(at::TensorIterator&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(bool, int, int)#1}, std::array<char*, 4ul>)",
           "rank_imbalance_pct": 23.261782691246246,
           "rank_max_ms": 0.7451040000000002,
@@ -2147,7 +2147,7 @@
           "avg_us": 3.684322222222223,
           "calls": 1530,
           "calls_per_rank_mean": 191.25,
-          "gpu_time_pct": 0.010651957726941089,
+          "gpu_time_pct": 0.010651957726941087,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctorOnSelf_add<int>, std::array<char*, 2ul> >(int, at::native::CUDAFunctorOnSelf_add<int>, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 40.31539398614126,
           "rank_max_ms": 0.7607700000000003,
@@ -2156,22 +2156,22 @@
           "total_ms": 5.637013000000001
         },
         {
-          "avg_us": 3.6733816993464066,
+          "avg_us": 3.673381699346406,
           "calls": 1530,
           "calls_per_rank_mean": 191.25,
-          "gpu_time_pct": 0.01062032694652755,
+          "gpu_time_pct": 0.010620326946527545,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<int>, std::array<char*, 1ul> >(int, at::native::FillFunctor<int>, std::array<char*, 1ul>)",
           "rank_imbalance_pct": 39.77713542079982,
           "rank_max_ms": 0.7544640000000006,
           "rank_mean_ms": 0.7025342500000001,
           "rank_min_ms": 0.47501600000000016,
-          "total_ms": 5.620274000000002
+          "total_ms": 5.620274000000001
         },
         {
           "avg_us": 4.675274509803922,
           "calls": 1020,
           "calls_per_rank_mean": 127.5,
-          "gpu_time_pct": 0.009011304917885076,
+          "gpu_time_pct": 0.009011304917885073,
           "name": "Cijk_SB_BiasS_HAS_ScaleAlphaVec_PostGSU8_VW4",
           "rank_imbalance_pct": 18.52633168231699,
           "rank_max_ms": 0.6432349999999997,
@@ -2183,7 +2183,7 @@
           "avg_us": 8.226341176470589,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.007927884078708237,
+          "gpu_time_pct": 0.007927884078708236,
           "name": "_prep_tape_kernel",
           "rank_imbalance_pct": 16.681945181356667,
           "rank_max_ms": 0.592583,
@@ -2192,34 +2192,34 @@
           "total_ms": 4.1954340000000006
         },
         {
-          "avg_us": 3.7985029411764706,
+          "avg_us": 3.79850294117647,
           "calls": 1020,
           "calls_per_rank_mean": 127.5,
-          "gpu_time_pct": 0.00732138148522535,
+          "gpu_time_pct": 0.007321381485225349,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::BUnaryFunctor<int, int, int, at::native::binary_internal::div_floor_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int, int)#1}>, std::array<char*, 2ul> >(int, at::native::BUnaryFunctor<int, int, int, at::native::binary_internal::div_floor_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int, int)#1}>, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 28.451869454245813,
           "rank_max_ms": 0.5136350000000002,
           "rank_mean_ms": 0.48430912499999995,
           "rank_min_ms": 0.37584,
-          "total_ms": 3.874473
+          "total_ms": 3.8744729999999996
         },
         {
-          "avg_us": 6.202852941176468,
+          "avg_us": 6.202852941176469,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.0059778093346743045,
+          "gpu_time_pct": 0.005977809334674304,
           "name": "_argmax_split_atomic_fixed_split_count_kernel",
           "rank_imbalance_pct": 7.95257084421946,
           "rank_max_ms": 0.41382300000000016,
           "rank_mean_ms": 0.39543187499999993,
           "rank_min_ms": 0.3823759999999998,
-          "total_ms": 3.163454999999999
+          "total_ms": 3.1634549999999995
         },
         {
           "avg_us": 5.433354901960783,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.0052362291931717635,
+          "gpu_time_pct": 0.005236229193171763,
           "name": "void at::native::indexFuncSmallIndex<int, long, unsigned int, 1, 1, -2, at::native::(anonymous namespace)::ReduceAdd>(at::cuda::detail::TensorInfo<int, unsigned int>, at::cuda::detail::TensorInfo<int const, unsigned int>, at::cuda::detail::TensorInfo<long const, unsigned int>, int, int, unsigned int, long, long, at::native::(anonymous namespace)::ReduceAdd const&, int)",
           "rank_imbalance_pct": 23.464937526411795,
           "rank_max_ms": 0.36461599999999994,
@@ -2231,7 +2231,7 @@
           "avg_us": 5.340176470588235,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.005146431336906049,
+          "gpu_time_pct": 0.005146431336906047,
           "name": "void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native::index_put_kernel_impl<at::native::OpaqueType<4> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_put_kernel_impl<at::native::OpaqueType<4> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1}>(long, at::native::gpu_index_kernel<at::native::index_put_kernel_impl<at::native::OpaqueType<4> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_put_kernel_impl<at::native::OpaqueType<4> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1})",
           "rank_imbalance_pct": 33.356612287909996,
           "rank_max_ms": 0.36581600000000003,
@@ -2243,7 +2243,7 @@
           "avg_us": 5.1493039215686265,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.004962483770184261,
+          "gpu_time_pct": 0.00496248377018426,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1} const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 25.16327163960859,
           "rank_max_ms": 0.38242099999999984,
@@ -2255,7 +2255,7 @@
           "avg_us": 4.652890196078432,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.004484080262921213,
+          "gpu_time_pct": 0.004484080262921212,
           "name": "void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>)",
           "rank_imbalance_pct": 27.778812578646026,
           "rank_max_ms": 0.319056,
@@ -2267,7 +2267,7 @@
           "avg_us": 4.592527450980392,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.004425907518131751,
+          "gpu_time_pct": 0.00442590751813175,
           "name": "_situ_and_mul_kernel",
           "rank_imbalance_pct": 26.285154613910322,
           "rank_max_ms": 0.31901799999999997,
@@ -2279,7 +2279,7 @@
           "avg_us": 4.177613725490196,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.004026047136974728,
+          "gpu_time_pct": 0.004026047136974726,
           "name": "void at::native::(anonymous namespace)::indexSelectSmallIndex<c10::BFloat16, long, unsigned int, 2, 2, -2>(at::cuda::detail::TensorInfo<c10::BFloat16, unsigned int>, at::cuda::detail::TensorInfo<c10::BFloat16 const, unsigned int>, at::cuda::detail::TensorInfo<long const, unsigned int>, int, int, unsigned int, long)",
           "rank_imbalance_pct": 8.20132329977291,
           "rank_max_ms": 0.274739,
@@ -2291,7 +2291,7 @@
           "avg_us": 4.176260784313725,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.004024743281398807,
+          "gpu_time_pct": 0.004024743281398806,
           "name": "_expand_page_table_kernel",
           "rank_imbalance_pct": 29.747222043548685,
           "rank_max_ms": 0.28337700000000005,
@@ -2303,7 +2303,7 @@
           "avg_us": 4.116354901960784,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.003967010824071938,
+          "gpu_time_pct": 0.0039670108240719365,
           "name": "void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native::index_kernel_impl<at::native::OpaqueType<4> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_kernel_impl<at::native::OpaqueType<4> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1}>(long, at::native::gpu_index_kernel<at::native::index_kernel_impl<at::native::OpaqueType<4> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_kernel_impl<at::native::OpaqueType<4> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1})",
           "rank_imbalance_pct": 11.050705911998078,
           "rank_max_ms": 0.27165799999999996,
@@ -2315,7 +2315,7 @@
           "avg_us": 4.093917647058824,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.003945387607615034,
+          "gpu_time_pct": 0.003945387607615032,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::compare_scalar_kernel<int>(at::TensorIteratorBase&, at::native::(anonymous namespace)::OpType, int)::{lambda(int)#1}, std::array<char*, 2ul> >(int, at::native::compare_scalar_kernel<int>(at::TensorIteratorBase&, at::native::(anonymous namespace)::OpType, int)::{lambda(int)#1}, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 8.920742296798053,
           "rank_max_ms": 0.2752190000000001,
@@ -2327,7 +2327,7 @@
           "avg_us": 4.015721568627451,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.0038700285346183216,
+          "gpu_time_pct": 0.0038700285346183203,
           "name": "triton_poi_fused_add_bitwise_and_bitwise_or_ge_lt_mul_sub_0",
           "rank_imbalance_pct": 42.04611482906887,
           "rank_max_ms": 0.275418,
@@ -2339,7 +2339,7 @@
           "avg_us": 3.906223529411765,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.003764503156673779,
+          "gpu_time_pct": 0.0037645031566737783,
           "name": "_mla_write_locations_kernel",
           "rank_imbalance_pct": 26.2611599187621,
           "rank_max_ms": 0.262936,
@@ -2348,34 +2348,34 @@
           "total_ms": 1.992174
         },
         {
-          "avg_us": 3.893921568627451,
+          "avg_us": 3.8939215686274506,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.0037526475191617093,
+          "gpu_time_pct": 0.0037526475191617076,
           "name": "fused_decode_input_prep_kernel",
           "rank_imbalance_pct": 21.15635228359937,
           "rank_max_ms": 0.264458,
           "rank_mean_ms": 0.24823749999999997,
           "rank_min_ms": 0.21194000000000005,
-          "total_ms": 1.9859
+          "total_ms": 1.9858999999999998
         },
         {
-          "avg_us": 3.7779137254901953,
+          "avg_us": 3.7779137254901958,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.0036408485172866475,
+          "gpu_time_pct": 0.0036408485172866466,
           "name": "void (anonymous namespace)::elementwise_kernel_with_index<int, at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(long)#1}>(int, at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(long)#1}, function_traits<at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(long)#1}>::result_type*)",
           "rank_imbalance_pct": 44.19494938590444,
           "rank_max_ms": 0.26649799999999996,
           "rank_mean_ms": 0.24084199999999997,
           "rank_min_ms": 0.160058,
-          "total_ms": 1.9267359999999996
+          "total_ms": 1.9267359999999998
         },
         {
           "avg_us": 3.7438745098039212,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.0036080442668547795,
+          "gpu_time_pct": 0.003608044266854778,
           "name": "triton_poi_fused_bitwise_and_bitwise_not_bitwise_or_ge_lt_1",
           "rank_imbalance_pct": 48.06512703626731,
           "rank_max_ms": 0.25853699999999996,
@@ -2384,16 +2384,16 @@
           "total_ms": 1.9093759999999997
         },
         {
-          "avg_us": 3.6978372549019602,
+          "avg_us": 3.6978372549019607,
           "calls": 510,
           "calls_per_rank_mean": 63.75,
-          "gpu_time_pct": 0.003563677274003982,
+          "gpu_time_pct": 0.0035636772740039817,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 4, at::native::gpu_kernel_impl_nocast<at::native::FillFunctor<long> >(at::TensorIteratorBase&, at::native::FillFunctor<long> const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::FillFunctor<long> >(at::TensorIteratorBase&, at::native::FillFunctor<long> const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 19.1073001335704,
           "rank_max_ms": 0.26321900000000004,
           "rank_mean_ms": 0.235737125,
           "rank_min_ms": 0.218176,
-          "total_ms": 1.8858969999999997
+          "total_ms": 1.885897
         }
       ],
       "kernel_calls_per_rank": {
@@ -2404,11 +2404,11 @@
       "profile_id": "20260902-105945",
       "rank_count": 8,
       "rank_kernel_ms": {
-        "imbalance_pct": 83.9558352882103,
-        "max": 7453.599426999988,
-        "mean": 6614.996445374996,
+        "imbalance_pct": 83.95583528821032,
+        "max": 7453.59942699999,
+        "mean": 6614.996445374997,
         "min": 1899.9239069999905,
-        "total": 52919.97156299996
+        "total": 52919.97156299998
       },
       "ranks": [
         {
@@ -2419,7 +2419,7 @@
         },
         {
           "kernel_calls": 103746,
-          "kernel_ms": 7448.195265999996,
+          "kernel_ms": 7448.195265999998,
           "rank": 1,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode/20260902-105945-TP1-DECODE.trace.json.gz"
         },
@@ -2431,25 +2431,25 @@
         },
         {
           "kernel_calls": 103746,
-          "kernel_ms": 7453.599426999988,
+          "kernel_ms": 7453.59942699999,
           "rank": 3,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode/20260902-105945-TP3-DECODE.trace.json.gz"
         },
         {
           "kernel_calls": 103504,
-          "kernel_ms": 6574.611948999999,
+          "kernel_ms": 6574.611948999997,
           "rank": 4,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode/20260902-105945-TP4-DECODE.trace.json.gz"
         },
         {
           "kernel_calls": 103746,
-          "kernel_ms": 7453.406707999996,
+          "kernel_ms": 7453.406707999998,
           "rank": 5,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode/20260902-105945-TP5-DECODE.trace.json.gz"
         },
         {
           "kernel_calls": 103746,
-          "kernel_ms": 7317.107945999993,
+          "kernel_ms": 7317.107945999994,
           "rank": 6,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c1/decode/20260902-105945-TP6-DECODE.trace.json.gz"
         },
@@ -2465,34 +2465,34 @@
       "stage": "DECODE",
       "top_categories": [
         {
-          "avg_us": 486.1328190617501,
+          "avg_us": 486.1328190617502,
           "calls": 96392,
           "calls_per_rank_mean": 12049.0,
-          "gpu_time_pct": 88.54750543320932,
+          "gpu_time_pct": 88.54750543320931,
           "name": "communication",
           "rank_imbalance_pct": 94.10641392223592,
           "rank_max_ms": 6698.693848000045,
           "rank_mean_ms": 5857.414336875028,
           "rank_min_ms": 1186.4912670000401,
-          "total_ms": 46859.31469500022
+          "total_ms": 46859.31469500023
         },
         {
-          "avg_us": 7.143729815083357,
-          "calls": 293214,
-          "calls_per_rank_mean": 36651.75,
-          "gpu_time_pct": 3.9581306114388797,
-          "name": "other",
-          "rank_imbalance_pct": 11.030874239379528,
-          "rank_max_ms": 269.8476129999863,
-          "rank_mean_ms": 261.83019924998143,
-          "rank_min_ms": 240.96545300000403,
-          "total_ms": 2094.6415939998515
+          "avg_us": 7.845630504258737,
+          "calls": 229981,
+          "calls_per_rank_mean": 28747.625,
+          "gpu_time_pct": 3.4095746760783827,
+          "name": "gemm_or_quant",
+          "rank_imbalance_pct": 7.6879589569184015,
+          "rank_max_ms": 231.0178019999939,
+          "rank_mean_ms": 225.54324362499108,
+          "rank_min_ms": 213.6781300000021,
+          "total_ms": 1804.3459489999286
         },
         {
           "avg_us": 10.030749239941397,
           "calls": 151962,
           "calls_per_rank_mean": 18995.25,
-          "gpu_time_pct": 2.8803732711483803,
+          "gpu_time_pct": 2.88037327114838,
           "name": "mla_or_attention",
           "rank_imbalance_pct": 5.88549266544228,
           "rank_max_ms": 198.60800200000068,
@@ -2501,22 +2501,22 @@
           "total_ms": 1524.2927159999747
         },
         {
-          "avg_us": 13.179708465286245,
+          "avg_us": 13.179708465286241,
           "calls": 82100,
           "calls_per_rank_mean": 10262.5,
-          "gpu_time_pct": 2.044698878403291,
+          "gpu_time_pct": 2.04469887840329,
           "name": "kda_attention",
           "rank_imbalance_pct": 4.530667513365833,
           "rank_max_ms": 137.66910799999997,
           "rank_mean_ms": 135.25675812500006,
           "rank_min_ms": 131.5410739999988,
-          "total_ms": 1082.0540650000007
+          "total_ms": 1082.0540650000005
         },
         {
           "avg_us": 8.452621213085017,
           "calls": 94338,
           "calls_per_rank_mean": 11792.25,
-          "gpu_time_pct": 1.5068099177844883,
+          "gpu_time_pct": 1.5068099177844878,
           "name": "moe",
           "rank_imbalance_pct": 19.688749250096762,
           "rank_max_ms": 104.03628999999971,
@@ -2525,22 +2525,22 @@
           "total_ms": 797.4033800000143
         },
         {
-          "avg_us": 5.774803342285936,
-          "calls": 46914,
-          "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.5119411745667317,
-          "name": "gemm_or_quant",
-          "rank_imbalance_pct": 10.929815349616046,
-          "rank_max_ms": 35.461388000000134,
-          "rank_mean_ms": 33.8648905000003,
-          "rank_min_ms": 31.760018000000436,
-          "total_ms": 270.9191240000024
+          "avg_us": 5.095143480984547,
+          "calls": 110147,
+          "calls_per_rank_mean": 13768.375,
+          "gpu_time_pct": 1.0604971099273777,
+          "name": "other",
+          "rank_imbalance_pct": 19.93007279535928,
+          "rank_max_ms": 73.0286549999998,
+          "rank_mean_ms": 70.1518461250006,
+          "rank_min_ms": 59.04734099999875,
+          "total_ms": 561.2147690000048
         },
         {
           "avg_us": 4.948666624493948,
           "calls": 47424,
           "calls_per_rank_mean": 5928.0,
-          "gpu_time_pct": 0.4434725852424419,
+          "gpu_time_pct": 0.44347258524244176,
           "name": "normalization",
           "rank_imbalance_pct": 37.60620540250844,
           "rank_max_ms": 31.62631400000012,
@@ -2552,7 +2552,7 @@
           "avg_us": 3.9678167366946826,
           "calls": 14280,
           "calls_per_rank_mean": 1785.0,
-          "gpu_time_pct": 0.10706812820665858,
+          "gpu_time_pct": 0.10706812820665855,
           "name": "elementwise_or_reduction",
           "rank_imbalance_pct": 27.071128643003526,
           "rank_max_ms": 7.469701999999996,
@@ -2563,7 +2563,7 @@
       ],
       "top_kernels": [
         {
-          "avg_us": 415.8835654400737,
+          "avg_us": 415.88356544007377,
           "calls": 43345,
           "calls_per_rank_mean": 5418.125,
           "gpu_time_pct": 34.06364858405093,
@@ -2572,25 +2572,25 @@
           "rank_max_ms": 2581.4813499999996,
           "rank_mean_ms": 2253.3091429999995,
           "rank_min_ms": 630.2231529999875,
-          "total_ms": 18026.473143999992
+          "total_ms": 18026.473143999996
         },
         {
-          "avg_us": 3195.490205530497,
+          "avg_us": 3195.4902055304965,
           "calls": 5099,
           "calls_per_rank_mean": 637.375,
-          "gpu_time_pct": 30.78951873321137,
+          "gpu_time_pct": 30.789518733211356,
           "name": "iris_stage_one_shot_allreduce_kernel",
           "rank_imbalance_pct": 109.57069440994577,
           "rank_max_ms": 2332.6984709999997,
           "rank_mean_ms": 2036.7255697500002,
           "rank_min_ms": 101.04412100000012,
-          "total_ms": 16293.804558000003
+          "total_ms": 16293.804558000002
         },
         {
           "avg_us": 264.5756548151934,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 23.454854383705463,
+          "gpu_time_pct": 23.454854383705456,
           "name": "iris_reduce_symmetric_gluon_kernel",
           "rank_imbalance_pct": 85.30102520617999,
           "rank_max_ms": 1773.5873549999947,
@@ -2602,7 +2602,7 @@
           "avg_us": 17.650264718420893,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 1.564710816244923,
+          "gpu_time_pct": 1.5647108162449226,
           "name": "_latent_input_decode_kernel",
           "rank_imbalance_pct": 4.899139486967509,
           "rank_max_ms": 104.83793799999935,
@@ -2614,19 +2614,19 @@
           "avg_us": 17.305387980159157,
           "calls": 43345,
           "calls_per_rank_mean": 5418.125,
-          "gpu_time_pct": 1.417427144886161,
+          "gpu_time_pct": 1.4174271448861604,
           "name": "_linear_attnres_partials_kernel",
           "rank_imbalance_pct": 15.804400116538044,
           "rank_max_ms": 105.73281599999989,
           "rank_mean_ms": 93.76275524999983,
           "rank_min_ms": 90.91417499999963,
-          "total_ms": 750.1020419999987
+          "total_ms": 750.1020419999986
         },
         {
           "avg_us": 12.036136164044859,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 1.0670135968001841,
+          "gpu_time_pct": 1.0670135968001837,
           "name": "_warp_decode_precomputed_situ_stage1_kernel",
           "rank_imbalance_pct": 7.941168592910034,
           "rank_max_ms": 71.94838699999973,
@@ -2638,7 +2638,7 @@
           "avg_us": 11.000997279915687,
           "calls": 47425,
           "calls_per_rank_mean": 5928.125,
-          "gpu_time_pct": 0.98587032568395,
+          "gpu_time_pct": 0.9858703256839498,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x128_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR0_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB256_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT2_1_MO40_NTn1_NTA4_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR0_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW1_SK3_SKFTR0_SKXCCM8_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS64_WG16_4_4",
           "rank_imbalance_pct": 1.7783959150555482,
           "rank_max_ms": 65.61883300000004,
@@ -2650,7 +2650,7 @@
           "avg_us": 10.12441382103406,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.8975378027831012,
+          "gpu_time_pct": 0.897537802783101,
           "name": "_rowcta_gemv_add3_kernel",
           "rank_imbalance_pct": 11.409105814125967,
           "rank_max_ms": 61.98976399999928,
@@ -2662,7 +2662,7 @@
           "avg_us": 5.774803342285936,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.5119411745667317,
+          "gpu_time_pct": 0.5119411745667316,
           "name": "_warp_decode_stage2_fp8_mxfp4_kernel",
           "rank_imbalance_pct": 10.929815349616046,
           "rank_max_ms": 35.461388000000134,
@@ -2674,7 +2674,7 @@
           "avg_us": 5.2192056556782385,
           "calls": 50993,
           "calls_per_rank_mean": 6374.125,
-          "gpu_time_pct": 0.5029159051666602,
+          "gpu_time_pct": 0.5029159051666601,
           "name": "_attnres_combine_kernel",
           "rank_imbalance_pct": 9.808929978285539,
           "rank_max_ms": 34.1351440000001,
@@ -2686,7 +2686,7 @@
           "avg_us": 7.219051497754794,
           "calls": 35186,
           "calls_per_rank_mean": 4398.25,
-          "gpu_time_pct": 0.47998806215836276,
+          "gpu_time_pct": 0.47998806215836265,
           "name": "_kda_fused_decode_kernel",
           "rank_imbalance_pct": 6.6808859222956976,
           "rank_max_ms": 32.866501000000085,
@@ -2695,34 +2695,34 @@
           "total_ms": 254.00954600000017
         },
         {
-          "avg_us": 5.320577418254689,
+          "avg_us": 5.3205774182546905,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.4716736642665166,
+          "gpu_time_pct": 0.4716736642665165,
           "name": "_kimi3_projection_gemv_kernel",
           "rank_imbalance_pct": 24.584249812956376,
           "rank_max_ms": 33.136840000000014,
           "rank_mean_ms": 31.201196125000067,
           "rank_min_ms": 25.466259999999533,
-          "total_ms": 249.60956900000048
+          "total_ms": 249.60956900000053
         },
         {
           "avg_us": 5.3157007289935,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.47124134166081166,
+          "gpu_time_pct": 0.47124134166081155,
           "name": "_kimi3_sigmoid_bias_topk_kernel",
           "rank_imbalance_pct": 4.034132798299183,
           "rank_max_ms": 31.68303300000021,
           "rank_mean_ms": 31.17259800000013,
           "rank_min_ms": 30.42548900000025,
-          "total_ms": 249.38078400000106
+          "total_ms": 249.38078400000103
         },
         {
           "avg_us": 4.948666624493948,
           "calls": 47424,
           "calls_per_rank_mean": 5928.0,
-          "gpu_time_pct": 0.4434725852424419,
+          "gpu_time_pct": 0.44347258524244176,
           "name": "_rmsnorm_kernel",
           "rank_imbalance_pct": 37.60620540250844,
           "rank_max_ms": 31.62631400000012,
@@ -2734,7 +2734,7 @@
           "avg_us": 4.911069169117964,
           "calls": 46914,
           "calls_per_rank_mean": 5864.25,
-          "gpu_time_pct": 0.4353704134661467,
+          "gpu_time_pct": 0.4353704134661466,
           "name": "_moe_partial_reduce",
           "rank_imbalance_pct": 48.46384471587481,
           "rank_max_ms": 31.783564999999967,
@@ -2759,16 +2759,16 @@
           "total_ms": 10251.012030000002
         },
         {
-          "avg_us": 844.285986714976,
+          "avg_us": 844.2859867149758,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 12.39936796970877,
+          "gpu_time_pct": 12.399367969708768,
           "name": "gluon_mxfp4_moe_stage1_kernel",
           "rank_imbalance_pct": 1.9847904897979114,
           "rank_max_ms": 705.2909220000006,
           "rank_mean_ms": 699.068797,
           "rank_min_ms": 691.4158709999999,
-          "total_ms": 5592.550376000001
+          "total_ms": 5592.550376
         },
         {
           "avg_us": 343.26603620178054,
@@ -2819,28 +2819,28 @@
           "total_ms": 3218.133045000001
         },
         {
-          "avg_us": 519.2706557971012,
+          "avg_us": 519.2706557971013,
           "calls": 4968,
           "calls_per_rank_mean": 621.0,
-          "gpu_time_pct": 5.719591499574899,
+          "gpu_time_pct": 5.719591499574901,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x208x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB4_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT4_13_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW4_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA4_VWB1_WSGRA0_WSGRB0_WS64_WG64_4_1",
           "rank_imbalance_pct": 2.9517742031755163,
           "rank_max_ms": 327.0829319999996,
           "rank_mean_ms": 322.46707724999993,
           "rank_min_ms": 317.564432,
-          "total_ms": 2579.736617999999
+          "total_ms": 2579.7366179999995
         },
         {
-          "avg_us": 273.317037892512,
+          "avg_us": 273.31703789251196,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 4.013993573914637,
+          "gpu_time_pct": 4.013993573914636,
           "name": "_mfma_lds_largem_kernel",
           "rank_imbalance_pct": 2.862180621817929,
           "rank_max_ms": 229.55898800000003,
           "rank_mean_ms": 226.3065073749999,
           "rank_min_ms": 223.08168699999982,
-          "total_ms": 1810.4520589999997
+          "total_ms": 1810.4520589999993
         },
         {
           "avg_us": 114.61389859617678,
@@ -2879,16 +2879,16 @@
           "total_ms": 1230.1846770000004
         },
         {
-          "avg_us": 104.49862937801929,
+          "avg_us": 104.49862937801927,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 1.5346896411603044,
+          "gpu_time_pct": 1.5346896411603042,
           "name": "_sigmoid_bias_topk_route_prefill_kernel",
           "rank_imbalance_pct": 530.7625470857964,
           "rank_max_ms": 488.0364289999997,
           "rank_mean_ms": 86.52486512499995,
           "rank_min_ms": 28.79485100000001,
-          "total_ms": 692.1989209999997
+          "total_ms": 692.1989209999996
         },
         {
           "avg_us": 116.71586996779386,
@@ -2918,28 +2918,28 @@
           "avg_us": 74.96655932971017,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 1.1009752254313856,
+          "gpu_time_pct": 1.1009752254313854,
           "name": "_add3_kernel",
           "rank_imbalance_pct": 8.09884457157805,
           "rank_max_ms": 65.73599300000004,
           "rank_mean_ms": 62.07231112500001,
           "rank_min_ms": 60.708852999999934,
-          "total_ms": 496.57848900000016
+          "total_ms": 496.5784890000001
         },
         {
-          "avg_us": 59.2653087258454,
+          "avg_us": 59.26530872584539,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 0.8703832377810496,
+          "gpu_time_pct": 0.8703832377810494,
           "name": "_gather_package_cdna4_scale_kernel",
           "rank_imbalance_pct": 1.988083731754604,
           "rank_max_ms": 49.70815300000002,
           "rank_mean_ms": 49.07167562499998,
           "rank_min_ms": 48.732567,
-          "total_ms": 392.5734049999999
+          "total_ms": 392.57340499999987
         },
         {
-          "avg_us": 221.9606487268519,
+          "avg_us": 221.96064872685187,
           "calls": 1728,
           "calls_per_rank_mean": 216.0,
           "gpu_time_pct": 0.8503728136011389,
@@ -2948,19 +2948,19 @@
           "rank_max_ms": 48.60731099999999,
           "rank_mean_ms": 47.94350012500001,
           "rank_min_ms": 47.198622,
-          "total_ms": 383.5480010000001
+          "total_ms": 383.54800100000006
         },
         {
-          "avg_us": 44.4735214480874,
+          "avg_us": 44.47352144808741,
           "calls": 7320,
           "calls_per_rank_mean": 915.0,
-          "gpu_time_pct": 0.7217756780658703,
+          "gpu_time_pct": 0.7217756780658705,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT192x256x64_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB1024_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT6_8_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW2_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA2_VWB8_WSGRA0_WSGRB0_WS64_WG32_8_1",
           "rank_imbalance_pct": 3.0176953974796055,
           "rank_max_ms": 41.255267999999944,
           "rank_mean_ms": 40.69327212499998,
           "rank_min_ms": 40.02726899999997,
-          "total_ms": 325.5461769999998
+          "total_ms": 325.54617699999983
         },
         {
           "avg_us": 182.13305381944443,
@@ -2999,16 +2999,16 @@
           "total_ms": 233.08144100000004
         },
         {
-          "avg_us": 14.56886689419792,
+          "avg_us": 14.568866894197923,
           "calls": 11720,
           "calls_per_rank_mean": 1465.0,
-          "gpu_time_pct": 0.3785672418318534,
+          "gpu_time_pct": 0.3785672418318535,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 2.9455442645238827,
           "rank_max_ms": 21.78485499999995,
           "rank_mean_ms": 21.343389999999957,
           "rank_min_ms": 21.156175999999988,
-          "total_ms": 170.74711999999963
+          "total_ms": 170.74711999999965
         },
         {
           "avg_us": 30.903552133655403,
@@ -3047,40 +3047,40 @@
           "total_ms": 129.06415700000002
         },
         {
-          "avg_us": 15.28450899901381,
+          "avg_us": 15.284508999013807,
           "calls": 8112,
           "calls_per_rank_mean": 1014.0,
-          "gpu_time_pct": 0.27489641600111153,
+          "gpu_time_pct": 0.2748964160011115,
           "name": "_rmsnorm_kernel",
           "rank_imbalance_pct": 1.522709422933604,
           "rank_max_ms": 15.642913999999989,
           "rank_mean_ms": 15.498492125,
           "rank_min_ms": 15.406916999999991,
-          "total_ms": 123.98793700000002
+          "total_ms": 123.987937
         },
         {
-          "avg_us": 21.90755334138486,
+          "avg_us": 21.907553341384865,
           "calls": 4968,
           "calls_per_rank_mean": 621.0,
-          "gpu_time_pct": 0.24130432649910585,
+          "gpu_time_pct": 0.2413043264991059,
           "name": "_output_fwd_kernel",
           "rank_imbalance_pct": 1.0781360795265647,
           "rank_max_ms": 13.667805000000005,
           "rank_mean_ms": 13.604590625,
           "rank_min_ms": 13.521128999999991,
-          "total_ms": 108.83672499999999
+          "total_ms": 108.836725
         },
         {
-          "avg_us": 21.770663244766503,
+          "avg_us": 21.7706632447665,
           "calls": 4968,
           "calls_per_rank_mean": 621.0,
-          "gpu_time_pct": 0.23979652815877317,
+          "gpu_time_pct": 0.23979652815877314,
           "name": "_fused_qkv_split_kernel",
           "rank_imbalance_pct": 2.09747610999987,
           "rank_max_ms": 13.709121000000005,
           "rank_mean_ms": 13.519581874999997,
           "rank_min_ms": 13.425551000000008,
-          "total_ms": 108.15665499999999
+          "total_ms": 108.15665499999997
         },
         {
           "avg_us": 15.086539855072465,
@@ -3107,16 +3107,16 @@
           "total_ms": 96.59986799999999
         },
         {
-          "avg_us": 55.78825810185185,
+          "avg_us": 55.788258101851845,
           "calls": 1728,
           "calls_per_rank_mean": 216.0,
-          "gpu_time_pct": 0.21373526469712062,
+          "gpu_time_pct": 0.21373526469712056,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x160x64_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA1024_LBSPPB128_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT8_5_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW8_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA8_VWB1_WSGRA0_WSGRB0_WS64_WG32_8_1",
           "rank_imbalance_pct": 3.4284228841049478,
           "rank_max_ms": 12.324038000000002,
           "rank_mean_ms": 12.05026375,
           "rank_min_ms": 11.910903999999999,
-          "total_ms": 96.40211000000001
+          "total_ms": 96.40211
         },
         {
           "avg_us": 8.68665594806763,
@@ -3128,19 +3128,19 @@
           "rank_max_ms": 7.240465999999995,
           "rank_mean_ms": 7.192551124999997,
           "rank_min_ms": 7.134854999999995,
-          "total_ms": 57.54040899999998
+          "total_ms": 57.540408999999975
         },
         {
           "avg_us": 4.207226016884115,
           "calls": 10424,
           "calls_per_rank_mean": 1303.0,
-          "gpu_time_pct": 0.09723438907851444,
+          "gpu_time_pct": 0.09723438907851441,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<int>, std::array<char*, 1ul> >(int, at::native::FillFunctor<int>, std::array<char*, 1ul>)",
           "rank_imbalance_pct": 9.635160644839411,
           "rank_max_ms": 5.6773789999999975,
           "rank_mean_ms": 5.482015500000001,
           "rank_min_ms": 5.149178000000001,
-          "total_ms": 43.856124000000015
+          "total_ms": 43.85612400000001
         },
         {
           "avg_us": 6.358562801932365,
@@ -3158,13 +3158,13 @@
           "avg_us": 727.8586428571429,
           "calls": 56,
           "calls_per_rank_mean": 7.0,
-          "gpu_time_pct": 0.09037008985401741,
+          "gpu_time_pct": 0.0903700898540174,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x224x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA1024_LBSPPB128_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT8_7_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW8_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA8_VWB1_WSGRA0_WSGRB0_WS64_WG32_8_1",
           "rank_imbalance_pct": 4.8321784616538075,
           "rank_max_ms": 5.234191,
           "rank_mean_ms": 5.0950105,
           "rank_min_ms": 4.987991,
-          "total_ms": 40.760084000000006
+          "total_ms": 40.760084
         },
         {
           "avg_us": 4.399994908350309,
@@ -3194,13 +3194,13 @@
           "avg_us": 4.48990987318841,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 0.06593979474313598,
+          "gpu_time_pct": 0.06593979474313597,
           "name": "_moe_sorting_stage3_kernel",
           "rank_imbalance_pct": 6.634575789789932,
           "rank_max_ms": 3.814487999999999,
           "rank_mean_ms": 3.7176453750000036,
           "rank_min_ms": 3.5678380000000036,
-          "total_ms": 29.741163000000032
+          "total_ms": 29.74116300000003
         },
         {
           "avg_us": 330.0269318181818,
@@ -3212,7 +3212,7 @@
           "rank_max_ms": 4.0606990000000005,
           "rank_mean_ms": 3.6302962500000002,
           "rank_min_ms": 3.2753740000000002,
-          "total_ms": 29.04237
+          "total_ms": 29.042370000000002
         },
         {
           "avg_us": 5.630027576489536,
@@ -3227,88 +3227,88 @@
           "total_ms": 27.969977000000018
         },
         {
-          "avg_us": 15.716544560185186,
+          "avg_us": 15.716544560185188,
           "calls": 1728,
           "calls_per_rank_mean": 216.0,
-          "gpu_time_pct": 0.060213025571841,
+          "gpu_time_pct": 0.06021302557184101,
           "name": "_sigmoid_mul_kernel",
           "rank_imbalance_pct": 3.9472145952000277,
           "rank_max_ms": 3.463729,
           "rank_mean_ms": 3.394773625000001,
           "rank_min_ms": 3.3297299999999987,
-          "total_ms": 27.158189000000004
+          "total_ms": 27.158189000000007
         },
         {
           "avg_us": 16.86069972826086,
           "calls": 1472,
           "calls_per_rank_mean": 184.0,
-          "gpu_time_pct": 0.05502664669637001,
+          "gpu_time_pct": 0.055026646696370016,
           "name": "_latent_input_decode_kernel",
           "rank_imbalance_pct": 1.4376111801667102,
           "rank_max_ms": 3.1233929999999974,
           "rank_mean_ms": 3.102368749999999,
           "rank_min_ms": 3.0787929999999992,
-          "total_ms": 24.818949999999987
+          "total_ms": 24.81894999999999
         },
         {
-          "avg_us": 4.655096215780999,
+          "avg_us": 4.655096215781,
           "calls": 4968,
           "calls_per_rank_mean": 621.0,
-          "gpu_time_pct": 0.051274318023254106,
+          "gpu_time_pct": 0.05127431802325411,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 4, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float, bool)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float, bool)#1} const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 6.486890936197069,
           "rank_max_ms": 2.967530000000001,
           "rank_mean_ms": 2.890814750000001,
           "rank_min_ms": 2.780006000000003,
-          "total_ms": 23.126518000000004
+          "total_ms": 23.126518000000008
         },
         {
-          "avg_us": 16.529916911764698,
+          "avg_us": 16.5299169117647,
           "calls": 1360,
           "calls_per_rank_mean": 170.0,
-          "gpu_time_pct": 0.04984243173223196,
+          "gpu_time_pct": 0.049842431732231976,
           "name": "_linear_attnres_partials_kernel",
           "rank_imbalance_pct": 1.5672474778016765,
           "rank_max_ms": 2.834771999999999,
           "rank_mean_ms": 2.8100858749999995,
           "rank_min_ms": 2.7907310000000005,
-          "total_ms": 22.480686999999993
+          "total_ms": 22.480686999999996
         },
         {
-          "avg_us": 15.433513235294113,
+          "avg_us": 15.433513235294116,
           "calls": 1360,
           "calls_per_rank_mean": 170.0,
-          "gpu_time_pct": 0.046536460765338614,
+          "gpu_time_pct": 0.04653646076533862,
           "name": "iris_stage_one_shot_allreduce_residual_attnres_gluon_kernel",
           "rank_imbalance_pct": 7.349895267070121,
           "rank_max_ms": 2.6978149999999985,
           "rank_mean_ms": 2.6236972499999998,
           "rank_min_ms": 2.5049759999999996,
-          "total_ms": 20.989577999999995
+          "total_ms": 20.989577999999998
         },
         {
-          "avg_us": 4.216887681159424,
+          "avg_us": 4.216887681159423,
           "calls": 4968,
           "calls_per_rank_mean": 621.0,
-          "gpu_time_pct": 0.0464475985048647,
+          "gpu_time_pct": 0.046447598504864684,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::where_kernel_impl(at::TensorIterator&)::{lambda()#1}::operator()() const::{lambda()#8}::operator()() const::{lambda(bool, long, long)#1}, std::array<char*, 4ul> >(int, at::native::(anonymous namespace)::where_kernel_impl(at::TensorIterator&)::{lambda()#1}::operator()() const::{lambda()#8}::operator()() const::{lambda(bool, long, long)#1}, std::array<char*, 4ul>)",
           "rank_imbalance_pct": 8.066369895832343,
           "rank_max_ms": 2.721953000000005,
           "rank_mean_ms": 2.6186872500000016,
           "rank_min_ms": 2.510720000000005,
-          "total_ms": 20.949498000000016
+          "total_ms": 20.949498000000013
         },
         {
-          "avg_us": 4.124902887658231,
+          "avg_us": 4.12490288765823,
           "calls": 5056,
           "calls_per_rank_mean": 632.0,
-          "gpu_time_pct": 0.04623921340008205,
+          "gpu_time_pct": 0.04623921340008204,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::compare_scalar_kernel<int>(at::TensorIteratorBase&, at::native::(anonymous namespace)::OpType, int)::{lambda(int)#1}, std::array<char*, 2ul> >(int, at::native::compare_scalar_kernel<int>(at::TensorIteratorBase&, at::native::(anonymous namespace)::OpType, int)::{lambda(int)#1}, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 6.498426866493643,
           "rank_max_ms": 2.6677119999999985,
           "rank_mean_ms": 2.6069386250000015,
           "rank_min_ms": 2.4983019999999985,
-          "total_ms": 20.855509000000016
+          "total_ms": 20.855509000000012
         },
         {
           "avg_us": 4.1953383655394525,
@@ -3335,16 +3335,16 @@
           "total_ms": 20.706072999999993
         },
         {
-          "avg_us": 11.486531250000002,
+          "avg_us": 11.486531249999999,
           "calls": 1472,
           "calls_per_rank_mean": 184.0,
-          "gpu_time_pct": 0.037487489075031376,
+          "gpu_time_pct": 0.03748748907503136,
           "name": "_warp_decode_precomputed_situ_stage1_kernel",
           "rank_imbalance_pct": 2.5870564142526993,
           "rank_max_ms": 2.1492319999999996,
           "rank_mean_ms": 2.11352175,
           "rank_min_ms": 2.0945539999999987,
-          "total_ms": 16.908174000000002
+          "total_ms": 16.908174
         },
         {
           "avg_us": 10.351266801075274,
@@ -3371,16 +3371,16 @@
           "total_ms": 14.206422999999996
         },
         {
-          "avg_us": 9.193627717391305,
+          "avg_us": 9.193627717391303,
           "calls": 1472,
           "calls_per_rank_mean": 184.0,
-          "gpu_time_pct": 0.03000435998601511,
+          "gpu_time_pct": 0.030004359986015104,
           "name": "iris_reduce_symmetric_gluon_kernel",
           "rank_imbalance_pct": 13.89206548131901,
           "rank_max_ms": 1.8254679999999992,
           "rank_mean_ms": 1.6916274999999998,
           "rank_min_ms": 1.5904659999999995,
-          "total_ms": 13.53302
+          "total_ms": 13.533019999999999
         },
         {
           "avg_us": 10.599231884057975,
@@ -3395,16 +3395,16 @@
           "total_ms": 11.701552000000003
         },
         {
-          "avg_us": 6.559582175925925,
+          "avg_us": 6.559582175925926,
           "calls": 1728,
           "calls_per_rank_mean": 216.0,
-          "gpu_time_pct": 0.025130987780876832,
+          "gpu_time_pct": 0.02513098778087684,
           "name": "_fp8_quantize_kernel",
           "rank_imbalance_pct": 3.9327538752239217,
           "rank_max_ms": 1.4454350000000002,
           "rank_mean_ms": 1.41686975,
           "rank_min_ms": 1.3897129999999998,
-          "total_ms": 11.334957999999999
+          "total_ms": 11.334958
         },
         {
           "avg_us": 5.022667245370371,
@@ -3434,25 +3434,25 @@
           "avg_us": 5.296048913043477,
           "calls": 1472,
           "calls_per_rank_mean": 184.0,
-          "gpu_time_pct": 0.017284206297575613,
+          "gpu_time_pct": 0.017284206297575617,
           "name": "_warp_decode_stage2_fp8_mxfp4_kernel",
           "rank_imbalance_pct": 2.589604842822851,
           "rank_max_ms": 0.9899430000000004,
           "rank_mean_ms": 0.9744729999999998,
           "rank_min_ms": 0.9647079999999992,
-          "total_ms": 7.795783999999998
+          "total_ms": 7.7957839999999985
         },
         {
-          "avg_us": 6.813479464285713,
+          "avg_us": 6.813479464285712,
           "calls": 1120,
           "calls_per_rank_mean": 140.0,
-          "gpu_time_pct": 0.01691907508273836,
+          "gpu_time_pct": 0.016919075082738357,
           "name": "void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native::index_kernel_impl<at::native::OpaqueType<2> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_kernel_impl<at::native::OpaqueType<2> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1}>(long, at::native::gpu_index_kernel<at::native::index_kernel_impl<at::native::OpaqueType<2> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_kernel_impl<at::native::OpaqueType<2> >(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1})",
           "rank_imbalance_pct": 3.560379326851644,
           "rank_max_ms": 0.9697489999999995,
           "rank_mean_ms": 0.9538871249999997,
           "rank_min_ms": 0.935787,
-          "total_ms": 7.631096999999999
+          "total_ms": 7.631096999999998
         },
         {
           "avg_us": 6.735473731884058,
@@ -3467,19 +3467,19 @@
           "total_ms": 7.435963
         },
         {
-          "avg_us": 4.409103125000001,
+          "avg_us": 4.4091031250000015,
           "calls": 1600,
           "calls_per_rank_mean": 200.0,
-          "gpu_time_pct": 0.01564083314771889,
+          "gpu_time_pct": 0.015640833147718892,
           "name": "_attnres_combine_kernel",
           "rank_imbalance_pct": 3.7469071445227913,
           "rank_max_ms": 0.8926070000000003,
           "rank_mean_ms": 0.8818206250000002,
           "rank_min_ms": 0.8595659999999997,
-          "total_ms": 7.054565000000001
+          "total_ms": 7.054565000000002
         },
         {
-          "avg_us": 4.731063858695654,
+          "avg_us": 4.731063858695655,
           "calls": 1472,
           "calls_per_rank_mean": 184.0,
           "gpu_time_pct": 0.015440318826985221,
@@ -3488,7 +3488,7 @@
           "rank_max_ms": 0.8984990000000008,
           "rank_mean_ms": 0.8705157500000005,
           "rank_min_ms": 0.83586,
-          "total_ms": 6.964126000000003
+          "total_ms": 6.964126000000004
         },
         {
           "avg_us": 4.599414402173913,
@@ -3518,13 +3518,13 @@
           "avg_us": 4.176529891304348,
           "calls": 1472,
           "calls_per_rank_mean": 184.0,
-          "gpu_time_pct": 0.01363053956535518,
+          "gpu_time_pct": 0.013630539565355178,
           "name": "_dynamic_fp8_quantize_kernel",
           "rank_imbalance_pct": 3.929177215066173,
           "rank_max_ms": 0.7834609999999994,
           "rank_mean_ms": 0.7684814999999999,
           "rank_min_ms": 0.7532660000000007,
-          "total_ms": 6.147852
+          "total_ms": 6.147851999999999
         },
         {
           "avg_us": 383.6090625,
@@ -3551,7 +3551,7 @@
           "total_ms": 5.009658
         },
         {
-          "avg_us": 55.140306818181806,
+          "avg_us": 55.14030681818181,
           "calls": 88,
           "calls_per_rank_mean": 11.0,
           "gpu_time_pct": 0.010758246582437654,
@@ -3560,7 +3560,7 @@
           "rank_max_ms": 0.617315,
           "rank_mean_ms": 0.606543375,
           "rank_min_ms": 0.596555,
-          "total_ms": 4.852346999999999
+          "total_ms": 4.852347
         },
         {
           "avg_us": 11.491807291666667,
@@ -3611,7 +3611,7 @@
           "total_ms": 3.388456
         },
         {
-          "avg_us": 21.10413125,
+          "avg_us": 21.104131250000002,
           "calls": 160,
           "calls_per_rank_mean": 20.0,
           "gpu_time_pct": 0.007486470292273103,
@@ -3620,7 +3620,7 @@
           "rank_max_ms": 0.4585420000000001,
           "rank_mean_ms": 0.422082625,
           "rank_min_ms": 0.38254200000000005,
-          "total_ms": 3.3766609999999995
+          "total_ms": 3.376661
         },
         {
           "avg_us": 30.90563636363636,
@@ -3647,7 +3647,7 @@
           "total_ms": 2.3529980000000004
         },
         {
-          "avg_us": 7.497383333333333,
+          "avg_us": 7.4973833333333335,
           "calls": 240,
           "calls_per_rank_mean": 30.0,
           "gpu_time_pct": 0.003989427728382576,
@@ -3656,7 +3656,7 @@
           "rank_max_ms": 0.22745299999999993,
           "rank_mean_ms": 0.2249215,
           "rank_min_ms": 0.22125199999999995,
-          "total_ms": 1.7993719999999997
+          "total_ms": 1.799372
         },
         {
           "avg_us": 4.441440104166667,
@@ -3707,19 +3707,19 @@
           "total_ms": 1.366615
         },
         {
-          "avg_us": 10.430390625000001,
+          "avg_us": 10.430390625,
           "calls": 128,
           "calls_per_rank_mean": 16.0,
-          "gpu_time_pct": 0.0029600577678691757,
+          "gpu_time_pct": 0.0029600577678691752,
           "name": "_rowcta_gemv_kernel",
           "rank_imbalance_pct": 4.456927997363491,
           "rank_max_ms": 0.169826,
           "rank_mean_ms": 0.16688624999999999,
           "rank_min_ms": 0.16238799999999998,
-          "total_ms": 1.33509
+          "total_ms": 1.3350899999999999
         },
         {
-          "avg_us": 3.088208333333333,
+          "avg_us": 3.0882083333333337,
           "calls": 336,
           "calls_per_rank_mean": 42.0,
           "gpu_time_pct": 0.002300570315211885,
@@ -3728,7 +3728,7 @@
           "rank_max_ms": 0.137399,
           "rank_mean_ms": 0.12970475,
           "rank_min_ms": 0.11403899999999999,
-          "total_ms": 1.0376379999999998
+          "total_ms": 1.037638
         },
         {
           "avg_us": 3.2258484848484845,
@@ -3767,19 +3767,19 @@
           "total_ms": 0.8421869999999999
         },
         {
-          "avg_us": 8.560852272727274,
+          "avg_us": 8.560852272727272,
           "calls": 88,
           "calls_per_rank_mean": 11.0,
-          "gpu_time_pct": 0.001670280145692862,
+          "gpu_time_pct": 0.0016702801456928615,
           "name": "_prep_tape_kernel",
           "rank_imbalance_pct": 3.9503288622230053,
           "rank_max_ms": 0.09558900000000001,
           "rank_mean_ms": 0.094169375,
           "rank_min_ms": 0.09186899999999999,
-          "total_ms": 0.7533550000000001
+          "total_ms": 0.753355
         },
         {
-          "avg_us": 2.7316727941176473,
+          "avg_us": 2.731672794117647,
           "calls": 272,
           "calls_per_rank_mean": 34.0,
           "gpu_time_pct": 0.0016473551014488277,
@@ -3788,10 +3788,10 @@
           "rank_max_ms": 0.10184699999999998,
           "rank_mean_ms": 0.092876875,
           "rank_min_ms": 0.07500700000000002,
-          "total_ms": 0.7430150000000001
+          "total_ms": 0.743015
         },
         {
-          "avg_us": 18.4319375,
+          "avg_us": 18.431937500000004,
           "calls": 32,
           "calls_per_rank_mean": 4.0,
           "gpu_time_pct": 0.0013077074899520878,
@@ -3800,19 +3800,19 @@
           "rank_max_ms": 0.079798,
           "rank_mean_ms": 0.07372775000000001,
           "rank_min_ms": 0.07127800000000001,
-          "total_ms": 0.589822
+          "total_ms": 0.5898220000000001
         },
         {
-          "avg_us": 4.386523437499999,
+          "avg_us": 4.3865234375,
           "calls": 128,
           "calls_per_rank_mean": 16.0,
-          "gpu_time_pct": 0.001244858725040518,
+          "gpu_time_pct": 0.0012448587250405182,
           "name": "void at::native::_scatter_gather_elementwise_kernel<256, 4, at::native::_cuda_scatter_gather_internal_kernel<false, at::native::OpaqueType<4>, long>::operator()<at::native::TensorAssign>(at::TensorIterator&, long, long, long, at::native::TensorAssign const&)::{lambda(int)#1}>(int, at::native::_cuda_scatter_gather_internal_kernel<false, at::native::OpaqueType<4>, long>::operator()<at::native::TensorAssign>(at::TensorIterator&, long, long, long, at::native::TensorAssign const&)::{lambda(int)#1})",
           "rank_imbalance_pct": 10.030722650162504,
           "rank_max_ms": 0.072305,
           "rank_mean_ms": 0.07018437500000001,
           "rank_min_ms": 0.065265,
-          "total_ms": 0.561475
+          "total_ms": 0.5614750000000001
         },
         {
           "avg_us": 7.647347222222223,
@@ -3827,7 +3827,7 @@
           "total_ms": 0.550609
         },
         {
-          "avg_us": 6.179022727272727,
+          "avg_us": 6.179022727272726,
           "calls": 88,
           "calls_per_rank_mean": 11.0,
           "gpu_time_pct": 0.0012055691013414345,
@@ -3836,7 +3836,7 @@
           "rank_max_ms": 0.069389,
           "rank_mean_ms": 0.06796925,
           "rank_min_ms": 0.066029,
-          "total_ms": 0.5437540000000001
+          "total_ms": 0.543754
         },
         {
           "avg_us": 3.74125,
@@ -3875,16 +3875,16 @@
           "total_ms": 0.482436
         },
         {
-          "avg_us": 3.4565156249999993,
+          "avg_us": 3.4565156249999998,
           "calls": 128,
           "calls_per_rank_mean": 16.0,
-          "gpu_time_pct": 0.0009809302732171094,
+          "gpu_time_pct": 0.0009809302732171096,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::BUnaryFunctor<long, long, long, at::native::remainder_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#4}::operator()() const::{lambda(long, long)#1}>, std::array<char*, 2ul> >(int, at::native::BUnaryFunctor<long, long, long, at::native::remainder_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#4}::operator()() const::{lambda(long, long)#1}>, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 17.721965310080144,
           "rank_max_ms": 0.05950499999999999,
           "rank_mean_ms": 0.05530425,
           "rank_min_ms": 0.04970399999999999,
-          "total_ms": 0.44243399999999994
+          "total_ms": 0.442434
         },
         {
           "avg_us": 6.074597222222223,
@@ -3923,16 +3923,16 @@
           "total_ms": 0.411814
         },
         {
-          "avg_us": 2.9646484375000006,
+          "avg_us": 2.9646484375,
           "calls": 128,
           "calls_per_rank_mean": 16.0,
-          "gpu_time_pct": 0.0008413424723892438,
+          "gpu_time_pct": 0.0008413424723892436,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<long, long, long, at::native::binary_internal::MulFunctor<long> >, std::array<char*, 2ul> >(int, at::native::AUnaryFunctor<long, long, long, at::native::binary_internal::MulFunctor<long> >, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 39.38283154357994,
           "rank_max_ms": 0.054904999999999995,
           "rank_mean_ms": 0.047434375,
           "rank_min_ms": 0.036224,
-          "total_ms": 0.37947500000000006
+          "total_ms": 0.379475
         },
         {
           "avg_us": 2.7430624999999997,
@@ -3947,28 +3947,28 @@
           "total_ms": 0.351112
         },
         {
-          "avg_us": 5.885428571428572,
+          "avg_us": 5.885428571428571,
           "calls": 56,
           "calls_per_rank_mean": 7.0,
-          "gpu_time_pct": 0.0007307280253506463,
+          "gpu_time_pct": 0.0007307280253506462,
           "name": "void at::native::(anonymous namespace)::CatArrayBatchedCopy_contig<at::native::(anonymous namespace)::OpaqueType<8u>, unsigned int, 1, 128, 1>(at::native::(anonymous namespace)::OpaqueType<8u>*, at::native::(anonymous namespace)::CatArrInputTensorMetadata<at::native::(anonymous namespace)::OpaqueType<8u>, unsigned int, 128, 1>, at::native::(anonymous namespace)::TensorSizeStride<unsigned int, 4u>, int, unsigned int)",
           "rank_imbalance_pct": 17.962036992087004,
           "rank_max_ms": 0.043273,
           "rank_mean_ms": 0.041198,
           "rank_min_ms": 0.035872999999999995,
-          "total_ms": 0.32958400000000004
+          "total_ms": 0.329584
         },
         {
-          "avg_us": 4.228472222222221,
+          "avg_us": 4.228472222222222,
           "calls": 72,
           "calls_per_rank_mean": 9.0,
-          "gpu_time_pct": 0.0006750028742839586,
+          "gpu_time_pct": 0.0006750028742839588,
           "name": "void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native::index_put_kernel_impl<at::native::OpaqueType<1> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_put_kernel_impl<at::native::OpaqueType<1> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1}>(long, at::native::gpu_index_kernel<at::native::index_put_kernel_impl<at::native::OpaqueType<1> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_put_kernel_impl<at::native::OpaqueType<1> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1})",
           "rank_imbalance_pct": 15.768763343734582,
           "rank_max_ms": 0.03951199999999999,
           "rank_mean_ms": 0.03805625,
           "rank_min_ms": 0.033511,
-          "total_ms": 0.30444999999999994
+          "total_ms": 0.30445
         },
         {
           "avg_us": 3.458090909090909,
@@ -3983,16 +3983,16 @@
           "total_ms": 0.304312
         },
         {
-          "avg_us": 4.082916666666667,
+          "avg_us": 4.082916666666666,
           "calls": 72,
           "calls_per_rank_mean": 9.0,
-          "gpu_time_pct": 0.0006517674329225008,
+          "gpu_time_pct": 0.0006517674329225006,
           "name": "void at::native::(anonymous namespace)::CatArrayBatchedCopy_contig<at::native::(anonymous namespace)::OpaqueType<8u>, unsigned int, 2, 128, 1>(at::native::(anonymous namespace)::OpaqueType<8u>*, at::native::(anonymous namespace)::CatArrInputTensorMetadata<at::native::(anonymous namespace)::OpaqueType<8u>, unsigned int, 128, 1>, at::native::(anonymous namespace)::TensorSizeStride<unsigned int, 4u>, int, unsigned int)",
           "rank_imbalance_pct": 20.682382556043144,
           "rank_max_ms": 0.041671,
           "rank_mean_ms": 0.036746249999999994,
           "rank_min_ms": 0.034071,
-          "total_ms": 0.29397
+          "total_ms": 0.29396999999999995
         },
         {
           "avg_us": 4.070111111111111,
@@ -4055,16 +4055,16 @@
           "total_ms": 0.252252
         },
         {
-          "avg_us": 3.2712361111111115,
+          "avg_us": 3.271236111111111,
           "calls": 72,
           "calls_per_rank_mean": 9.0,
-          "gpu_time_pct": 0.0005221965904983627,
+          "gpu_time_pct": 0.0005221965904983626,
           "name": "compute_position_kernel",
           "rank_imbalance_pct": 35.59646582798722,
           "rank_max_ms": 0.033311,
           "rank_mean_ms": 0.029441125,
           "rank_min_ms": 0.022831,
-          "total_ms": 0.23552900000000002
+          "total_ms": 0.235529
         },
         {
           "avg_us": 2.9112222222222224,
@@ -4103,31 +4103,31 @@
           "total_ms": 0.122529
         },
         {
-          "avg_us": 4.2265625,
+          "avg_us": 4.226562499999999,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
-          "gpu_time_pct": 0.00014993289332715623,
+          "gpu_time_pct": 0.0001499328933271562,
           "name": "void at::native::(anonymous namespace)::indexSelectSmallIndex<c10::BFloat16, long, unsigned int, 2, 2, -2>(at::cuda::detail::TensorInfo<c10::BFloat16, unsigned int>, at::cuda::detail::TensorInfo<c10::BFloat16 const, unsigned int>, at::cuda::detail::TensorInfo<long const, unsigned int>, int, int, unsigned int, long)",
           "rank_imbalance_pct": 7.571164510166359,
           "rank_max_ms": 0.008718,
           "rank_mean_ms": 0.008453124999999999,
           "rank_min_ms": 0.008078,
-          "total_ms": 0.067625
+          "total_ms": 0.06762499999999999
         },
         {
-          "avg_us": 4.184125000000001,
+          "avg_us": 4.184125,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
-          "gpu_time_pct": 0.00014842746730764955,
+          "gpu_time_pct": 0.00014842746730764952,
           "name": "triton_poi_fused_add_bitwise_and_bitwise_or_ge_lt_mul_sub_0",
           "rank_imbalance_pct": 8.59199952200282,
           "rank_max_ms": 0.008718,
           "rank_mean_ms": 0.008368249999999999,
           "rank_min_ms": 0.007999,
-          "total_ms": 0.066946
+          "total_ms": 0.06694599999999999
         },
         {
-          "avg_us": 4.063999999999999,
+          "avg_us": 4.064,
           "calls": 16,
           "calls_per_rank_mean": 2.0,
           "gpu_time_pct": 0.00014416615830987068,
@@ -4136,7 +4136,7 @@
           "rank_max_ms": 0.008518000000000001,
           "rank_mean_ms": 0.008128,
           "rank_min_ms": 0.007717999999999999,
-          "total_ms": 0.06502399999999998
+          "total_ms": 0.065024
         },
         {
           "avg_us": 4.0165,
@@ -4183,10 +4183,10 @@
       "profile_id": "20260902-110004",
       "rank_count": 8,
       "rank_kernel_ms": {
-        "imbalance_pct": 53.45326570200041,
-        "max": 7892.346452000003,
+        "imbalance_pct": 53.453265702000365,
+        "max": 7892.346452,
         "mean": 5637.9389555,
-        "min": 4878.683962000002,
+        "min": 4878.683962000001,
         "total": 45103.511644
       },
       "ranks": [
@@ -4198,43 +4198,43 @@
         },
         {
           "kernel_calls": 38725,
-          "kernel_ms": 7887.925479000001,
+          "kernel_ms": 7887.925479,
           "rank": 1,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill/20260902-110004-TP1.trace.json.gz"
         },
         {
           "kernel_calls": 38725,
-          "kernel_ms": 4878.683962000002,
+          "kernel_ms": 4878.683962000001,
           "rank": 2,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill/20260902-110004-TP2.trace.json.gz"
         },
         {
           "kernel_calls": 38725,
-          "kernel_ms": 4895.633416999999,
+          "kernel_ms": 4895.633417000001,
           "rank": 3,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill/20260902-110004-TP3.trace.json.gz"
         },
         {
           "kernel_calls": 38725,
-          "kernel_ms": 7892.346452000003,
+          "kernel_ms": 7892.346452,
           "rank": 4,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill/20260902-110004-TP4.trace.json.gz"
         },
         {
           "kernel_calls": 38725,
-          "kernel_ms": 4894.077489999997,
+          "kernel_ms": 4894.07749,
           "rank": 5,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill/20260902-110004-TP5.trace.json.gz"
         },
         {
           "kernel_calls": 38725,
-          "kernel_ms": 4883.745497,
+          "kernel_ms": 4883.745496999999,
           "rank": 6,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill/20260902-110004-TP6.trace.json.gz"
         },
         {
           "kernel_calls": 38725,
-          "kernel_ms": 4883.881279999999,
+          "kernel_ms": 4883.88128,
           "rank": 7,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/prefill/20260902-110004-TP7.trace.json.gz"
         }
@@ -4256,28 +4256,28 @@
           "total_ms": 11232.099350000004
         },
         {
-          "avg_us": 618.6214098725349,
+          "avg_us": 618.621409872535,
           "calls": 16632,
           "calls_per_rank_mean": 2079.0,
-          "gpu_time_pct": 22.811774325267436,
+          "gpu_time_pct": 22.81177432526744,
           "name": "communication",
           "rank_imbalance_pct": 17.18234855314658,
           "rank_max_ms": 1352.2841170000022,
           "rank_mean_ms": 1286.1139111250002,
           "rank_min_ms": 1131.2995419999988,
-          "total_ms": 10288.911289
+          "total_ms": 10288.911289000001
         },
         {
-          "avg_us": 76.14802303128609,
-          "calls": 90008,
-          "calls_per_rank_mean": 11251.0,
-          "gpu_time_pct": 15.196003608538891,
-          "name": "other",
-          "rank_imbalance_pct": 2.6811238267417843,
-          "rank_max_ms": 869.7025269999953,
-          "rank_mean_ms": 856.7414071249998,
-          "rank_min_ms": 846.732229000004,
-          "total_ms": 6853.931256999998
+          "avg_us": 136.27121806167403,
+          "calls": 50848,
+          "calls_per_rank_mean": 6356.0,
+          "gpu_time_pct": 15.362703797192616,
+          "name": "gemm_or_quant",
+          "rank_imbalance_pct": 2.7713299032992844,
+          "rank_max_ms": 877.7955060000016,
+          "rank_mean_ms": 866.1398620000001,
+          "rank_min_ms": 853.7919130000005,
+          "total_ms": 6929.118896000001
         },
         {
           "avg_us": 275.19615886287625,
@@ -4292,19 +4292,19 @@
           "total_ms": 5266.153695999999
         },
         {
-          "avg_us": 221.75878053467747,
+          "avg_us": 221.75878053467753,
           "calls": 23416,
           "calls_per_rank_mean": 2927.0,
-          "gpu_time_pct": 11.512858790210805,
+          "gpu_time_pct": 11.512858790210807,
           "name": "mla_or_attention",
           "rank_imbalance_pct": 353.85555682991907,
           "rank_max_ms": 2656.013832000008,
           "rank_mean_ms": 649.0879506250011,
           "rank_min_ms": 359.18005000000005,
-          "total_ms": 5192.703605000008
+          "total_ms": 5192.703605000009
         },
         {
-          "avg_us": 52.82112331773011,
+          "avg_us": 52.821123317730105,
           "calls": 68360,
           "calls_per_rank_mean": 8545.0,
           "gpu_time_pct": 8.005700351006643,
@@ -4313,22 +4313,22 @@
           "rank_max_ms": 3227.2242350000292,
           "rank_mean_ms": 451.35649875000377,
           "rank_min_ms": 53.91778300000017,
-          "total_ms": 3610.8519900000306
+          "total_ms": 3610.85199000003
         },
         {
-          "avg_us": 133.87909524456504,
-          "calls": 14720,
-          "calls_per_rank_mean": 1840.0,
-          "gpu_time_pct": 4.369283477425542,
-          "name": "gemm_or_quant",
-          "rank_imbalance_pct": 2.7912104393762394,
-          "rank_max_ms": 249.72261299999968,
-          "rank_mean_ms": 246.33753524999966,
-          "rank_min_ms": 242.84681399999957,
-          "total_ms": 1970.7002819999973
+          "avg_us": 35.18026434669631,
+          "calls": 53880,
+          "calls_per_rank_mean": 6735.0,
+          "gpu_time_pct": 4.202583288771823,
+          "name": "other",
+          "rank_imbalance_pct": 3.1198952018811217,
+          "rank_max_ms": 241.79553799999974,
+          "rank_mean_ms": 236.93908037499966,
+          "rank_min_ms": 234.40328699999887,
+          "total_ms": 1895.5126429999973
         },
         {
-          "avg_us": 46.435005807671594,
+          "avg_us": 46.4350058076716,
           "calls": 14808,
           "calls_per_rank_mean": 1851.0,
           "gpu_time_pct": 1.524514479997195,
@@ -4337,7 +4337,7 @@
           "rank_max_ms": 487.1798940000012,
           "rank_mean_ms": 85.95119575000012,
           "rank_min_ms": 28.401337000000005,
-          "total_ms": 687.6095660000009
+          "total_ms": 687.609566000001
         },
         {
           "avg_us": 7.647347222222223,
@@ -4366,16 +4366,16 @@
           "total_ms": 10251.012030000002
         },
         {
-          "avg_us": 844.285986714976,
+          "avg_us": 844.2859867149758,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 12.39936796970877,
+          "gpu_time_pct": 12.399367969708768,
           "name": "gluon_mxfp4_moe_stage1_kernel",
           "rank_imbalance_pct": 1.9847904897979114,
           "rank_max_ms": 705.2909220000006,
           "rank_mean_ms": 699.068797,
           "rank_min_ms": 691.4158709999999,
-          "total_ms": 5592.550376000001
+          "total_ms": 5592.550376
         },
         {
           "avg_us": 343.26603620178054,
@@ -4426,28 +4426,28 @@
           "total_ms": 3218.133045000001
         },
         {
-          "avg_us": 519.2706557971012,
+          "avg_us": 519.2706557971013,
           "calls": 4968,
           "calls_per_rank_mean": 621.0,
-          "gpu_time_pct": 5.719591499574899,
+          "gpu_time_pct": 5.719591499574901,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x208x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB4_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT4_13_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW4_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA4_VWB1_WSGRA0_WSGRB0_WS64_WG64_4_1",
           "rank_imbalance_pct": 2.9517742031755163,
           "rank_max_ms": 327.0829319999996,
           "rank_mean_ms": 322.46707724999993,
           "rank_min_ms": 317.564432,
-          "total_ms": 2579.736617999999
+          "total_ms": 2579.7366179999995
         },
         {
-          "avg_us": 273.317037892512,
+          "avg_us": 273.31703789251196,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 4.013993573914637,
+          "gpu_time_pct": 4.013993573914636,
           "name": "_mfma_lds_largem_kernel",
           "rank_imbalance_pct": 2.862180621817929,
           "rank_max_ms": 229.55898800000003,
           "rank_mean_ms": 226.3065073749999,
           "rank_min_ms": 223.08168699999982,
-          "total_ms": 1810.4520589999997
+          "total_ms": 1810.4520589999993
         },
         {
           "avg_us": 114.61389859617678,
@@ -4486,16 +4486,16 @@
           "total_ms": 1230.1846770000004
         },
         {
-          "avg_us": 104.49862937801929,
+          "avg_us": 104.49862937801927,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 1.5346896411603044,
+          "gpu_time_pct": 1.5346896411603042,
           "name": "_sigmoid_bias_topk_route_prefill_kernel",
           "rank_imbalance_pct": 530.7625470857964,
           "rank_max_ms": 488.0364289999997,
           "rank_mean_ms": 86.52486512499995,
           "rank_min_ms": 28.79485100000001,
-          "total_ms": 692.1989209999997
+          "total_ms": 692.1989209999996
         },
         {
           "avg_us": 116.71586996779386,
@@ -4525,29 +4525,29 @@
           "avg_us": 74.96655932971017,
           "calls": 6624,
           "calls_per_rank_mean": 828.0,
-          "gpu_time_pct": 1.1009752254313856,
+          "gpu_time_pct": 1.1009752254313854,
           "name": "_add3_kernel",
           "rank_imbalance_pct": 8.09884457157805,
           "rank_max_ms": 65.73599300000004,
           "rank_mean_ms": 62.07231112500001,
           "rank_min_ms": 60.708852999999934,
-          "total_ms": 496.57848900000016
+          "total_ms": 496.5784890000001
         }
       ]
     },
     {
       "all_kernels": [
         {
-          "avg_us": 1044.8685616843513,
+          "avg_us": 1044.868561684351,
           "calls": 48351,
           "calls_per_rank_mean": 6043.875,
-          "gpu_time_pct": 44.55443033668736,
+          "gpu_time_pct": 44.554430336687346,
           "name": "iris_stage_one_shot_allreduce_kernel",
           "rank_imbalance_pct": 67.77632365420968,
           "rank_max_ms": 7460.720546000019,
           "rank_mean_ms": 6315.054978250008,
           "rank_min_ms": 3180.608445000012,
-          "total_ms": 50520.439826000074
+          "total_ms": 50520.43982600007
         },
         {
           "avg_us": 253.0640413337898,
@@ -4562,16 +4562,16 @@
           "total_ms": 11846.940031000035
         },
         {
-          "avg_us": 649.6082391436842,
+          "avg_us": 649.6082391436843,
           "calls": 13126,
           "calls_per_rank_mean": 1640.75,
-          "gpu_time_pct": 7.5198243591102845,
+          "gpu_time_pct": 7.519824359110285,
           "name": "ncclDevKernel_Generic_1(ncclDevKernelArgsStorage<4096ul>)",
           "rank_imbalance_pct": 5.244747103989805,
           "rank_max_ms": 1091.8392250000006,
           "rank_mean_ms": 1065.844718375,
           "rank_min_ms": 1035.9383649999995,
-          "total_ms": 8526.757746999998
+          "total_ms": 8526.757747
         },
         {
           "avg_us": 865.4096445312501,
@@ -4586,16 +4586,16 @@
           "total_ms": 5095.531987
         },
         {
-          "avg_us": 33.956226531508044,
+          "avg_us": 33.95622653150804,
           "calls": 107133,
           "calls_per_rank_mean": 13391.625,
-          "gpu_time_pct": 3.208237132495378,
+          "gpu_time_pct": 3.2082371324953773,
           "name": "_attn_res_rmsnorm_kernel",
           "rank_imbalance_pct": 103.8063653056922,
           "rank_max_ms": 858.160987999998,
           "rank_mean_ms": 454.72905212500626,
           "rank_min_ms": 386.1232870000025,
-          "total_ms": 3637.832417000051
+          "total_ms": 3637.83241700005
         },
         {
           "avg_us": 351.8128472222226,
@@ -4646,16 +4646,16 @@
           "total_ms": 2687.389891000004
         },
         {
-          "avg_us": 545.2633962862318,
+          "avg_us": 545.2633962862319,
           "calls": 4416,
           "calls_per_rank_mean": 552.0,
-          "gpu_time_pct": 2.1235338170350153,
+          "gpu_time_pct": 2.1235338170350158,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x208x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB4_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT4_13_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW4_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA4_VWB1_WSGRA0_WSGRB0_WS64_WG64_4_1",
           "rank_imbalance_pct": 2.71640655746457,
           "rank_max_ms": 305.4862979999998,
           "rank_mean_ms": 300.98539475,
           "rank_min_ms": 297.3103110000002,
-          "total_ms": 2407.8831579999996
+          "total_ms": 2407.883158
         },
         {
           "avg_us": 288.01220584239127,
@@ -4694,28 +4694,28 @@
           "total_ms": 1287.9554199999977
         },
         {
-          "avg_us": 25.887106276686627,
+          "avg_us": 25.887106276686623,
           "calls": 46840,
           "calls_per_rank_mean": 5855.0,
-          "gpu_time_pct": 1.0693605674027507,
+          "gpu_time_pct": 1.0693605674027504,
           "name": "_warp_decode_stage2_fp8_mxfp4_kernel",
           "rank_imbalance_pct": 6.958117092239616,
           "rank_max_ms": 155.67269500000015,
           "rank_mean_ms": 151.56900725000017,
           "rank_min_ms": 145.12634599999998,
-          "total_ms": 1212.5520580000016
+          "total_ms": 1212.5520580000014
         },
         {
-          "avg_us": 195.98931674592396,
+          "avg_us": 195.98931674592401,
           "calls": 5888,
           "calls_per_rank_mean": 736.0,
-          "gpu_time_pct": 1.017709837660625,
+          "gpu_time_pct": 1.0177098376606253,
           "name": "gluon_mxfp4_moe_stage2_reduce_kernel",
           "rank_imbalance_pct": 4.918699916278272,
           "rank_max_ms": 149.0897620000002,
           "rank_mean_ms": 144.24813712500006,
           "rank_min_ms": 141.99462899999986,
-          "total_ms": 1153.9850970000002
+          "total_ms": 1153.9850970000005
         },
         {
           "avg_us": 259.6266005434782,
@@ -4730,7 +4730,7 @@
           "total_ms": 1146.5110679999998
         },
         {
-          "avg_us": 19.511767024094315,
+          "avg_us": 19.51176702409432,
           "calls": 46816,
           "calls_per_rank_mean": 5852.0,
           "gpu_time_pct": 0.8055911352920666,
@@ -4739,19 +4739,19 @@
           "rank_max_ms": 118.08201499999984,
           "rank_mean_ms": 114.18286062499995,
           "rank_min_ms": 110.1654640000001,
-          "total_ms": 913.4628849999995
+          "total_ms": 913.4628849999996
         },
         {
-          "avg_us": 16.585636561712235,
+          "avg_us": 16.58563656171223,
           "calls": 46814,
           "calls_per_rank_mean": 5851.75,
-          "gpu_time_pct": 0.6847494116088344,
+          "gpu_time_pct": 0.6847494116088342,
           "name": "_mfma_lds_mediumm_kernel",
           "rank_imbalance_pct": 5.4562743477439435,
           "rank_max_ms": 99.74233399999933,
           "rank_mean_ms": 97.05499874999954,
           "rank_min_ms": 94.4467469999999,
-          "total_ms": 776.4399899999964
+          "total_ms": 776.4399899999963
         },
         {
           "avg_us": 12.6058870863689,
@@ -4766,7 +4766,7 @@
           "total_ms": 664.3806729999866
         },
         {
-          "avg_us": 13.500952361044355,
+          "avg_us": 13.500952361044357,
           "calls": 47839,
           "calls_per_rank_mean": 5979.875,
           "gpu_time_pct": 0.5696003796244297,
@@ -4775,34 +4775,34 @@
           "rank_max_ms": 175.84227300000063,
           "rank_mean_ms": 80.73400750000012,
           "rank_min_ms": 54.60558099999985,
-          "total_ms": 645.8720600000008
+          "total_ms": 645.8720600000009
         },
         {
-          "avg_us": 16.746103811448556,
+          "avg_us": 16.746103811448553,
           "calls": 35131,
           "calls_per_rank_mean": 4391.375,
-          "gpu_time_pct": 0.5188335643388104,
+          "gpu_time_pct": 0.5188335643388103,
           "name": "_kda_fused_decode_kernel",
           "rank_imbalance_pct": 193.83242643807563,
           "rank_max_ms": 186.37093599999974,
           "rank_mean_ms": 73.53842162499988,
           "rank_min_ms": 43.829628999999954,
-          "total_ms": 588.3073729999992
+          "total_ms": 588.3073729999991
         },
         {
-          "avg_us": 122.74725701992753,
+          "avg_us": 122.7472570199275,
           "calls": 4416,
           "calls_per_rank_mean": 552.0,
-          "gpu_time_pct": 0.4780404351464561,
+          "gpu_time_pct": 0.478040435146456,
           "name": "_preprocess_intra_fwd_kernel",
           "rank_imbalance_pct": 1.2998475181030003,
           "rank_max_ms": 68.21071800000001,
           "rank_mean_ms": 67.75648587499998,
           "rank_min_ms": 67.32998700000002,
-          "total_ms": 542.051887
+          "total_ms": 542.0518869999999
         },
         {
-          "avg_us": 79.75741745923916,
+          "avg_us": 79.75741745923915,
           "calls": 5888,
           "calls_per_rank_mean": 736.0,
           "gpu_time_pct": 0.41415475966937415,
@@ -4811,43 +4811,43 @@
           "rank_max_ms": 62.48563700000002,
           "rank_mean_ms": 58.70145925000001,
           "rank_min_ms": 57.348889,
-          "total_ms": 469.61167400000016
+          "total_ms": 469.6116740000001
         },
         {
-          "avg_us": 9.612834286934186,
+          "avg_us": 9.612834286934188,
           "calls": 46840,
           "calls_per_rank_mean": 5855.0,
-          "gpu_time_pct": 0.3970928931783361,
+          "gpu_time_pct": 0.3970928931783362,
           "name": "_dynamic_fp8_quantize_kernel",
           "rank_imbalance_pct": 5.160942965965543,
           "rank_max_ms": 57.72401799999917,
           "rank_mean_ms": 56.283144749999664,
           "rank_min_ms": 54.81927699999986,
-          "total_ms": 450.26515799999726
+          "total_ms": 450.2651579999973
         },
         {
-          "avg_us": 232.7114934895834,
+          "avg_us": 232.71149348958338,
           "calls": 1536,
           "calls_per_rank_mean": 192.0,
-          "gpu_time_pct": 0.3152338321202478,
+          "gpu_time_pct": 0.31523383212024775,
           "name": "_mla_prefill_kernel",
           "rank_imbalance_pct": 1.9238145193719864,
           "rank_max_ms": 45.053022,
           "rank_mean_ms": 44.68060675000001,
           "rank_min_ms": 44.19345,
-          "total_ms": 357.44485400000013
+          "total_ms": 357.4448540000001
         },
         {
-          "avg_us": 6.622826404430497,
+          "avg_us": 6.622826404430499,
           "calls": 52726,
           "calls_per_rank_mean": 6590.75,
-          "gpu_time_pct": 0.3079583395432972,
+          "gpu_time_pct": 0.3079583395432973,
           "name": "_rmsnorm_kernel",
           "rank_imbalance_pct": 16.744496261538643,
           "rank_max_ms": 46.83892300000062,
           "rank_mean_ms": 43.64939312500031,
           "rank_min_ms": 39.53005200000064,
-          "total_ms": 349.1951450000024
+          "total_ms": 349.19514500000247
         },
         {
           "avg_us": 59.235807065217415,
@@ -4934,16 +4934,16 @@
           "total_ms": 266.3679340000001
         },
         {
-          "avg_us": 59.466375,
+          "avg_us": 59.466374999999985,
           "calls": 4416,
           "calls_per_rank_mean": 552.0,
-          "gpu_time_pct": 0.2315923994698087,
+          "gpu_time_pct": 0.23159239946980864,
           "name": "_causal_conv1d_fwd_kernel",
           "rank_imbalance_pct": 2.5420832909500377,
           "rank_max_ms": 33.127933999999996,
           "rank_mean_ms": 32.82543899999999,
           "rank_min_ms": 32.293484,
-          "total_ms": 262.60351199999997
+          "total_ms": 262.6035119999999
         },
         {
           "avg_us": 5.134469257045262,
@@ -4955,31 +4955,31 @@
           "rank_max_ms": 33.78223900000025,
           "rank_mean_ms": 30.062317500000006,
           "rank_min_ms": 25.25399599999992,
-          "total_ms": 240.49854000000008
+          "total_ms": 240.49854000000005
         },
         {
-          "avg_us": 5.067154071257679,
+          "avg_us": 5.06715407125768,
           "calls": 46816,
           "calls_per_rank_mean": 5852.0,
-          "gpu_time_pct": 0.20920987811731875,
+          "gpu_time_pct": 0.20920987811731878,
           "name": "_split_epilogue_kernel",
           "rank_imbalance_pct": 29.24384448050156,
           "rank_max_ms": 33.63382100000022,
           "rank_mean_ms": 29.652985624999943,
           "rank_min_ms": 24.96214799999975,
-          "total_ms": 237.2238849999995
+          "total_ms": 237.22388499999954
         },
         {
-          "avg_us": 49.24842504528986,
+          "avg_us": 49.24842504528987,
           "calls": 4416,
           "calls_per_rank_mean": 552.0,
-          "gpu_time_pct": 0.1917984899255706,
+          "gpu_time_pct": 0.19179848992557064,
           "name": "_wu_vector_fwd_kernel",
           "rank_imbalance_pct": 2.204444070056737,
           "rank_max_ms": 27.48858800000003,
           "rank_mean_ms": 27.18513062500001,
           "rank_min_ms": 26.889307000000038,
-          "total_ms": 217.48104500000005
+          "total_ms": 217.48104500000008
         },
         {
           "avg_us": 6.069187805988852,
@@ -5006,40 +5006,40 @@
           "total_ms": 156.190242
         },
         {
-          "avg_us": 24.02224473505434,
+          "avg_us": 24.022244735054336,
           "calls": 5888,
           "calls_per_rank_mean": 736.0,
-          "gpu_time_pct": 0.12473983375966029,
+          "gpu_time_pct": 0.12473983375966026,
           "name": "_mxfp4_quantize_cdna4_scale_tiled_kernel",
           "rank_imbalance_pct": 2.0368123332134336,
           "rank_max_ms": 17.823063,
           "rank_mean_ms": 17.68037212499999,
           "rank_min_ms": 17.46294699999997,
-          "total_ms": 141.44297699999996
+          "total_ms": 141.44297699999993
         },
         {
-          "avg_us": 31.675166440217378,
+          "avg_us": 31.675166440217385,
           "calls": 4416,
           "calls_per_rank_mean": 552.0,
-          "gpu_time_pct": 0.12335925637800356,
+          "gpu_time_pct": 0.1233592563780036,
           "name": "_solve_merge_64_fwd_kernel",
           "rank_imbalance_pct": 1.7100501520848221,
           "rank_max_ms": 17.599538000000003,
           "rank_mean_ms": 17.484691874999996,
           "rank_min_ms": 17.300541000000003,
-          "total_ms": 139.87753499999994
+          "total_ms": 139.87753499999997
         },
         {
-          "avg_us": 79.03001888020832,
+          "avg_us": 79.03001888020833,
           "calls": 1536,
           "calls_per_rank_mean": 192.0,
-          "gpu_time_pct": 0.10705502908587002,
+          "gpu_time_pct": 0.10705502908587004,
           "name": "_mla_nope_quantize_fp8_kernel",
           "rank_imbalance_pct": 2.5641825562575247,
           "rank_max_ms": 15.411640000000002,
           "rank_mean_ms": 15.173763625,
           "rank_min_ms": 15.022557000000003,
-          "total_ms": 121.39010899999998
+          "total_ms": 121.390109
         },
         {
           "avg_us": 9.27224819849328,
@@ -5078,7 +5078,7 @@
           "total_ms": 100.20201299999998
         },
         {
-          "avg_us": 7.98281452669505,
+          "avg_us": 7.982814526695051,
           "calls": 12212,
           "calls_per_rank_mean": 1526.5,
           "gpu_time_pct": 0.08597389586060865,
@@ -5087,7 +5087,7 @@
           "rank_max_ms": 21.238149000000003,
           "rank_mean_ms": 12.185766374999995,
           "rank_min_ms": 9.779226999999981,
-          "total_ms": 97.48613099999994
+          "total_ms": 97.48613099999996
         },
         {
           "avg_us": 7.976070013101872,
@@ -5138,16 +5138,16 @@
           "total_ms": 89.56240700000001
         },
         {
-          "avg_us": 14.57022486413042,
+          "avg_us": 14.570224864130422,
           "calls": 5888,
           "calls_per_rank_mean": 736.0,
-          "gpu_time_pct": 0.07565851765469438,
+          "gpu_time_pct": 0.07565851765469439,
           "name": "_moe_sorting_stage2_kernel",
           "rank_imbalance_pct": 0.6603699819434303,
           "rank_max_ms": 10.753454000000007,
           "rank_mean_ms": 10.723685499999991,
           "rank_min_ms": 10.682637999999987,
-          "total_ms": 85.78948399999992
+          "total_ms": 85.78948399999993
         },
         {
           "avg_us": 6.225943482688411,
@@ -5189,28 +5189,28 @@
           "avg_us": 9.038081691576084,
           "calls": 5888,
           "calls_per_rank_mean": 736.0,
-          "gpu_time_pct": 0.04693186753144116,
+          "gpu_time_pct": 0.04693186753144115,
           "name": "_moe_sorting_stage4_kernel",
           "rank_imbalance_pct": 1.411088441542234,
           "rank_max_ms": 6.692870000000006,
           "rank_mean_ms": 6.6520281249999975,
           "rank_min_ms": 6.599003999999993,
-          "total_ms": 53.21622499999999
+          "total_ms": 53.21622499999998
         },
         {
-          "avg_us": 3.994129404108956,
+          "avg_us": 3.994129404108957,
           "calls": 10757,
           "calls_per_rank_mean": 1344.625,
-          "gpu_time_pct": 0.037891087703200335,
+          "gpu_time_pct": 0.03789108770320034,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<int>, std::array<char*, 1ul> >(int, at::native::FillFunctor<int>, std::array<char*, 1ul>)",
           "rank_imbalance_pct": 7.496509355903793,
           "rank_max_ms": 5.557021999999999,
           "rank_mean_ms": 5.370606250000006,
           "rank_min_ms": 5.154413999999995,
-          "total_ms": 42.96485000000004
+          "total_ms": 42.96485000000005
         },
         {
-          "avg_us": 733.4044285714288,
+          "avg_us": 733.4044285714286,
           "calls": 56,
           "calls_per_rank_mean": 7.0,
           "gpu_time_pct": 0.03622057392019914,
@@ -5219,10 +5219,10 @@
           "rank_max_ms": 5.2796330000000005,
           "rank_mean_ms": 5.133831,
           "rank_min_ms": 5.04563,
-          "total_ms": 41.070648000000006
+          "total_ms": 41.070648
         },
         {
-          "avg_us": 6.24623420516304,
+          "avg_us": 6.246234205163041,
           "calls": 5888,
           "calls_per_rank_mean": 736.0,
           "gpu_time_pct": 0.03243469646443842,
@@ -5231,7 +5231,7 @@
           "rank_max_ms": 4.623665999999994,
           "rank_mean_ms": 4.597228374999998,
           "rank_min_ms": 4.562897999999993,
-          "total_ms": 36.777826999999974
+          "total_ms": 36.77782699999998
         },
         {
           "avg_us": 4.3843542303771725,
@@ -5306,16 +5306,16 @@
           "total_ms": 24.183594999999997
         },
         {
-          "avg_us": 4.523364356884058,
+          "avg_us": 4.523364356884059,
           "calls": 4416,
           "calls_per_rank_mean": 552.0,
-          "gpu_time_pct": 0.01761628828202471,
+          "gpu_time_pct": 0.017616288282024713,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 4, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float, bool)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float, bool)#1} const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 3.728267339007713,
           "rank_max_ms": 2.548553000000001,
           "rank_mean_ms": 2.4968971250000003,
           "rank_min_ms": 2.4554620000000034,
-          "total_ms": 19.975177
+          "total_ms": 19.975177000000002
         },
         {
           "avg_us": 3.9692322179923902,
@@ -5342,16 +5342,16 @@
           "total_ms": 17.99699700000002
         },
         {
-          "avg_us": 4.058141530797103,
+          "avg_us": 4.058141530797102,
           "calls": 4416,
           "calls_per_rank_mean": 552.0,
-          "gpu_time_pct": 0.01580447327595442,
+          "gpu_time_pct": 0.015804473275954415,
           "name": "void at::native::vectorized_elementwise_kernel<16, at::native::bitwise_not_kernel_cuda(at::TensorIteratorBase&)::{lambda(bool)#1}, std::array<char*, 2ul> >(int, at::native::bitwise_not_kernel_cuda(at::TensorIteratorBase&)::{lambda(bool)#1}, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 9.101269349563417,
           "rank_max_ms": 2.316461999999999,
           "rank_mean_ms": 2.2400941250000006,
           "rank_min_ms": 2.1125850000000033,
-          "total_ms": 17.92075300000001
+          "total_ms": 17.920753000000005
         },
         {
           "avg_us": 3.742950724637683,
@@ -5366,52 +5366,52 @@
           "total_ms": 12.913180000000008
         },
         {
-          "avg_us": 6.630152994791666,
+          "avg_us": 6.630152994791665,
           "calls": 1536,
           "calls_per_rank_mean": 192.0,
-          "gpu_time_pct": 0.008981286247407754,
+          "gpu_time_pct": 0.008981286247407752,
           "name": "_fp8_quantize_kernel",
           "rank_imbalance_pct": 3.135925623888309,
           "rank_max_ms": 1.2962970000000007,
           "rank_mean_ms": 1.2729893749999996,
           "rank_min_ms": 1.256377,
-          "total_ms": 10.183914999999999
+          "total_ms": 10.183914999999997
         },
         {
-          "avg_us": 4.201106614447346,
+          "avg_us": 4.201106614447347,
           "calls": 2298,
           "calls_per_rank_mean": 287.25,
-          "gpu_time_pct": 0.008514075555069719,
+          "gpu_time_pct": 0.00851407555506972,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int)#1}, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 14.246070314060972,
           "rank_max_ms": 1.2724410000000006,
           "rank_mean_ms": 1.2067678750000002,
           "rank_min_ms": 1.1005240000000012,
-          "total_ms": 9.654143
+          "total_ms": 9.654143000000001
         },
         {
-          "avg_us": 15.649485165794067,
+          "avg_us": 15.649485165794065,
           "calls": 573,
           "calls_per_rank_mean": 71.625,
-          "gpu_time_pct": 0.00790821465810287,
+          "gpu_time_pct": 0.007908214658102868,
           "name": "void at::native::indexFuncSmallIndex<int, long, unsigned int, 1, 1, -2, at::native::(anonymous namespace)::ReduceAdd>(at::cuda::detail::TensorInfo<int, unsigned int>, at::cuda::detail::TensorInfo<int const, unsigned int>, at::cuda::detail::TensorInfo<long const, unsigned int>, int, int, unsigned int, long, long, at::native::(anonymous namespace)::ReduceAdd const&, int)",
           "rank_imbalance_pct": 13.628224336481281,
           "rank_max_ms": 1.2300069999999999,
           "rank_mean_ms": 1.1208943749999998,
           "rank_min_ms": 1.0772490000000001,
-          "total_ms": 8.967155
+          "total_ms": 8.967154999999998
         },
         {
-          "avg_us": 4.9290625,
+          "avg_us": 4.929062499999999,
           "calls": 1536,
           "calls_per_rank_mean": 192.0,
-          "gpu_time_pct": 0.00667696828091888,
+          "gpu_time_pct": 0.006676968280918879,
           "name": "_set_mla_kv_buffer_per_loc_kernel",
           "rank_imbalance_pct": 5.4272068302372105,
           "rank_max_ms": 0.975696999999999,
           "rank_mean_ms": 0.9463799999999998,
           "rank_min_ms": 0.9243350000000001,
-          "total_ms": 7.571039999999999
+          "total_ms": 7.571039999999998
         },
         {
           "avg_us": 3.6322968138624936,
@@ -5474,40 +5474,40 @@
           "total_ms": 5.834655
         },
         {
-          "avg_us": 9.578676521739128,
+          "avg_us": 9.57867652173913,
           "calls": 575,
           "calls_per_rank_mean": 71.875,
-          "gpu_time_pct": 0.004857324568695961,
+          "gpu_time_pct": 0.004857324568695962,
           "name": "void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>)",
           "rank_imbalance_pct": 8.226388360087524,
           "rank_max_ms": 0.7186099999999999,
           "rank_mean_ms": 0.688467375,
           "rank_min_ms": 0.6619739999999997,
-          "total_ms": 5.507738999999999
+          "total_ms": 5.507739
         },
         {
-          "avg_us": 9.234608695652172,
+          "avg_us": 9.234608695652174,
           "calls": 575,
           "calls_per_rank_mean": 71.875,
-          "gpu_time_pct": 0.004682848574944942,
+          "gpu_time_pct": 0.004682848574944943,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1}>(at::TensorIteratorBase&, at::native::(anonymous namespace)::masked_fill_kernel(at::TensorIterator&, c10::Scalar const&)::{lambda()#1}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16, bool)#1} const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 19.833443191020535,
           "rank_max_ms": 0.7624939999999999,
           "rank_mean_ms": 0.6637375,
           "rank_min_ms": 0.630852,
-          "total_ms": 5.309899999999999
+          "total_ms": 5.3099
         },
         {
-          "avg_us": 9.926915187376723,
+          "avg_us": 9.926915187376725,
           "calls": 507,
           "calls_per_rank_mean": 63.375,
-          "gpu_time_pct": 0.0044386003510188225,
+          "gpu_time_pct": 0.004438600351018824,
           "name": "_argmax_split_atomic_fixed_block_size_kernel",
           "rank_imbalance_pct": 6.5800030439428685,
           "rank_max_ms": 0.6504160000000001,
           "rank_mean_ms": 0.62911825,
           "rank_min_ms": 0.60902,
-          "total_ms": 5.032945999999999
+          "total_ms": 5.032946
         },
         {
           "avg_us": 8.662372173913043,
@@ -5534,16 +5534,16 @@
           "total_ms": 4.86344
         },
         {
-          "avg_us": 3.756026359143327,
+          "avg_us": 3.756026359143328,
           "calls": 1214,
           "calls_per_rank_mean": 151.75,
-          "gpu_time_pct": 0.00402134274800112,
+          "gpu_time_pct": 0.004021342748001121,
           "name": "void at::native::vectorized_elementwise_kernel<4, at::native::BUnaryFunctor<int, int, int, at::native::binary_internal::div_floor_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int, int)#1}>, std::array<char*, 2ul> >(int, at::native::BUnaryFunctor<int, int, int, at::native::binary_internal::div_floor_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(int, int)#1}>, std::array<char*, 2ul>)",
           "rank_imbalance_pct": 10.344101604099755,
           "rank_max_ms": 0.5983719999999999,
           "rank_mean_ms": 0.569977,
           "rank_min_ms": 0.5394130000000003,
-          "total_ms": 4.559815999999999
+          "total_ms": 4.559816
         },
         {
           "avg_us": 6.698974999999999,
@@ -5642,16 +5642,16 @@
           "total_ms": 1.9636239999999998
         },
         {
-          "avg_us": 3.8340939334637953,
+          "avg_us": 3.834093933463796,
           "calls": 511,
           "calls_per_rank_mean": 63.875,
-          "gpu_time_pct": 0.00172785550588538,
+          "gpu_time_pct": 0.0017278555058853802,
           "name": "void (anonymous namespace)::elementwise_kernel_with_index<int, at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(long)#1}>(int, at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(long)#1}, function_traits<at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#3}::operator()() const::{lambda(long)#1}>::result_type*)",
           "rank_imbalance_pct": 15.515546477122022,
           "rank_max_ms": 0.26129699999999995,
           "rank_mean_ms": 0.24490274999999997,
           "rank_min_ms": 0.223299,
-          "total_ms": 1.9592219999999996
+          "total_ms": 1.9592219999999998
         },
         {
           "avg_us": 81.6359090909091,
@@ -5681,16 +5681,16 @@
           "avg_us": 4.006515625,
           "calls": 192,
           "calls_per_rank_mean": 24.0,
-          "gpu_time_pct": 0.0006784093766596306,
+          "gpu_time_pct": 0.0006784093766596305,
           "name": "void rocprim::ROCPRIM_400200_NS::detail::trampoline_kernel<rocprim::ROCPRIM_400200_NS::detail::wrapped_scan_config<rocprim::ROCPRIM_400200_NS::default_config, int>, (rocprim::ROCPRIM_400200_NS::detail::target_arch)950, rocprim::ROCPRIM_400200_NS::detail::scan_impl<(rocprim::ROCPRIM_400200_NS::detail::lookback_scan_determinism)0, false, false, rocprim::ROCPRIM_400200_NS::default_config, int const*, int*, int, std::plus<int>, int>(void*, unsigned long&, int const*, int*, int, unsigned long, std::plus<int>, ihipStream_t*, bool)::{lambda(auto:1, auto:2)#1}::operator()<std::integral_constant<bool, false>, std::integral_constant<bool, true> >(std::integral_constant<bool, false>, std::integral_constant<bool, true>) const::{lambda(auto:1)#2}, rocprim::ROCPRIM_400200_NS::detail::default_config_selector>(rocprim::ROCPRIM_400200_NS::detail::scan_impl<(rocprim::ROCPRIM_400200_NS::detail::lookback_scan_determinism)0, false, false, rocprim::ROCPRIM_400200_NS::default_config, int const*, int*, int, std::plus<int>, int>(void*, unsigned long&, int const*, int*, int, unsigned long, std::plus<int>, ihipStream_t*, bool)::{lambda(auto:1, auto:2)#1}::operator()<std::integral_constant<bool, false>, std::integral_constant<bool, true> >(std::integral_constant<bool, false>, std::integral_constant<bool, true>) const::{lambda(auto:1)#2})",
           "rank_imbalance_pct": 7.903792130266984,
           "rank_max_ms": 0.100696,
           "rank_mean_ms": 0.09615637499999999,
           "rank_min_ms": 0.09309599999999998,
-          "total_ms": 0.769251
+          "total_ms": 0.7692509999999999
         },
         {
-          "avg_us": 2.779528225806451,
+          "avg_us": 2.7795282258064513,
           "calls": 248,
           "calls_per_rank_mean": 31.0,
           "gpu_time_pct": 0.0006079201544712279,
@@ -5699,7 +5699,7 @@
           "rank_max_ms": 0.09105200000000002,
           "rank_mean_ms": 0.086165375,
           "rank_min_ms": 0.079649,
-          "total_ms": 0.6893229999999999
+          "total_ms": 0.689323
         },
         {
           "avg_us": 4.477366666666667,
@@ -5726,16 +5726,16 @@
           "total_ms": 0.482676
         },
         {
-          "avg_us": 7.515312500000001,
+          "avg_us": 7.5153125,
           "calls": 64,
           "calls_per_rank_mean": 8.0,
-          "gpu_time_pct": 0.0004241805886319929,
+          "gpu_time_pct": 0.00042418058863199283,
           "name": "compute_out_cache_loc_kernel",
           "rank_imbalance_pct": 13.440891513160638,
           "rank_max_ms": 0.06423300000000001,
           "rank_mean_ms": 0.0601225,
           "rank_min_ms": 0.05615200000000001,
-          "total_ms": 0.4809800000000001
+          "total_ms": 0.48098
         },
         {
           "avg_us": 3.5387109375,
@@ -5810,16 +5810,16 @@
           "total_ms": 0.40984400000000004
         },
         {
-          "avg_us": 6.159687499999999,
+          "avg_us": 6.1596875,
           "calls": 64,
           "calls_per_rank_mean": 8.0,
-          "gpu_time_pct": 0.00034766616418666925,
+          "gpu_time_pct": 0.00034766616418666936,
           "name": "void at::native::elementwise_kernel_manual_unroll<128, 4, at::native::gpu_kernel_impl<at::native::CUDAFunctor_add<long> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<long> const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl<at::native::CUDAFunctor_add<long> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<long> const&)::{lambda(int, bool)#1})",
           "rank_imbalance_pct": 10.227791588453139,
           "rank_max_ms": 0.052511999999999996,
           "rank_mean_ms": 0.0492775,
           "rank_min_ms": 0.047472,
-          "total_ms": 0.3942199999999999
+          "total_ms": 0.39422
         },
         {
           "avg_us": 5.6240781250000005,
@@ -5885,13 +5885,13 @@
           "avg_us": 4.297796875,
           "calls": 64,
           "calls_per_rank_mean": 8.0,
-          "gpu_time_pct": 0.00024257700637974,
+          "gpu_time_pct": 0.00024257700637973995,
           "name": "void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native::index_put_kernel_impl<at::native::OpaqueType<1> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_put_kernel_impl<at::native::OpaqueType<1> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1}>(long, at::native::gpu_index_kernel<at::native::index_put_kernel_impl<at::native::OpaqueType<1> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_put_kernel_impl<at::native::OpaqueType<1> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1})",
           "rank_imbalance_pct": 19.777574993001522,
           "rank_max_ms": 0.039032000000000004,
           "rank_mean_ms": 0.034382375,
           "rank_min_ms": 0.032232,
-          "total_ms": 0.27505900000000005
+          "total_ms": 0.275059
         },
         {
           "avg_us": 4.120875,
@@ -5942,40 +5942,40 @@
           "total_ms": 0.252339
         },
         {
-          "avg_us": 3.7952656250000003,
+          "avg_us": 3.795265625,
           "calls": 64,
           "calls_per_rank_mean": 8.0,
-          "gpu_time_pct": 0.00021421304926804688,
+          "gpu_time_pct": 0.00021421304926804683,
           "name": "void at::native::(anonymous namespace)::searchsorted_cuda_kernel<long, long>(long*, long const*, long const*, long const*, long, long, long, bool, bool)",
           "rank_imbalance_pct": 23.58201212859773,
           "rank_max_ms": 0.033792,
           "rank_mean_ms": 0.030362125,
           "rank_min_ms": 0.026632,
-          "total_ms": 0.24289700000000003
+          "total_ms": 0.242897
         },
         {
-          "avg_us": 3.794,
+          "avg_us": 3.7939999999999996,
           "calls": 64,
           "calls_per_rank_mean": 8.0,
-          "gpu_time_pct": 0.00021414161463941531,
+          "gpu_time_pct": 0.0002141416146394153,
           "name": "void at::native::unrolled_elementwise_kernel<at::native::CUDAFunctor_add<int>, std::array<char*, 3ul>, 4, TrivialOffsetCalculator<2, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithoutCast, at::native::memory::StoreWithoutCast>(int, at::native::CUDAFunctor_add<int>, std::array<char*, 3ul>, TrivialOffsetCalculator<2, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithoutCast, at::native::memory::StoreWithoutCast)",
           "rank_imbalance_pct": 11.860832894043213,
           "rank_max_ms": 0.032032,
           "rank_mean_ms": 0.030351999999999997,
           "rank_min_ms": 0.028432000000000002,
-          "total_ms": 0.242816
+          "total_ms": 0.24281599999999998
         },
         {
-          "avg_us": 3.2821718750000004,
+          "avg_us": 3.282171875,
           "calls": 64,
           "calls_per_rank_mean": 8.0,
-          "gpu_time_pct": 0.00018525292167542894,
+          "gpu_time_pct": 0.00018525292167542888,
           "name": "compute_position_kernel",
           "rank_imbalance_pct": 18.280578313711857,
           "rank_max_ms": 0.028392,
           "rank_mean_ms": 0.026257375,
           "rank_min_ms": 0.023592000000000002,
-          "total_ms": 0.21005900000000002
+          "total_ms": 0.210059
         },
         {
           "avg_us": 3.0239999999999996,
@@ -6094,10 +6094,10 @@
       "profile_id": "20260902-110012",
       "rank_count": 8,
       "rank_kernel_ms": {
-        "imbalance_pct": 52.699318627585505,
-        "max": 18097.57319400002,
-        "mean": 14173.798050000016,
-        "min": 10628.07819800001,
+        "imbalance_pct": 52.69931862758555,
+        "max": 18097.57319400003,
+        "mean": 14173.798050000018,
+        "min": 10628.078198000014,
         "total": 113390.38440000014
       },
       "ranks": [
@@ -6109,25 +6109,25 @@
         },
         {
           "kernel_calls": 153212,
-          "kernel_ms": 18097.57319400002,
+          "kernel_ms": 18097.57319400003,
           "rank": 1,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode/20260902-110012-TP1-DECODE.trace.json.gz"
         },
         {
           "kernel_calls": 151814,
-          "kernel_ms": 13605.938895000043,
+          "kernel_ms": 13605.938895000041,
           "rank": 2,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode/20260902-110012-TP2-DECODE.trace.json.gz"
         },
         {
           "kernel_calls": 153273,
-          "kernel_ms": 14766.561309000022,
+          "kernel_ms": 14766.561309000017,
           "rank": 3,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode/20260902-110012-TP3-DECODE.trace.json.gz"
         },
         {
           "kernel_calls": 149697,
-          "kernel_ms": 10628.07819800001,
+          "kernel_ms": 10628.078198000014,
           "rank": 4,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode/20260902-110012-TP4-DECODE.trace.json.gz"
         },
@@ -6139,13 +6139,13 @@
         },
         {
           "kernel_calls": 152934,
-          "kernel_ms": 14084.967236000011,
+          "kernel_ms": 14084.96723600001,
           "rank": 6,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode/20260902-110012-TP6-DECODE.trace.json.gz"
         },
         {
           "kernel_calls": 153212,
-          "kernel_ms": 14268.979288000017,
+          "kernel_ms": 14268.979288000019,
           "rank": 7,
           "trace": "/data/results/kimi-k3-real-tp8ep1-gfx950-0b1061eb/eager-profile/c16/decode/20260902-110012-TP7-DECODE.trace.json.gz"
         }
@@ -6155,16 +6155,16 @@
       "stage": "DECODE",
       "top_categories": [
         {
-          "avg_us": 654.4115013245695,
+          "avg_us": 654.4115013245694,
           "calls": 108337,
           "calls_per_rank_mean": 13542.125,
-          "gpu_time_pct": 62.52468337077072,
+          "gpu_time_pct": 62.5246833707707,
           "name": "communication",
           "rank_imbalance_pct": 55.059919587912304,
           "rank_max_ms": 10178.28242999999,
           "rank_mean_ms": 8862.122352374983,
           "rank_min_ms": 5298.804988999922,
-          "total_ms": 70896.97881899988
+          "total_ms": 70896.97881899987
         },
         {
           "avg_us": 55.44767422232967,
@@ -6179,16 +6179,16 @@
           "total_ms": 13356.180319000548
         },
         {
-          "avg_us": 28.748274460084133,
-          "calls": 350193,
-          "calls_per_rank_mean": 43774.125,
-          "gpu_time_pct": 8.8785698463513,
-          "name": "other",
-          "rank_imbalance_pct": 46.31413751711256,
-          "rank_max_ms": 1714.9661540000318,
-          "rank_mean_ms": 1258.4305597500302,
-          "rank_min_ms": 1132.1348940000335,
-          "total_ms": 10067.444478000241
+          "avg_us": 33.40508055608417,
+          "calls": 347286,
+          "calls_per_rank_mean": 43410.75,
+          "gpu_time_pct": 10.23112926848869,
+          "name": "gemm_or_quant",
+          "rank_imbalance_pct": 39.291598457505145,
+          "rank_max_ms": 1896.1384770000147,
+          "rank_mean_ms": 1450.139600750031,
+          "rank_min_ms": 1326.3554480000444,
+          "total_ms": 11601.116806000247
         },
         {
           "avg_us": 66.15878467489205,
@@ -6215,66 +6215,66 @@
           "total_ms": 4559.49362000002
         },
         {
-          "avg_us": 36.29186088399889,
-          "calls": 105430,
-          "calls_per_rank_mean": 13178.75,
-          "gpu_time_pct": 3.374405081388893,
-          "name": "gemm_or_quant",
-          "rank_imbalance_pct": 4.199628422015148,
-          "rank_max_ms": 486.4920380000049,
-          "rank_mean_ms": 478.2813616250005,
-          "rank_min_ms": 466.40599800000035,
-          "total_ms": 3826.2508930000035
-        },
-        {
-          "avg_us": 38.20460362193491,
+          "avg_us": 38.2046036219349,
           "calls": 98787,
           "calls_per_rank_mean": 12348.375,
-          "gpu_time_pct": 3.328428771073184,
+          "gpu_time_pct": 3.3284287710731832,
           "name": "elementwise_or_reduction",
           "rank_imbalance_pct": 673.8979016676699,
           "rank_max_ms": 3251.5110410000816,
           "rank_mean_ms": 471.7647722500104,
           "rank_min_ms": 72.29813999999992,
-          "total_ms": 3774.118178000084
+          "total_ms": 3774.1181780000834
         },
         {
-          "avg_us": 7.229201072083601,
+          "avg_us": 21.16154743993283,
+          "calls": 108337,
+          "calls_per_rank_mean": 13542.125,
+          "gpu_time_pct": 2.0218456592515084,
+          "name": "other",
+          "rank_imbalance_pct": 2.4847239204641123,
+          "rank_max_ms": 289.14484100000004,
+          "rank_mean_ms": 286.5723206250003,
+          "rank_min_ms": 282.02431000000155,
+          "total_ms": 2292.5785650000025
+        },
+        {
+          "avg_us": 7.229201072083599,
           "calls": 70890,
           "calls_per_rank_mean": 8861.25,
-          "gpu_time_pct": 0.45195901461288795,
+          "gpu_time_pct": 0.4519590146128879,
           "name": "normalization",
           "rank_imbalance_pct": 11.555853832603955,
           "rank_max_ms": 67.48206600000057,
           "rank_mean_ms": 64.0597580000008,
           "rank_min_ms": 60.07941400000066,
-          "total_ms": 512.4780640000065
+          "total_ms": 512.4780640000064
         },
         {
-          "avg_us": 7.515312500000001,
+          "avg_us": 7.5153125,
           "calls": 64,
           "calls_per_rank_mean": 8.0,
-          "gpu_time_pct": 0.0004241805886319929,
+          "gpu_time_pct": 0.00042418058863199283,
           "name": "kv_cache",
           "rank_imbalance_pct": 13.440891513160638,
           "rank_max_ms": 0.06423300000000001,
           "rank_mean_ms": 0.0601225,
           "rank_min_ms": 0.05615200000000001,
-          "total_ms": 0.4809800000000001
+          "total_ms": 0.48098
         }
       ],
       "top_kernels": [
         {
-          "avg_us": 1044.8685616843513,
+          "avg_us": 1044.868561684351,
           "calls": 48351,
           "calls_per_rank_mean": 6043.875,
-          "gpu_time_pct": 44.55443033668736,
+          "gpu_time_pct": 44.554430336687346,
           "name": "iris_stage_one_shot_allreduce_kernel",
           "rank_imbalance_pct": 67.77632365420968,
           "rank_max_ms": 7460.720546000019,
           "rank_mean_ms": 6315.054978250008,
           "rank_min_ms": 3180.608445000012,
-          "total_ms": 50520.439826000074
+          "total_ms": 50520.43982600007
         },
         {
           "avg_us": 253.0640413337898,
@@ -6289,16 +6289,16 @@
           "total_ms": 11846.940031000035
         },
         {
-          "avg_us": 649.6082391436842,
+          "avg_us": 649.6082391436843,
           "calls": 13126,
           "calls_per_rank_mean": 1640.75,
-          "gpu_time_pct": 7.5198243591102845,
+          "gpu_time_pct": 7.519824359110285,
           "name": "ncclDevKernel_Generic_1(ncclDevKernelArgsStorage<4096ul>)",
           "rank_imbalance_pct": 5.244747103989805,
           "rank_max_ms": 1091.8392250000006,
           "rank_mean_ms": 1065.844718375,
           "rank_min_ms": 1035.9383649999995,
-          "total_ms": 8526.757746999998
+          "total_ms": 8526.757747
         },
         {
           "avg_us": 865.4096445312501,
@@ -6313,16 +6313,16 @@
           "total_ms": 5095.531987
         },
         {
-          "avg_us": 33.956226531508044,
+          "avg_us": 33.95622653150804,
           "calls": 107133,
           "calls_per_rank_mean": 13391.625,
-          "gpu_time_pct": 3.208237132495378,
+          "gpu_time_pct": 3.2082371324953773,
           "name": "_attn_res_rmsnorm_kernel",
           "rank_imbalance_pct": 103.8063653056922,
           "rank_max_ms": 858.160987999998,
           "rank_mean_ms": 454.72905212500626,
           "rank_min_ms": 386.1232870000025,
-          "total_ms": 3637.832417000051
+          "total_ms": 3637.83241700005
         },
         {
           "avg_us": 351.8128472222226,
@@ -6373,16 +6373,16 @@
           "total_ms": 2687.389891000004
         },
         {
-          "avg_us": 545.2633962862318,
+          "avg_us": 545.2633962862319,
           "calls": 4416,
           "calls_per_rank_mean": 552.0,
-          "gpu_time_pct": 2.1235338170350153,
+          "gpu_time_pct": 2.1235338170350158,
           "name": "Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x208x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB4_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT4_13_MO40_NTn1_NTA0_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW4_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA4_VWB1_WSGRA0_WSGRB0_WS64_WG64_4_1",
           "rank_imbalance_pct": 2.71640655746457,
           "rank_max_ms": 305.4862979999998,
           "rank_mean_ms": 300.98539475,
           "rank_min_ms": 297.3103110000002,
-          "total_ms": 2407.8831579999996
+          "total_ms": 2407.883158
         },
         {
           "avg_us": 288.01220584239127,
@@ -6421,28 +6421,28 @@
           "total_ms": 1287.9554199999977
         },
         {
-          "avg_us": 25.887106276686627,
+          "avg_us": 25.887106276686623,
           "calls": 46840,
           "calls_per_rank_mean": 5855.0,
-          "gpu_time_pct": 1.0693605674027507,
+          "gpu_time_pct": 1.0693605674027504,
           "name": "_warp_decode_stage2_fp8_mxfp4_kernel",
           "rank_imbalance_pct": 6.958117092239616,
           "rank_max_ms": 155.67269500000015,
           "rank_mean_ms": 151.56900725000017,
           "rank_min_ms": 145.12634599999998,
-          "total_ms": 1212.5520580000016
+          "total_ms": 1212.5520580000014
         },
         {
-          "avg_us": 195.98931674592396,
+          "avg_us": 195.98931674592401,
           "calls": 5888,
           "calls_per_rank_mean": 736.0,
-          "gpu_time_pct": 1.017709837660625,
+          "gpu_time_pct": 1.0177098376606253,
           "name": "gluon_mxfp4_moe_stage2_reduce_kernel",
           "rank_imbalance_pct": 4.918699916278272,
           "rank_max_ms": 149.0897620000002,
           "rank_mean_ms": 144.24813712500006,
           "rank_min_ms": 141.99462899999986,
-          "total_ms": 1153.9850970000002
+          "total_ms": 1153.9850970000005
         }
       ]
     }

@@ -1,7 +1,7 @@
 import csv
 import json
 
-from toy_e2e.scripts.summarize_gpu_hotspots import _write_csvs, summarize
+from toy_e2e.scripts.summarize_gpu_hotspots import _category, _write_csvs, summarize
 
 
 def _write_trace(path, durations):
@@ -59,3 +59,8 @@ def test_summarize_gpu_hotspots_aggregates_across_tp_ranks(tmp_path):
     assert rows[0]["kernel_name"] == "moe.fused[gluon]"
     assert rows[0]["calls"] == "2"
     assert rows[0]["gpu_time_pct"] == "76.923077"
+
+
+def test_category_recognizes_generated_gemm_names():
+    assert _category("_rowcta_gemv_add3_kernel") == "gemm_or_quant"
+    assert _category("Cijk_Alik_Bljk_generated_solution") == "gemm_or_quant"

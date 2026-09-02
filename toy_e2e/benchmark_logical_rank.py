@@ -25,14 +25,16 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import platform
 import statistics
 import sys
 import time
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from unittest import mock
 
 import torch
@@ -68,6 +70,7 @@ def _summary(values: list[float]) -> dict[str, float | int]:
         "min": min(values),
         "mean": statistics.fmean(values),
         "p50": statistics.median(values),
+        "p90": _percentile(values, 0.90),
         "p95": _percentile(values, 0.95),
         "max": max(values),
     }
@@ -436,6 +439,8 @@ def _run_workload(
     chunked_prefill_size: int,
     breakdown: LayerBreakdown | None = None,
     hotspot_top_k: int = 10,
+    before_forward: Callable[[str], None] | None = None,
+    after_forward: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     from tokenspeed.runtime.engine.scheduler_utils import (
         advance_scheduler,
@@ -492,6 +497,8 @@ def _run_workload(
         phase = "prefill" if prepared.ctx.num_extends else "decode"
         logical_backend.snapshot(reset=True)
 
+        if before_forward is not None:
+            before_forward(phase)
         if breakdown is not None:
             breakdown.begin()
         start_event = torch.cuda.Event(enable_timing=True)
@@ -514,6 +521,8 @@ def _run_workload(
                     str(sample["module_type"]),
                 )
                 module_ms[key].append(float(sample["elapsed_ms"]))
+        if after_forward is not None:
+            after_forward(phase)
         collective_events[phase].extend(logical_backend.snapshot(reset=True))
 
         events = []
@@ -736,6 +745,14 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     parser.add_argument(
+        "--expected-arch",
+        choices=("gfx950", "gfx1250"),
+        required=True,
+    )
+    parser.add_argument("--tokenspeed-revision", required=True)
+    parser.add_argument("--model-revision", required=True)
+    parser.add_argument("--container-image", default="unavailable")
+    parser.add_argument(
         "--load-format",
         choices=("raw-rank-state", "dummy", "safetensors"),
         default="raw-rank-state",
@@ -791,6 +808,11 @@ def main() -> int:
         raise ValueError("--hotspot-top-k must be positive")
 
     torch.cuda.set_device(0)
+    architecture = torch.cuda.get_device_properties(0).gcnArchName
+    if not architecture.startswith(args.expected_arch):
+        raise RuntimeError(
+            f"expected {args.expected_arch}, detected {architecture}"
+        )
     concurrencies = tuple(dict.fromkeys(args.concurrency))
     load_format: str | type = {
         "raw-rank-state": RawRankStateLoader,
@@ -894,10 +916,48 @@ def main() -> int:
                 print(f"Completed concurrency {concurrency}", flush=True)
         finally:
             breakdown.close()
+        import transformers
+        import triton
+
+        device = torch.cuda.get_device_name(0)
         result = {
+            "format": "tokenspeed_logical_rank_benchmark_v1",
             "status": "passed",
-            "device": torch.cuda.get_device_name(0),
-            "architecture": torch.cuda.get_device_properties(0).gcnArchName,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "experiment": "toy one-GPU Kimi-K3 TP8/EP1 logical rank 0",
+            "device": device,
+            "architecture": architecture,
+            "hardware": {
+                "device": device,
+                "architecture": architecture,
+                "gpu_count": 1,
+            },
+            "software": {
+                "tokenspeed_revision": args.tokenspeed_revision,
+                "model_revision": args.model_revision,
+                "pytorch": torch.__version__,
+                "hip": torch.version.hip,
+                "transformers": transformers.__version__,
+                "triton": triton.__version__,
+                "container_image": args.container_image,
+                "os": platform.platform(),
+            },
+            "topology": {
+                "physical_ranks": 1,
+                "logical_tp_size": 8,
+                "logical_tp_rank": 0,
+                "expert_parallel": 1,
+                "collectives": "local shape/traffic substitutes",
+            },
+            "workload": {
+                "prompt_tokens": args.prompt_tokens,
+                "output_tokens": args.output_tokens,
+                "concurrencies": list(concurrencies),
+                "chunked_prefill_size": args.chunked_prefill_size,
+                "measurement": (
+                    "full eager scheduler workload plus static decode graph replay"
+                ),
+            },
             "checkpoint": str(args.checkpoint),
             "load_format": args.load_format,
             "load_wall_s": load_wall_s,
