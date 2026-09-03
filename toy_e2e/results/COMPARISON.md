@@ -85,6 +85,30 @@ with synthetic prompts.
 
 ## Eager GPU hotspot comparison
 
+### Kernel dispatch counts
+
+Each cell shows **total captured GPU-kernel dispatches / dispatches per
+forward per rank**. The normalized value is the useful cross-target
+comparison; the real target's total is rank-summed across eight GPUs.
+
+| Target | C1 prefill | C1 decode | C16 prefill | C16 decode |
+|---|---:|---:|---:|---:|
+| gfx950 toy | 3,695 / 3,695.0 | 102,875 / 1,607.4 | 29,988 / 3,748.5 | 122,762 / 1,918.2 |
+| gfx950 real | 44,464 / 5,558.0 | 826,624 / 1,614.5 | 309,800 / 4,840.6 | 1,220,238 / 2,383.3 |
+| gfx1250 toy | 7,651 / 7,651.0 | 267,163 / 4,174.4 | 63,844 / 7,980.5 | 322,954 / 5,046.2 |
+
+The normalized count uses one forward for C1 prefill, eight forwards for C16
+prefill, and 64 forwards for each decode profile. Compared with the gfx950
+toy target, gfx1250 dispatches 2.07x and 2.13x as many kernels per prefill
+forward at C1 and C16, and 2.60x and 2.63x as many per decode forward. This is
+consistent with greater kernel fragmentation and elementwise/reduction
+overhead, although dispatch count alone does not establish causality.
+
+Here, a dispatch is one GPU-kernel event in the eager PyTorch profiler trace,
+not a request-scheduler dispatch or a CUDA graph replay.
+
+### Category shares
+
 | Target | C1 prefill dominant | C1 decode dominant | C16 prefill dominant | C16 decode dominant |
 |---|---|---|---|---|
 | gfx950 toy | MoE, 45.99% | GEMM / quant, 30.56% | Other, 46.16% | GEMM / quant, 36.36% |
@@ -111,7 +135,9 @@ measurements.
 
 For current rank-local kernel performance, gfx950 is decisively ahead of
 gfx1250, especially at C16. The gfx1250 profile points first to prefill
-GEMM/quant work, then C16 decode GEMM/quant and elementwise overhead.
+GEMM/quant work, then C16 decode GEMM/quant and elementwise overhead. Its
+2.07x-2.63x higher normalized dispatch count also makes kernel fusion and
+launch fragmentation concrete areas to investigate.
 
 The real gfx950 result remains the production reference. It demonstrates that
 physical TP8 decode behavior is dominated by collective communication even
