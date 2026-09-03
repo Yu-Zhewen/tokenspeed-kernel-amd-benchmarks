@@ -2,6 +2,9 @@
 
 This index intentionally contains only the three approved targets:
 
+See the [three-target performance comparison](COMPARISON.md) for matched
+throughput, latency, and hotspot analysis.
+
 | Target | Status | Result |
 |---|---|---|
 | gfx950 toy 1-GPU logical TP8 rank 0 | complete | [`gfx950_toy_1gpu_0b1061eb/`](gfx950_toy_1gpu_0b1061eb/) |
