@@ -6,7 +6,7 @@ This package maintains three Kimi-K3 TP8/EP1 measurement targets:
 |---|---:|---|---|
 | gfx950 toy 1-GPU | 1 | logical TP8 rank-0 compute estimate | [complete](results/gfx950_toy_1gpu_0b1061eb/) |
 | gfx950 real 8-GPU | 8 | physical TP8/EP1 serving | [complete](results/gfx950_real_8gpu_0b1061eb/) |
-| gfx1250 toy 1-GPU | 1 | logical TP8 rank-0 compute estimate | [pending](results/gfx1250_toy_1gpu_pending/) |
+| gfx1250 toy 1-GPU | 1 | logical TP8 rank-0 compute estimate | [complete](results/gfx1250_toy_1gpu_0b1061eb/) |
 
 “Toy 1-GPU” means one physical GPU executes rank 0 of a TP8 model with local
 substitutes for rank-spanning collectives. It is not TP1. “Real 8-GPU”

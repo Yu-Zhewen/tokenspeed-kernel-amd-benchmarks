@@ -330,9 +330,10 @@ Decode transition-only `EXTEND` traces are discarded by the capture script.
 
 ## 4. GFX1250 toy 1-GPU logical rank
 
-This target is pending. It requires one physical gfx1250 GPU. FFM and AM are
-valid for functional development but must not be reported as physical
-performance.
+This target requires one physical gfx1250 GPU. FFM and AM are valid for
+functional development but must not be reported as physical performance. The
+reference result is under
+[`results/gfx1250_toy_1gpu_0b1061eb/`](results/gfx1250_toy_1gpu_0b1061eb/).
 
 ### 4.1 Transfer and validate
 
@@ -419,8 +420,8 @@ python3 "$BENCHMARKS_ROOT/toy_e2e/scripts/update_result_readme_hotspots.py" \
 ```
 
 Copy [`RESULT_TEMPLATE.md`](RESULT_TEMPLATE.md) into the completed result
-directory as `README.md`, fill every field, and replace the pending entry in
-[`results/README.md`](results/README.md).
+directory as `README.md`, fill every field, and update
+[`results/README.md`](results/README.md) to reference it.
 
 ## 5. Final report validation
 

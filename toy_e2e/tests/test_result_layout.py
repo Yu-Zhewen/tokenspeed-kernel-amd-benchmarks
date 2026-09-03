@@ -11,7 +11,7 @@ TOY_ROOT = RESULTS.parent
 APPROVED_DIRECTORIES = {
     "gfx950_toy_1gpu_0b1061eb",
     "gfx950_real_8gpu_0b1061eb",
-    "gfx1250_toy_1gpu_pending",
+    "gfx1250_toy_1gpu_0b1061eb",
 }
 REQUIRED_HEADINGS = [
     "## Status",
@@ -65,21 +65,22 @@ def test_toy_markdown_local_links_resolve():
 
 
 @pytest.mark.parametrize(
-    ("directory", "rank_count"),
+    ("directory", "rank_count", "architecture"),
     [
-        ("gfx950_toy_1gpu_0b1061eb", 1),
-        ("gfx950_real_8gpu_0b1061eb", 8),
+        ("gfx950_toy_1gpu_0b1061eb", 1, "gfx950"),
+        ("gfx950_real_8gpu_0b1061eb", 8, "gfx950"),
+        ("gfx1250_toy_1gpu_0b1061eb", 1, "gfx1250"),
     ],
 )
 def test_collected_results_have_complete_common_profile_contract(
-    directory, rank_count
+    directory, rank_count, architecture
 ):
     root = RESULTS / directory
     result = json.loads((root / "result.json").read_text())
     hotspots = json.loads((root / "hotspots" / "hotspots.json").read_text())
 
     assert result["status"] == "passed"
-    assert result["hardware"]["architecture"].startswith("gfx950")
+    assert result["hardware"]["architecture"].startswith(architecture)
     assert result["hardware"]["gpu_count"] == rank_count
     profiles = hotspots["profiles"]
     assert len(profiles) == 4
@@ -100,9 +101,16 @@ def test_collected_results_have_complete_common_profile_contract(
     }
 
 
-def test_toy_result_uses_complete_rolling_graph_contract():
+@pytest.mark.parametrize(
+    "directory",
+    [
+        "gfx950_toy_1gpu_0b1061eb",
+        "gfx1250_toy_1gpu_0b1061eb",
+    ],
+)
+def test_toy_result_uses_complete_rolling_graph_contract(directory):
     result = json.loads(
-        (RESULTS / "gfx950_toy_1gpu_0b1061eb" / "result.json").read_text()
+        (RESULTS / directory / "result.json").read_text()
     )
 
     assert result["format"] == "tokenspeed_logical_rank_benchmark_v2"
@@ -144,6 +152,7 @@ def test_toy_result_uses_complete_rolling_graph_contract():
     [
         "gfx950_toy_1gpu_0b1061eb",
         "gfx950_real_8gpu_0b1061eb",
+        "gfx1250_toy_1gpu_0b1061eb",
     ],
 )
 def test_collected_readmes_show_exact_top_ten_kernels(directory):

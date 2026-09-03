@@ -8,7 +8,7 @@ Maintain exactly three result targets for the same Kimi-K3 TP8/EP1 workload:
 |---|---|---:|---:|---|
 | G950-T1 | gfx950 toy logical rank | 1 | rank 0 executed; seven ranks substituted | required and collected |
 | G950-R8 | gfx950 real TP8/EP1 serving | 8 | ranks 0–7 executed | required and collected |
-| G1250-T1 | gfx1250 toy logical rank | 1 | rank 0 executed; seven ranks substituted | required, pending physical run |
+| G1250-T1 | gfx1250 toy logical rank | 1 | rank 0 executed; seven ranks substituted | required and collected |
 
 “Toy 1-GPU” means one physical GPU running logical TP8 rank 0. It does not
 mean TP1, and it is not an eight-GPU service measurement.
@@ -136,13 +136,17 @@ toy_e2e/
       hotspots/
         hotspots.json
         csv/{c1,c16}_{extend,decode}.csv
-    gfx1250_toy_1gpu_pending/
+    gfx1250_toy_1gpu_<TokenSpeed-short-SHA>/
       README.md
+      result.json
+      run.log
+      hotspots/
+        hotspots.json
+        csv/{c1,c16}_{extend,decode}.csv
 ```
 
-After G1250-T1 is collected, rename `gfx1250_toy_1gpu_pending` to
-`gfx1250_toy_1gpu_<TokenSpeed-short-SHA>` and replace every `unavailable`
-field with measured data.
+The collected G1250-T1 result uses the same revision-scoped naming and
+complete artifact contract as the gfx950 toy target.
 
 ## Completion checklist
 
