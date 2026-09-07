@@ -213,6 +213,7 @@ class PreparedForward:
     input_ids: torch.Tensor
     positions: torch.Tensor
     out_cache_loc: torch.Tensor
+    pass_legacy_runner_args: bool
     req_pool_indices: torch.Tensor
     seq_lens: torch.Tensor
     extend_prefix_lens: torch.Tensor
@@ -221,16 +222,22 @@ class PreparedForward:
 def _execute_forward(runner, prepared: PreparedForward):
     from tokenspeed.runtime.execution.breakable_cuda_graph import active_forward
 
-    with torch.inference_mode(), active_forward(prepared.ctx):
-        return runner.forward(
-            ctx=prepared.ctx,
-            input_ids=prepared.input_ids,
-            positions=prepared.positions,
-            out_cache_loc=prepared.out_cache_loc,
-            req_pool_indices=prepared.req_pool_indices,
-            seq_lens=prepared.seq_lens,
-            extend_prefix_lens=prepared.extend_prefix_lens,
+    kwargs = {
+        "ctx": prepared.ctx,
+        "input_ids": prepared.input_ids,
+        "positions": prepared.positions,
+    }
+    if prepared.pass_legacy_runner_args:
+        kwargs.update(
+            {
+                "out_cache_loc": prepared.out_cache_loc,
+                "req_pool_indices": prepared.req_pool_indices,
+                "seq_lens": prepared.seq_lens,
+                "extend_prefix_lens": prepared.extend_prefix_lens,
+            }
         )
+    with torch.inference_mode(), active_forward(prepared.ctx):
+        return runner.forward(**kwargs)
 
 
 def _create_cache(server_args, model_config, cache_bytes: int):
@@ -358,10 +365,30 @@ def _prepare_forward(
         contract=pool.arena.runtime_contract,
         num_requests=bs,
     )
-    page_table = cache_metadata.require_full_attention_table(
-        active_forward_op=forward_op
+    block_tables = dict(cache_metadata.tables(active_forward_op=forward_op))
+    legacy_cache_metadata = hasattr(
+        cache_metadata,
+        "require_full_attention_table",
     )
-    block_granularity = cache_metadata.block_granularity
+    if legacy_cache_metadata:
+        page_table = cache_metadata.require_full_attention_table(
+            active_forward_op=forward_op
+        )
+        block_granularity = cache_metadata.block_granularity
+    else:
+        contract = pool.arena.runtime_contract
+        full_attention_group_ids = [
+            spec.group_id
+            for spec in contract.group_specs
+            if spec.family == "history" and spec.retention == "full_history"
+        ]
+        if len(full_attention_group_ids) != 1:
+            raise RuntimeError(
+                "logical-rank benchmark requires exactly one full-attention "
+                f"cache group, got {full_attention_group_ids}"
+            )
+        page_table = block_tables[full_attention_group_ids[0]]
+        block_granularity = int(contract.prefix_granularity)
     rows = torch.repeat_interleave(
         torch.arange(bs, dtype=torch.int64, device="cuda"),
         torch.tensor(input_lengths, dtype=torch.int64, device="cuda"),
@@ -376,28 +403,38 @@ def _prepare_forward(
         physical_pages * block_granularity
         + torch.remainder(positions, block_granularity)
     )
-    block_tables = dict(cache_metadata.tables(active_forward_op=forward_op))
-    backend.init_forward_metadata(
-        bs=bs,
-        num_extends=num_extends,
-        req_pool_indices=req_pool_indices,
-        seq_lens=seq_lens,
-        page_table=page_table,
-        forward_mode=mode,
-        extend_with_prefix=any(starts[:num_extends]),
-        extend_seq_lens=extend_seq_lens,
-        extend_seq_lens_cpu=extend_seq_lens_cpu,
-        extend_prefix_lens=extend_prefix_lens,
-        extend_prefix_lens_cpu=extend_prefix_lens_cpu,
-        positions=positions,
-        out_cache_loc=out_cache_loc,
-        global_num_tokens=[num_tokens] * 8,
-        all_decode_or_idle=not num_extends,
-        num_tokens=num_tokens,
-        cache_metadata=cache_metadata,
-        forward_batch=forward_op,
-        block_tables=block_tables,
-    )
+    metadata_kwargs = {
+        "bs": bs,
+        "req_pool_indices": req_pool_indices,
+        "seq_lens": seq_lens,
+        "forward_mode": mode,
+        "positions": positions,
+        "out_cache_loc": out_cache_loc,
+        "global_num_tokens": [num_tokens] * 8,
+        "all_decode_or_idle": not num_extends,
+        "num_tokens": num_tokens,
+        "cache_metadata": cache_metadata,
+        "forward_batch": forward_op,
+        "block_tables": block_tables,
+    }
+    if not legacy_cache_metadata and not num_extends:
+        backend.refresh_decode_metadata(
+            actual_bs=bs,
+            num_extends=0,
+            for_graph_replay=False,
+            **metadata_kwargs,
+        )
+    else:
+        backend.init_forward_metadata(
+            num_extends=num_extends,
+            page_table=page_table,
+            extend_with_prefix=any(starts[:num_extends]),
+            extend_seq_lens=extend_seq_lens,
+            extend_seq_lens_cpu=extend_seq_lens_cpu,
+            extend_prefix_lens=extend_prefix_lens,
+            extend_prefix_lens_cpu=extend_prefix_lens_cpu,
+            **metadata_kwargs,
+        )
     gather_ids = torch.cumsum(
         torch.tensor(input_lengths, dtype=torch.int64, device="cuda"), dim=0
     ) - 1
@@ -419,6 +456,7 @@ def _prepare_forward(
         input_ids=input_ids,
         positions=positions,
         out_cache_loc=out_cache_loc,
+        pass_legacy_runner_args=legacy_cache_metadata,
         req_pool_indices=req_pool_indices,
         seq_lens=seq_lens,
         extend_prefix_lens=extend_prefix_lens,

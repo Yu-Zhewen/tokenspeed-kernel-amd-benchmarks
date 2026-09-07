@@ -184,6 +184,13 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             model_config,
             int(args.cache_gib * (1 << 30)),
         )
+        backend.init_cuda_graph_state(
+            max(concurrencies),
+            cache_group_specs=tuple(pool.arena.cache_group_specs),
+            cache_group_page_counts=pool.arena.cache_group_page_counts,
+            max_tokens_per_req=1,
+            overlap_schedule_depth=0,
+        )
         runs = []
         for concurrency in concurrencies:
             print(f"Warming C{concurrency}", flush=True)
