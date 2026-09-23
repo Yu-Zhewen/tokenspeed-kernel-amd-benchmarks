@@ -121,6 +121,7 @@ def generated(tmp_path):
     subprocess.run(
         [
             sys.executable, str(SCRIPT), "--revision", "a" * 40,
+            "--commit-date", "2026-09-22",
             "--gfx950-performance", str(paths["p950"]),
             "--gfx950-hotspots", str(paths["h950"]),
             "--gfx1250-performance", str(paths["p1250"]),
@@ -136,7 +137,8 @@ def generated(tmp_path):
 def test_records_provenance(generated):
     _, text = generated
     assert "a" * 40 in text
-    assert "2026-09-23" in text
+    assert "2026-09-22" in text  # commit date
+    assert "2026-09-23" in text  # measured date, read from the inputs
     assert "modelsha" in text
     assert "50,000 / 1,024" in text
 

@@ -236,6 +236,12 @@ def write_csvs(out_dir: Path, arch: str, stages) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--revision", required=True, help="TokenSpeed commit under test")
+    ap.add_argument(
+        "--commit-date",
+        required=True,
+        help="UTC date of the commit as YYYY-MM-DD, from "
+        "TZ=UTC git show -s --format=%cd --date=format-local:%Y-%m-%d <sha>",
+    )
     ap.add_argument("--gfx950-performance", required=True, type=Path)
     ap.add_argument("--gfx950-hotspots", required=True, type=Path)
     ap.add_argument("--gfx1250-performance", required=True, type=Path)
@@ -255,12 +261,12 @@ def main() -> None:
         args.gfx950_performance, args.gfx950_hotspots,
         args.gfx1250_performance, args.gfx1250_hotspots,
     ])
-    if not dates:
-        collected = "unknown"
-        slug = args.revision[:8]
-    else:
-        collected = dates[0] if len(dates) == 1 else f"{dates[0]} to {dates[-1]}"
-        slug = f"{dates[-1].replace('-', '')}_{args.revision[:8]}"
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", args.commit_date):
+        raise SystemExit("--commit-date must be YYYY-MM-DD")
+    collected = "unknown" if not dates else (
+        dates[0] if len(dates) == 1 else f"{dates[0]} to {dates[-1]}"
+    )
+    slug = f"{args.commit_date.replace('-', '')}_{args.revision[:8]}"
     short = args.revision[:8]
 
     lines = [
@@ -275,7 +281,8 @@ def main() -> None:
         "| Field | Value |",
         "|---|---|",
         f"| TokenSpeed revision | `{args.revision}` |",
-        f"| Collected | {collected} |",
+        f"| Commit date (UTC) | {args.commit_date} |",
+        f"| Measured | {collected} |",
         f"| Model revision | `{doc950['software']['model_revision']}` |",
         f"| Model | {doc950['model']['model_type']}, "
         f"{doc950['model']['num_layers']} layers, "
@@ -362,6 +369,7 @@ def main() -> None:
         "```bash",
         "python3 toy_e2e/scripts/generate_arch_comparison.py \\",
         f"  --revision {args.revision} \\",
+        f"  --commit-date {args.commit_date} \\",
         "  --gfx950-performance <gfx950 performance result.json> \\",
         "  --gfx950-hotspots <gfx950 hotspots.json> \\",
         "  --gfx1250-performance <gfx1250 performance result.json> \\",

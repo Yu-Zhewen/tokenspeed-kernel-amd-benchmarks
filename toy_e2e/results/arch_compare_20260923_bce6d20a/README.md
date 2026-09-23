@@ -9,7 +9,8 @@ the same TokenSpeed commit, the same workload, and the same harness.
 | Field | Value |
 |---|---|
 | TokenSpeed revision | `bce6d20a0e64138c8a9efa83a1f522d7a6a671b7` |
-| Collected | 2026-09-23 |
+| Commit date (UTC) | 2026-09-23 |
+| Measured | 2026-09-23 |
 | Model revision | `eaf5a944bfc8c57438bbce226feef9f6bdbdaae1` |
 | Model | KimiK3ForConditionalGeneration, 93 layers, attn tp8 moe tp8 ep1 |
 | Prompt / output tokens | 50,000 / 1,024 |
@@ -305,6 +306,7 @@ Regenerate this document with:
 ```bash
 python3 toy_e2e/scripts/generate_arch_comparison.py \
   --revision bce6d20a0e64138c8a9efa83a1f522d7a6a671b7 \
+  --commit-date 2026-09-23 \
   --gfx950-performance <gfx950 performance result.json> \
   --gfx950-hotspots <gfx950 hotspots.json> \
   --gfx1250-performance <gfx1250 performance result.json> \

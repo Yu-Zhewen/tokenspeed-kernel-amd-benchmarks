@@ -113,6 +113,8 @@ for the node lock.
 ```bash
 python3 toy_e2e/scripts/generate_arch_comparison.py \
   --revision "$FULL_SHA" \
+  --commit-date "$(TZ=UTC git show -s --format=%cd \
+      --date=format-local:%Y-%m-%d "$FULL_SHA")" \
   --gfx950-performance  <gfx950 perf>/result.json \
   --gfx950-hotspots     <gfx950 hs>/hotspots/hotspots.json \
   --gfx1250-performance <gfx1250 perf>/result.json \
@@ -120,9 +122,11 @@ python3 toy_e2e/scripts/generate_arch_comparison.py \
   --output-dir "toy_e2e/results/arch_compare_$(date -u +%Y%m%d)_${FULL_SHA:0:8}"
 ```
 
-Name the directory `arch_compare_<YYYYMMDD>_<short-sha>` so entries sort by
-when they were collected; the document reports the same date, read from the
-inputs rather than the invocation, so the two cannot disagree.
+Name the directory `arch_compare_<YYYYMMDD>_<short-sha>`, using the commit's
+own UTC date, so entries sort by code history. Use UTC rather than the
+committer's local date: two commits landing hours apart can otherwise share a
+date and lose their ordering. The document records the measurement date
+separately, read from the inputs.
 
 All four inputs must come from the same commit. The generator does not check
 this, because the recorded revision is the runner's metadata rather than a
