@@ -69,37 +69,6 @@ STAGE_LABEL = {
     ("DECODE", "c16"): "decode c16",
     ("DECODE", "c1"): "decode c1",
 }
-# The ratio the strongest categories already reach, used as the bar for
-# reporting how much the weaker ones still have to give.
-# What MI455X should reach in each bucket if it hit the same fraction of its
-# own peak that MI355X hits of hers. Set by whichever resource the bucket is
-# bound by, from the published specs: BF16 matrix 5.0 vs 2.5 PFLOPS, MXFP4
-# 40.3 vs 10.1, memory bandwidth 23.3 vs 8.0 TB/s. Compute unit count and
-# clock are identical across the two parts, so none of the uplift comes from
-# extra parallelism.
-#
-# Treat the decode columns as indicative only. Decode runs thousands of 2-7us
-# kernels whose cost is dominated by launch and occupancy rather than FLOPs or
-# bytes, and neither scales with the peaks below.
-BF16_CEILING = 5.0 / 2.5
-MXFP4_CEILING = 40.3 / 10.1
-BANDWIDTH_CEILING = 23.3 / 8.0
-BUCKET_CEILING = {
-    "dense GEMM": BF16_CEILING,
-    "input projections": BF16_CEILING,
-    "MLA attention": BF16_CEILING,
-    "AttnRes": BF16_CEILING,
-    "KDA state scan": BF16_CEILING,
-    "KDA other": BF16_CEILING,
-    "MoE": MXFP4_CEILING,
-}
-
-
-def ceiling_for(category: str) -> float:
-    """Bandwidth is the default: the leftover buckets are all memory bound."""
-    return BUCKET_CEILING.get(category, BANDWIDTH_CEILING)
-
-
 ARCHES = [("gfx950", "MI355X"), ("gfx1250", "MI455X")]
 
 
@@ -252,7 +221,7 @@ STAGE_E2E = {
 }
 
 
-def breakdown_tables(hs950, hs1250, perf950, perf1250) -> tuple[list[str], list[str]]:
+def breakdown_tables(hs950, hs1250, perf950, perf1250) -> list[str]:
     per_stage = {
         key: (category_totals(hs950, key), category_totals(hs1250, key))
         for key in STAGES
@@ -260,39 +229,23 @@ def breakdown_tables(hs950, hs1250, perf950, perf1250) -> tuple[list[str], list[
     categories = {c for a, b in per_stage.values() for c in set(a) | set(b)}
 
     def rank_key(category):
-        total = 0.0
-        for a, b in per_stage.values():
-            ms_a = a.get(category, [0.0, 0])[0]
-            ms_b = b.get(category, [0.0, 0])[0]
-            if ms_a:
-                total += ms_b - ms_a / ceiling_for(category)
-        return total
+        return sum(b.get(category, [0.0, 0])[0] for _a, b in per_stage.values())
 
     order = sorted(categories, key=rank_key, reverse=True)
     header = "| Category | " + " | ".join(
         STAGE_LABEL[s] for s in STAGES
-    ) + " | Ceiling |"
-    align = "|---|" + "---:|" * len(STAGES) + "---:|"
+    ) + " |"
+    align = "|---|" + "---:|" * len(STAGES)
 
     ratios = [header, align]
-    headroom = [header.replace("Category", "Category"), align]
     for category in order:
-        rcells, hcells = [], []
+        rcells = []
         for key in STAGES:
             a, b = per_stage[key]
             ms_a = a.get(category, [0.0, 0])[0]
             ms_b = b.get(category, [0.0, 0])[0]
             rcells.append(f"{ms_a / ms_b:.2f}x" if ms_a and ms_b else "—")
-            if ms_a and ms_b:
-                h = ms_b - ms_a / ceiling_for(category)
-                hcells.append(f"{h:,.0f}")
-            else:
-                hcells.append("—")
-        ratios.append(
-            f"| {category} | " + " | ".join(rcells)
-            + f" | {ceiling_for(category):.2f}x |"
-        )
-        headroom.append(f"| {category} | " + " | ".join(hcells) + " | |")
+        ratios.append(f"| {category} | " + " | ".join(rcells) + " |")
 
     # Close with the measured step latency rather than a total of the rows
     # above, so the breakdown is anchored to what the machine reported.
@@ -306,10 +259,8 @@ def breakdown_tables(hs950, hs1250, perf950, perf1250) -> tuple[list[str], list[
             ocells.append("—")
             continue
         ocells.append(f"**{a / b:.2f}x**")
-    ratios.append(
-        "| **End-to-end (step p50)** | " + " | ".join(ocells) + " | |"
-    )
-    return ratios, headroom
+    ratios.append("| **End-to-end (step p50)** | " + " | ".join(ocells) + " |")
+    return ratios
 
 
 def kernel_table(rows, top) -> list[str]:
@@ -380,7 +331,7 @@ def main() -> None:
             "compare unlike work:\n  " + "\n  ".join(mismatches)
         )
     work = doc950["workload"]
-    ratios, headroom = breakdown_tables(hs950, hs1250, perf950, perf1250)
+    ratios = breakdown_tables(hs950, hs1250, perf950, perf1250)
     dates = collected_dates([
         args.gfx950_performance, args.gfx950_hotspots,
         args.gfx1250_performance, args.gfx1250_hotspots,
@@ -441,28 +392,13 @@ def main() -> None:
         "",
         "The final row is the measured step latency from the end-to-end "
         "table above, not a total of the rows, so the buckets can be read "
-        "against what the machine actually reported. The ceiling column is "
-        "what MI455X should reach if it hit the same fraction of its own "
-        "peak that MI355X hits of hers, set by whichever resource the bucket "
-        "is bound by. MI455X doubles BF16 matrix throughput, quadruples "
-        "MXFP4, and has 2.91x the memory bandwidth, but has the same compute "
-        "unit count at the same clock, so none of the uplift comes from "
-        "extra parallelism. Treat the decode ceilings as indicative: decode "
-        "is thousands of 2-7us kernels whose cost is launch- and "
-        "occupancy-bound rather than FLOP- or bandwidth-bound.",
+        "against what the machine actually reported.",
         "",
         "Kernels are bucketed by function because the two architectures do not",
         "split the work into the same kernels. Ratios are accumulated GPU kernel",
         "duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.",
         "",
         *ratios,
-        "",
-        "The same buckets, expressed as the milliseconds MI455X would save if a",
-        "bucket ran as efficiently against MI455X's peak as MI355X does",
-        "reach. Negative means MI455X is already past that bar, so the bucket has",
-        "nothing to give relative to MI355X whatever its absolute cost.",
-        "",
-        *headroom,
         "",
         "## Heaviest kernels",
         "",
