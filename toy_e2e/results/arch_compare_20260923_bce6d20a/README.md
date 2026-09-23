@@ -43,45 +43,45 @@ MI455X either way.
 
 ## Where the time goes
 
-The final row is the measured step latency from the end-to-end table above, not a total of the rows, so the buckets can be read against what the machine actually reported.
+The final row is the measured step latency from the end-to-end table above, not a total of the rows, so the buckets can be read against what the machine actually reported. The ceiling column is what MI455X should reach if it hit the same fraction of its own peak that MI355X hits of hers, set by whichever resource the bucket is bound by. MI455X doubles BF16 matrix throughput, quadruples MXFP4, and has 2.91x the memory bandwidth, but has the same compute unit count at the same clock, so none of the uplift comes from extra parallelism. Treat the decode ceilings as indicative: decode is thousands of 2-7us kernels whose cost is launch- and occupancy-bound rather than FLOP- or bandwidth-bound.
 
 Kernels are bucketed by function because the two architectures do not
 split the work into the same kernels. Ratios are accumulated GPU kernel
 duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.
 
-| Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
-|---|---:|---:|---:|---:|
-| dense GEMM | 1.19x | 1.18x | 1.10x | 1.67x |
-| input projections | 0.93x | 0.95x | 1.54x | 1.66x |
-| KDA state scan | 1.01x | 0.99x | — | — |
-| MLA attention | 1.23x | 1.37x | 1.58x | 2.08x |
-| AttnRes | 1.42x | 1.41x | 1.24x | 1.21x |
-| KDA other | 1.40x | 1.41x | 1.48x | 1.16x |
-| elementwise | 1.54x | 1.49x | 0.97x | 1.21x |
-| rmsnorm | 1.74x | 1.71x | 1.34x | 0.70x |
-| add3 | 2.81x | 2.80x | — | — |
-| other | 2.23x | 2.38x | 0.94x | 0.65x |
-| MoE | 1.74x | 1.77x | 1.50x | 1.04x |
-| **End-to-end (step p50)** | **1.36x** | **1.36x** | **1.30x** | **1.31x** |
+| Category | prefill c16 | prefill c1 | decode c16 | decode c1 | Ceiling |
+|---|---:|---:|---:|---:|---:|
+| MoE | 1.74x | 1.77x | 1.50x | 1.04x | 3.99x |
+| dense GEMM | 1.19x | 1.18x | 1.10x | 1.67x | 2.00x |
+| input projections | 0.93x | 0.95x | 1.54x | 1.66x | 2.00x |
+| KDA state scan | 1.01x | 0.99x | — | — | 2.00x |
+| MLA attention | 1.23x | 1.37x | 1.58x | 2.08x | 2.00x |
+| AttnRes | 1.42x | 1.41x | 1.24x | 1.21x | 2.00x |
+| KDA other | 1.40x | 1.41x | 1.48x | 1.16x | 2.00x |
+| elementwise | 1.54x | 1.49x | 0.97x | 1.21x | 2.91x |
+| other | 2.23x | 2.38x | 0.94x | 0.65x | 2.91x |
+| rmsnorm | 1.74x | 1.71x | 1.34x | 0.70x | 2.91x |
+| add3 | 2.81x | 2.80x | — | — | 2.91x |
+| **End-to-end (step p50)** | **1.36x** | **1.36x** | **1.30x** | **1.31x** | |
 
 The same buckets, expressed as the milliseconds MI455X would save if a
-bucket reached 1.5x, the ratio its strongest buckets already
+bucket ran as efficiently against MI455X's peak as MI355X does
 reach. Negative means MI455X is already past that bar, so the bucket has
 nothing to give relative to MI355X whatever its absolute cost.
 
-| Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
-|---|---:|---:|---:|---:|
-| dense GEMM | 1,872 | 122 | 93 | -14 |
-| input projections | 1,740 | 107 | -2 | -7 |
-| KDA state scan | 789 | 54 | — | — |
-| MLA attention | 502 | 13 | -5 | -20 |
-| AttnRes | 124 | 9 | 16 | 24 |
-| KDA other | 93 | 6 | 0 | 6 |
-| elementwise | -14 | 0 | 27 | 4 |
-| rmsnorm | -32 | -2 | 2 | 10 |
-| add3 | -237 | -15 | — | — |
-| other | -339 | -22 | 8 | 19 |
-| MoE | -1,168 | -85 | 0 | 48 |
+| Category | prefill c16 | prefill c1 | decode c16 | decode c1 | Ceiling |
+|---|---:|---:|---:|---:|---:|
+| MoE | 4,039 | 263 | 273 | 115 | |
+| dense GEMM | 3,664 | 234 | 157 | 19 | |
+| input projections | 2,455 | 153 | 21 | 11 | |
+| KDA state scan | 1,198 | 80 | — | — | |
+| MLA attention | 1,078 | 50 | 18 | -2 | |
+| AttnRes | 687 | 44 | 36 | 48 | |
+| KDA other | 433 | 27 | 8 | 12 | |
+| elementwise | 228 | 16 | 50 | 13 | |
+| other | 164 | 7 | 14 | 26 | |
+| rmsnorm | 80 | 5 | 12 | 14 | |
+| add3 | 9 | 1 | — | — | |
 
 ## Heaviest kernels
 
