@@ -50,7 +50,7 @@ duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.
 | Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
 |---|---:|---:|---:|---:|
 | AttnRes | 0.65x | 0.65x | 0.58x | 1.32x |
-| dense GEMM | 1.13x | 1.15x | 1.43x | 1.71x |
+| dense GEMM | 1.13x | 1.15x | 1.10x | 1.71x |
 | input projections | 1.13x | 1.13x | 1.56x | 1.64x |
 | KDA state scan | 1.00x | 0.98x | — | — |
 | MLA attention | 1.25x | 1.39x | 1.58x | 2.09x |
@@ -69,7 +69,7 @@ nothing to give relative to MI355X whatever its absolute cost.
 | Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
 |---|---:|---:|---:|---:|
 | AttnRes | 3,800 | 239 | 133 | 14 |
-| dense GEMM | 2,406 | 138 | 12 | -17 |
+| dense GEMM | 2,406 | 138 | 92 | -17 |
 | input projections | 1,137 | 71 | -4 | -6 |
 | KDA state scan | 790 | 54 | — | — |
 | MLA attention | 469 | 11 | -5 | -20 |
@@ -246,7 +246,7 @@ not wall time, and kernels may overlap. The heaviest
 | 3 | dense GEMM | `_wmma_tdm_dense_m16_kernel.kd` | 197.828 | 17,920 | 11.0 | 14.59% |
 | 4 | input projections | `_packed_input_projections_kernel.kd` | 90.991 | 5,888 | 15.5 | 6.71% |
 | 5 | MLA attention | `_mla_decode_fwd_kernel_num_query_heads_12_num_queries_per_kv_NONE_num_tokens_per_seq_1_TILE_SIZE_64_KV_LORA_RANK_512_QK_ROPE_HEAD_DIM_64_BLOCK_Q_1_BLOCK_M_16_NUM_HEAD_BLOCKS_1_NUM_KV_SPLITS_32_num_warps_2_num_stages_2.kd` | 83.232 | 1,536 | 54.2 | 6.14% |
-| 6 | add3 | `_wmma_tdm_add3_m16_kernel.kd` | 79.909 | 5,888 | 13.6 | 5.89% |
+| 6 | dense GEMM | `_wmma_tdm_add3_m16_kernel.kd` | 79.909 | 5,888 | 13.6 | 5.89% |
 | 7 | MoE | `_precomputed_topk_route_small_m_gfx1250_kernel.kd` | 57.764 | 5,888 | 9.8 | 4.26% |
 | 8 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 45.733 | 6,016 | 7.6 | 3.37% |
 | 9 | MoE | `gluon_sigmoid_bias_topk_gfx1250.kd` | 43.817 | 5,888 | 7.4 | 3.23% |

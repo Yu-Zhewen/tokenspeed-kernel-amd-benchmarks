@@ -43,7 +43,7 @@ CATEGORIES = [
     ),
     (
         "dense GEMM",
-        r"rowcta_gemv|projection_gemv|wmma_tdm_dense|mm_a16w16|^Cijk_"
+        r"rowcta_gemv|projection_gemv|wmma_tdm_dense|wmma_tdm_add3|mm_a16w16|^Cijk_"
         r"|^Custom_Cijk_|smallm|gluon_bmm|torch_mm|torch_bmm",
     ),
     ("input projections", r"packed_input_projections|latent_input"),
@@ -55,7 +55,9 @@ CATEGORIES = [
         r"|kda_paged_prefill_solve_merge|kda_paged_prefill_gfx|kda_fused"
         r"|causal_conv1d",
     ),
-    ("add3", r"^_add3_kernel|^_wmma_tdm_add3"),
+    # Only the elementwise add in ops/activation. The *_add3 GEMM epilogues
+    # live in gemm/ and are claimed by dense GEMM above.
+    ("add3", r"^_add3_kernel"),
     ("rmsnorm", r"rmsnorm|layernorm"),
     ("elementwise", r"elementwise|CatArrayBatched|copyBuffer"),
 ]
@@ -128,6 +130,37 @@ def check_bucket_symmetry(stages_a, stages_b) -> list[str]:
                         f"{row['category']}"
                     )
     return sorted(set(problems))
+
+
+def check_bucket_coverage(stages_a, stages_b, floor_ms: float = 5.0):
+    """Flag buckets that are substantial on one architecture and absent on the other.
+
+    Symmetric names are not enough. If the two architectures fuse an operation
+    differently, the kernels have unrelated names and land in different
+    buckets, so the ratio compares unlike work even though no single kernel is
+    miscategorised. gfx1250 fusing a matmul and its add into one kernel while
+    gfx950 leaves the matmul in hipBLASLt is the case that motivated this.
+    """
+    warnings = []
+    for stage in sorted(set(stages_a) | set(stages_b), key=str):
+        totals = []
+        for stages in (stages_a, stages_b):
+            by_cat = {}
+            for row in stages.get(stage, []):
+                by_cat[row["category"]] = (
+                    by_cat.get(row["category"], 0.0) + row["ms"]
+                )
+            totals.append(by_cat)
+        for category in set(totals[0]) | set(totals[1]):
+            a = totals[0].get(category, 0.0)
+            b = totals[1].get(category, 0.0)
+            if max(a, b) >= floor_ms and min(a, b) < floor_ms:
+                warnings.append(
+                    f"{stage} bucket {category!r} is {a:.1f}ms on gfx950 and "
+                    f"{b:.1f}ms on gfx1250; the architectures likely split "
+                    f"this work differently, so the ratio is not meaningful"
+                )
+    return warnings
 
 
 def read_performance(path: Path):
@@ -282,6 +315,9 @@ def main() -> None:
     hs950 = read_hotspots(args.gfx950_hotspots, 0)
     hs1250 = read_hotspots(args.gfx1250_hotspots, 1)
 
+    lopsided = check_bucket_coverage(hs950, hs1250)
+    for warning in lopsided:
+        print(f"warning: {warning}")
     mismatches = check_bucket_symmetry(hs950, hs1250)
     if mismatches:
         raise SystemExit(
