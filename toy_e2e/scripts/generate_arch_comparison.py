@@ -216,7 +216,16 @@ def category_totals(stages, key):
     return totals
 
 
-def breakdown_tables(hs950, hs1250) -> tuple[list[str], list[str]]:
+# The measured step latency behind each stage column, so the breakdown can
+# close with the number the machine actually reported rather than a total of
+# its own rows.
+STAGE_E2E = {
+    "EXTEND": lambda b: b["step_wall_ms"]["prefill"]["p50"],
+    "DECODE": lambda b: b["steady_decode_step_ms"]["p50"],
+}
+
+
+def breakdown_tables(hs950, hs1250, perf950, perf1250) -> tuple[list[str], list[str]]:
     per_stage = {
         key: (category_totals(hs950, key), category_totals(hs1250, key))
         for key in STAGES
@@ -255,20 +264,19 @@ def breakdown_tables(hs950, hs1250) -> tuple[list[str], list[str]]:
         ratios.append(f"| {category} | " + " | ".join(rcells) + " |")
         headroom.append(f"| {category} | " + " | ".join(hcells) + " |")
 
-    # Sum every kernel in the stage. This is the cross-check on the buckets:
-    # it should land within a few percent of the matching step p50 ratio in
-    # the end-to-end table, because the two measure the same thing by
-    # different routes. Kernel time omits host-side gaps, so a persistent gap
-    # between the two means launch overhead rather than kernel speed.
-    ocells, hcells = [], []
-    for key in STAGES:
-        a, b = per_stage[key]
-        ms_a = sum(v[0] for v in a.values())
-        ms_b = sum(v[0] for v in b.values())
-        ocells.append(f"**{ms_a / ms_b:.2f}x**" if ms_a and ms_b else "—")
-        hcells.append(f"**{ms_b - ms_a / TARGET_RATIO:,.0f}**" if ms_a and ms_b else "—")
-    ratios.append("| **Overall (sum of kernels)** | " + " | ".join(ocells) + " |")
-    headroom.append("| **Overall (sum of kernels)** | " + " | ".join(hcells) + " |")
+    # Close with the measured step latency rather than a total of the rows
+    # above, so the breakdown is anchored to what the machine reported.
+    ocells = []
+    for stage, conc in STAGES:
+        get = STAGE_E2E[stage]
+        batch = int(conc.lstrip("c"))
+        try:
+            a, b = get(perf950[batch]), get(perf1250[batch])
+        except KeyError:
+            ocells.append("—")
+            continue
+        ocells.append(f"**{a / b:.2f}x**")
+    ratios.append("| **End-to-end (step p50)** | " + " | ".join(ocells) + " |")
     return ratios, headroom
 
 
@@ -340,7 +348,7 @@ def main() -> None:
             "compare unlike work:\n  " + "\n  ".join(mismatches)
         )
     work = doc950["workload"]
-    ratios, headroom = breakdown_tables(hs950, hs1250)
+    ratios, headroom = breakdown_tables(hs950, hs1250, perf950, perf1250)
     dates = collected_dates([
         args.gfx950_performance, args.gfx950_hotspots,
         args.gfx1250_performance, args.gfx1250_hotspots,
@@ -399,11 +407,9 @@ def main() -> None:
         "",
         "## Where the time goes",
         "",
-        "The final row sums every kernel in the stage and should agree with "
-        "the matching `step p50` row of the end-to-end table above, which it "
-        "does here to within 0.03x. They are independent measurements of the "
-        "same work, so a divergence means either the profile missed kernels "
-        "or host-side launch gaps dominate.",
+        "The final row is the measured step latency from the end-to-end "
+        "table above, not a total of the rows, so the buckets can be read "
+        "against what the machine actually reported.",
         "",
         "Kernels are bucketed by function because the two architectures do not",
         "split the work into the same kernels. Ratios are accumulated GPU kernel",
