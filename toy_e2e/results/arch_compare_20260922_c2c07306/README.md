@@ -49,17 +49,17 @@ duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.
 
 | Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
 |---|---:|---:|---:|---:|
-| AttnRes | 0.65x | 0.56x | 0.58x | 0.44x |
-| dense GEMM | 1.13x | 1.07x | 1.43x | 0.84x |
-| input projections | 1.14x | 0.96x | 1.57x | 1.63x |
-| KDA state scan | 1.00x | 0.94x | — | — |
-| MLA attention | 1.23x | 1.37x | 1.59x | 2.60x |
-| other | 1.21x | 1.21x | 0.50x | 1.25x |
-| elementwise | 1.10x | 1.09x | 0.95x | 1.27x |
-| KDA other | 1.42x | 1.41x | 1.45x | 1.14x |
-| rmsnorm | 1.76x | 1.31x | 1.24x | 0.96x |
-| add3 | 2.91x | 2.89x | — | — |
-| MoE | 1.88x | 1.88x | 1.49x | 1.08x |
+| AttnRes | 0.65x | 0.65x | 0.58x | 0.43x |
+| dense GEMM | 1.13x | 1.11x | 1.41x | 0.84x |
+| input projections | 1.13x | 1.14x | 1.55x | 1.66x |
+| KDA state scan | 1.00x | 0.98x | — | — |
+| MLA attention | 1.23x | 1.37x | 1.58x | 2.61x |
+| other | 1.20x | 1.20x | 0.49x | 1.16x |
+| elementwise | 1.01x | 1.00x | 0.94x | 1.17x |
+| KDA other | 1.40x | 1.40x | 1.51x | 1.09x |
+| rmsnorm | 1.77x | 1.76x | 1.24x | 0.67x |
+| add3 | 2.90x | 2.89x | — | — |
+| MoE | 1.87x | 1.92x | 1.48x | 1.02x |
 
 The same buckets, expressed as the milliseconds MI455X would save if a
 bucket reached 1.5x, the ratio its strongest buckets already
@@ -68,17 +68,17 @@ nothing to give relative to MI355X whatever its absolute cost.
 
 | Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
 |---|---:|---:|---:|---:|
-| AttnRes | 3,802 | 307 | 133 | 2 |
-| dense GEMM | 2,369 | 180 | 12 | 53 |
-| input projections | 1,112 | 123 | -4 | -6 |
-| KDA state scan | 788 | 60 | — | — |
-| MLA attention | 486 | 13 | -5 | -27 |
-| other | 242 | 14 | 24 | 29 |
-| elementwise | 181 | 12 | 29 | 3 |
-| KDA other | 84 | 6 | 1 | 7 |
-| rmsnorm | -35 | 2 | 4 | 5 |
-| add3 | -254 | -16 | — | — |
-| MoE | -1,816 | -122 | 4 | 43 |
+| AttnRes | 3,807 | 239 | 133 | 2 |
+| dense GEMM | 2,379 | 157 | 17 | 53 |
+| input projections | 1,117 | 70 | -3 | -7 |
+| KDA state scan | 794 | 54 | — | — |
+| MLA attention | 495 | 13 | -5 | -27 |
+| other | 255 | 15 | 24 | 43 |
+| elementwise | 245 | 17 | 30 | 5 |
+| KDA other | 103 | 7 | -0 | 8 |
+| rmsnorm | -35 | -2 | 4 | 11 |
+| add3 | -253 | -16 | — | — |
+| MoE | -1,798 | -131 | 7 | 52 |
 
 ## Heaviest kernels
 
@@ -191,101 +191,101 @@ not wall time, and kernels may overlap. The heaviest
 
 | Rank | Category | Exact kernel name | GPU duration (ms) | Calls | Mean/call (us) | Stage GPU time |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | dense GEMM | `_wmma_tdm_dense_largem_kernel.kd` | 8,689.736 | 46,944 | 185.1 | 23.43% |
-| 2 | AttnRes | `gluon_attn_res_fwd_gfx1250.kd` | 6,728.901 | 18,326 | 367.2 | 18.14% |
-| 3 | MoE | `_matmul.kd` | 5,534.311 | 18,032 | 306.9 | 14.92% |
-| 4 | input projections | `_packed_input_projections_kernel.kd` | 4,570.306 | 9,016 | 506.9 | 12.32% |
-| 5 | MLA attention | `gluon_mla_prefill_gfx1250.kd` | 2,705.519 | 5,856 | 462.0 | 7.29% |
-| 6 | KDA state scan | `gluon_kda_paged_prefill_state_scan_gfx1250.kd` | 2,373.273 | 7,866 | 301.7 | 6.40% |
-| 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 899.493 | 22,478 | 40.0 | 2.42% |
-| 8 | KDA other | `gluon_kda_paged_prefill_preprocess_gfx1250.kd` | 843.107 | 7,866 | 107.2 | 2.27% |
-| 9 | other | `_fp8_quantize_kernel.kd` | 715.937 | 20,384 | 35.1 | 1.93% |
-| 10 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 553.809 | 9,016 | 61.4 | 1.49% |
-| 11 | elementwise | `void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}) [clone .kd]` | 455.499 | 28,449 | 16.0 | 1.23% |
-| 12 | MoE | `_precomputed_topk_route_large_stage2_gfx1250_kernel.kd` | 310.055 | 9,015 | 34.4 | 0.84% |
-| 13 | add3 | `_add3_kernel.kd` | 270.113 | 9,016 | 30.0 | 0.73% |
-| 14 | KDA other | `gluon_kda_paged_prefill_wu_vector_gfx1250.kd` | 254.792 | 7,866 | 32.4 | 0.69% |
-| 15 | MoE | `gluon_sigmoid_bias_topk_gfx1250.kd` | 234.872 | 9,016 | 26.1 | 0.63% |
-| 16 | KDA other | `_causal_conv1d_fwd_kernel.kd` | 217.508 | 6,762 | 32.2 | 0.59% |
-| 17 | MoE | `_precomputed_topk_route_large_stage4_gfx1250_kernel.kd` | 206.801 | 9,015 | 22.9 | 0.56% |
-| 18 | MoE | `_precomputed_topk_route_large_stage1_gfx1250_kernel.kd` | 143.441 | 9,016 | 15.9 | 0.39% |
-| 19 | KDA other | `gluon_kda_paged_prefill_gfx1250.kd` | 118.899 | 7,866 | 15.1 | 0.32% |
-| 20 | other | `_mla_nope_quantize_fp8_kernel.kd` | 111.152 | 2,352 | 47.3 | 0.30% |
+| 1 | dense GEMM | `_wmma_tdm_dense_largem_kernel.kd` | 8,683.330 | 46,944 | 185.0 | 23.32% |
+| 2 | AttnRes | `gluon_attn_res_fwd_gfx1250.kd` | 6,733.486 | 18,326 | 367.4 | 18.08% |
+| 3 | MoE | `_matmul.kd` | 5,534.310 | 18,032 | 306.9 | 14.86% |
+| 4 | input projections | `_packed_input_projections_kernel.kd` | 4,575.134 | 9,016 | 507.4 | 12.28% |
+| 5 | MLA attention | `gluon_mla_prefill_gfx1250.kd` | 2,715.143 | 5,856 | 463.7 | 7.29% |
+| 6 | KDA state scan | `gluon_kda_paged_prefill_state_scan_gfx1250.kd` | 2,379.130 | 7,866 | 302.5 | 6.39% |
+| 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 916.722 | 22,478 | 40.8 | 2.46% |
+| 8 | KDA other | `gluon_kda_paged_prefill_preprocess_gfx1250.kd` | 859.875 | 7,866 | 109.3 | 2.31% |
+| 9 | other | `_fp8_quantize_kernel.kd` | 716.087 | 20,384 | 35.1 | 1.92% |
+| 10 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 555.060 | 9,016 | 61.6 | 1.49% |
+| 11 | elementwise | `void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}) [clone .kd]` | 453.812 | 28,449 | 16.0 | 1.22% |
+| 12 | MoE | `_precomputed_topk_route_large_stage2_gfx1250_kernel.kd` | 317.305 | 9,016 | 35.2 | 0.85% |
+| 13 | add3 | `_add3_kernel.kd` | 270.890 | 9,016 | 30.0 | 0.73% |
+| 14 | KDA other | `gluon_kda_paged_prefill_wu_vector_gfx1250.kd` | 254.464 | 7,866 | 32.3 | 0.68% |
+| 15 | MoE | `gluon_sigmoid_bias_topk_gfx1250.kd` | 238.759 | 9,016 | 26.5 | 0.64% |
+| 16 | KDA other | `_causal_conv1d_fwd_kernel.kd` | 221.885 | 6,762 | 32.8 | 0.60% |
+| 17 | MoE | `_precomputed_topk_route_large_stage4_gfx1250_kernel.kd` | 206.508 | 9,016 | 22.9 | 0.55% |
+| 18 | MoE | `_precomputed_topk_route_large_stage1_gfx1250_kernel.kd` | 144.227 | 9,016 | 16.0 | 0.39% |
+| 19 | KDA other | `gluon_kda_paged_prefill_gfx1250.kd` | 119.521 | 7,866 | 15.2 | 0.32% |
+| 20 | other | `_mla_nope_quantize_fp8_kernel.kd` | 111.046 | 2,352 | 47.2 | 0.30% |
 
 ### MI455X (gfx1250) prefill c1
 
 | Rank | Category | Exact kernel name | GPU duration (ms) | Calls | Mean/call (us) | Stage GPU time |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | dense GEMM | `_wmma_tdm_dense_largem_kernel.kd` | 566.396 | 3,300 | 171.6 | 22.55% |
-| 2 | AttnRes | `gluon_attn_res_fwd_gfx1250.kd` | 489.882 | 1,309 | 374.2 | 19.51% |
-| 3 | MoE | `_matmul.kd` | 349.233 | 1,104 | 316.3 | 13.91% |
-| 4 | input projections | `_packed_input_projections_kernel.kd` | 341.405 | 644 | 530.1 | 13.60% |
-| 5 | KDA state scan | `gluon_kda_paged_prefill_state_scan_gfx1250.kd` | 161.345 | 552 | 292.3 | 6.42% |
-| 6 | MLA attention | `gluon_mla_prefill_gfx1250.kd` | 154.821 | 360 | 430.1 | 6.17% |
-| 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 63.474 | 1,486 | 42.7 | 2.53% |
-| 8 | KDA other | `gluon_kda_paged_prefill_preprocess_gfx1250.kd` | 53.829 | 552 | 97.5 | 2.14% |
-| 9 | other | `_fp8_quantize_kernel.kd` | 45.133 | 1,456 | 31.0 | 1.80% |
-| 10 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 34.640 | 644 | 53.8 | 1.38% |
-| 11 | elementwise | `void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}) [clone .kd]` | 29.629 | 2,169 | 13.7 | 1.18% |
-| 12 | MoE | `_matmul_decode.kd` | 25.237 | 184 | 137.2 | 1.00% |
-| 13 | MoE | `_precomputed_topk_route_large_stage2_gfx1250_kernel.kd` | 21.795 | 644 | 33.8 | 0.87% |
-| 14 | add3 | `_add3_kernel.kd` | 17.146 | 644 | 26.6 | 0.68% |
-| 15 | KDA other | `gluon_kda_paged_prefill_wu_vector_gfx1250.kd` | 15.880 | 552 | 28.8 | 0.63% |
-| 16 | MoE | `gluon_sigmoid_bias_topk_gfx1250.kd` | 15.125 | 644 | 23.5 | 0.60% |
-| 17 | KDA other | `_causal_conv1d_fwd_kernel.kd` | 13.992 | 483 | 29.0 | 0.56% |
-| 18 | MoE | `_precomputed_topk_route_large_stage4_gfx1250_kernel.kd` | 13.558 | 644 | 21.1 | 0.54% |
-| 19 | MoE | `_precomputed_topk_route_large_stage1_gfx1250_kernel.kd` | 10.254 | 644 | 15.9 | 0.41% |
-| 20 | rmsnorm | `_rmsnorm_gated_kernel.kd` | 9.386 | 483 | 19.4 | 0.37% |
+| 1 | dense GEMM | `_wmma_tdm_dense_largem_kernel.kd` | 546.723 | 3,300 | 165.7 | 23.22% |
+| 2 | AttnRes | `gluon_attn_res_fwd_gfx1250.kd` | 422.470 | 1,309 | 322.7 | 17.94% |
+| 3 | MoE | `_matmul.kd` | 338.623 | 1,104 | 306.7 | 14.38% |
+| 4 | input projections | `_packed_input_projections_kernel.kd` | 288.209 | 644 | 447.5 | 12.24% |
+| 5 | MLA attention | `gluon_mla_prefill_gfx1250.kd` | 155.252 | 360 | 431.3 | 6.59% |
+| 6 | KDA state scan | `gluon_kda_paged_prefill_state_scan_gfx1250.kd` | 154.791 | 552 | 280.4 | 6.57% |
+| 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 60.720 | 1,486 | 40.9 | 2.58% |
+| 8 | KDA other | `gluon_kda_paged_prefill_preprocess_gfx1250.kd` | 54.633 | 552 | 99.0 | 2.32% |
+| 9 | other | `_fp8_quantize_kernel.kd` | 45.048 | 1,456 | 30.9 | 1.91% |
+| 10 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 34.702 | 644 | 53.9 | 1.47% |
+| 11 | elementwise | `void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}) [clone .kd]` | 29.588 | 2,169 | 13.6 | 1.26% |
+| 12 | MoE | `_matmul_decode.kd` | 25.166 | 184 | 136.8 | 1.07% |
+| 13 | MoE | `_precomputed_topk_route_large_stage2_gfx1250_kernel.kd` | 22.243 | 644 | 34.5 | 0.94% |
+| 14 | add3 | `_add3_kernel.kd` | 17.130 | 644 | 26.6 | 0.73% |
+| 15 | KDA other | `gluon_kda_paged_prefill_wu_vector_gfx1250.kd` | 15.942 | 552 | 28.9 | 0.68% |
+| 16 | MoE | `gluon_sigmoid_bias_topk_gfx1250.kd` | 15.418 | 644 | 23.9 | 0.65% |
+| 17 | KDA other | `_causal_conv1d_fwd_kernel.kd` | 14.252 | 483 | 29.5 | 0.61% |
+| 18 | MoE | `_precomputed_topk_route_large_stage4_gfx1250_kernel.kd` | 13.519 | 644 | 21.0 | 0.57% |
+| 19 | MoE | `_precomputed_topk_route_large_stage1_gfx1250_kernel.kd` | 10.270 | 644 | 15.9 | 0.44% |
+| 20 | KDA other | `gluon_kda_paged_prefill_gfx1250.kd` | 7.820 | 552 | 14.2 | 0.33% |
 
 ### MI455X (gfx1250) decode c16
 
 | Rank | Category | Exact kernel name | GPU duration (ms) | Calls | Mean/call (us) | Stage GPU time |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | MoE | `_matmul_decode.kd` | 301.416 | 11,776 | 25.6 | 22.25% |
-| 2 | AttnRes | `gluon_attn_res_fwd_gfx1250.kd` | 217.964 | 11,968 | 18.2 | 16.09% |
-| 3 | dense GEMM | `_wmma_tdm_dense_m16_kernel.kd` | 198.171 | 17,920 | 11.1 | 14.63% |
-| 4 | input projections | `_packed_input_projections_kernel.kd` | 90.676 | 5,888 | 15.4 | 6.69% |
-| 5 | MLA attention | `_mla_decode_fwd_kernel_num_query_heads_12_num_queries_per_kv_NONE_num_tokens_per_seq_1_TILE_SIZE_64_KV_LORA_RANK_512_QK_ROPE_HEAD_DIM_64_BLOCK_Q_1_BLOCK_M_16_NUM_HEAD_BLOCKS_1_NUM_KV_SPLITS_32_num_warps_2_num_stages_2.kd` | 82.914 | 1,536 | 54.0 | 6.12% |
-| 6 | add3 | `_wmma_tdm_add3_m16_kernel.kd` | 80.278 | 5,888 | 13.6 | 5.93% |
-| 7 | MoE | `_precomputed_topk_route_small_m_gfx1250_kernel.kd` | 57.747 | 5,888 | 9.8 | 4.26% |
-| 8 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 45.831 | 6,016 | 7.6 | 3.38% |
-| 9 | MoE | `gluon_sigmoid_bias_topk_gfx1250.kd` | 43.584 | 5,888 | 7.4 | 3.22% |
-| 10 | elementwise | `void at::native::(anonymous namespace)::CatArrayBatchedCopy_contig<at::native::(anonymous namespace)::OpaqueType<2u>, unsigned int, 2, 128, 1>(at::native::(anonymous namespace)::OpaqueType<2u>*, at::native::(anonymous namespace)::CatArrInputTensorMetadata<at::native::(anonymous namespace)::OpaqueType<2u>, unsigned int, 128, 1>, at::native::(anonymous namespace)::TensorSizeStride<unsigned int, 4u>, int, unsigned int) [clone .kd]` | 38.884 | 5,888 | 6.6 | 2.87% |
-| 11 | elementwise | `void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}) [clone .kd]` | 35.314 | 9,024 | 3.9 | 2.61% |
-| 12 | KDA other | `gluon_kda_fused_paged_decode_vmajor_gfx1250.kd` | 31.641 | 4,416 | 7.2 | 2.34% |
-| 13 | other | `_fp8_quantize_kernel.kd` | 29.146 | 11,776 | 2.5 | 2.15% |
-| 14 | dense GEMM | `Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 22.962 | 3,072 | 7.5 | 1.69% |
-| 15 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 18.630 | 5,888 | 3.2 | 1.38% |
-| 16 | rmsnorm | `_rmsnorm_kernel.kd` | 17.370 | 5,888 | 3.0 | 1.28% |
-| 17 | MoE | `_situ_kernel.kd` | 16.260 | 5,888 | 2.8 | 1.20% |
-| 18 | rmsnorm | `_rmsnorm_fused_parallel_kernel.kd` | 5.708 | 1,536 | 3.7 | 0.42% |
-| 19 | other | `_mla_rope_set_kv_buffer_kernel.kd` | 4.760 | 1,536 | 3.1 | 0.35% |
-| 20 | MoE | `_sigmoid_mul_kernel.kd` | 4.669 | 1,536 | 3.0 | 0.34% |
+| 1 | MoE | `_matmul_decode.kd` | 298.600 | 11,776 | 25.4 | 21.88% |
+| 2 | AttnRes | `gluon_attn_res_fwd_gfx1250.kd` | 217.678 | 11,968 | 18.2 | 15.95% |
+| 3 | dense GEMM | `_wmma_tdm_dense_m16_kernel.kd` | 200.219 | 17,920 | 11.2 | 14.67% |
+| 4 | input projections | `_packed_input_projections_kernel.kd` | 91.582 | 5,888 | 15.6 | 6.71% |
+| 5 | MLA attention | `_mla_decode_fwd_kernel_num_query_heads_12_num_queries_per_kv_NONE_num_tokens_per_seq_1_TILE_SIZE_64_KV_LORA_RANK_512_QK_ROPE_HEAD_DIM_64_BLOCK_Q_1_BLOCK_M_16_NUM_HEAD_BLOCKS_1_NUM_KV_SPLITS_32_num_warps_2_num_stages_2.kd` | 83.111 | 1,536 | 54.1 | 6.09% |
+| 6 | add3 | `_wmma_tdm_add3_m16_kernel.kd` | 81.365 | 5,888 | 13.8 | 5.96% |
+| 7 | MoE | `_precomputed_topk_route_small_m_gfx1250_kernel.kd` | 62.830 | 5,888 | 10.7 | 4.60% |
+| 8 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 47.129 | 6,016 | 7.8 | 3.45% |
+| 9 | MoE | `gluon_sigmoid_bias_topk_gfx1250.kd` | 44.774 | 5,888 | 7.6 | 3.28% |
+| 10 | elementwise | `void at::native::(anonymous namespace)::CatArrayBatchedCopy_contig<at::native::(anonymous namespace)::OpaqueType<2u>, unsigned int, 2, 128, 1>(at::native::(anonymous namespace)::OpaqueType<2u>*, at::native::(anonymous namespace)::CatArrInputTensorMetadata<at::native::(anonymous namespace)::OpaqueType<2u>, unsigned int, 128, 1>, at::native::(anonymous namespace)::TensorSizeStride<unsigned int, 4u>, int, unsigned int) [clone .kd]` | 39.180 | 5,888 | 6.7 | 2.87% |
+| 11 | elementwise | `void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int, bool)#1}) [clone .kd]` | 34.844 | 9,024 | 3.9 | 2.55% |
+| 12 | KDA other | `gluon_kda_fused_paged_decode_vmajor_gfx1250.kd` | 30.447 | 4,416 | 6.9 | 2.23% |
+| 13 | other | `_fp8_quantize_kernel.kd` | 29.327 | 11,776 | 2.5 | 2.15% |
+| 14 | dense GEMM | `Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 24.279 | 3,072 | 7.9 | 1.78% |
+| 15 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 18.232 | 5,888 | 3.1 | 1.34% |
+| 16 | rmsnorm | `_rmsnorm_kernel.kd` | 17.303 | 5,888 | 2.9 | 1.27% |
+| 17 | MoE | `_situ_kernel.kd` | 16.102 | 5,888 | 2.7 | 1.18% |
+| 18 | rmsnorm | `_rmsnorm_fused_parallel_kernel.kd` | 5.679 | 1,536 | 3.7 | 0.42% |
+| 19 | MoE | `_sigmoid_mul_kernel.kd` | 4.614 | 1,536 | 3.0 | 0.34% |
+| 20 | MLA attention | `_mla_decode_fwd_reduce_kernel_num_query_heads_12_TILE_SIZE_64_KV_LORA_RANK_512_NUM_KV_SPLITS_32_ALL_DECODE_1_HAS_LSE_0_num_warps_4.kd` | 4.506 | 1,536 | 2.9 | 0.33% |
 
 ### MI455X (gfx1250) decode c1
 
 | Rank | Category | Exact kernel name | GPU duration (ms) | Calls | Mean/call (us) | Stage GPU time |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | MoE | `_matmul_decode.kd` | 93.922 | 11,776 | 8.0 | 15.22% |
-| 2 | other | `gluon_linear_attnres_partials_gfx1250.kd` | 72.973 | 5,440 | 13.4 | 11.82% |
-| 3 | input projections | `gluon_latent_input_decode_gfx1250.kd` | 65.784 | 5,888 | 11.2 | 10.66% |
-| 4 | dense GEMM | `_rowcta_gemv_kernel.kd` | 53.557 | 12,480 | 4.3 | 8.68% |
-| 5 | dense GEMM | `_rowcta_gemv_add3_kernel.kd` | 39.271 | 5,888 | 6.7 | 6.36% |
-| 6 | MLA attention | `_mla_decode_fwd_kernel_num_query_heads_12_num_queries_per_kv_NONE_num_tokens_per_seq_1_TILE_SIZE_64_KV_LORA_RANK_512_QK_ROPE_HEAD_DIM_64_BLOCK_Q_1_BLOCK_M_16_NUM_HEAD_BLOCKS_1_NUM_KV_SPLITS_64_num_warps_2_num_stages_2.kd` | 36.353 | 1,536 | 23.7 | 5.89% |
-| 7 | other | `_attnres_combine_kernel.kd` | 33.421 | 11,840 | 2.8 | 5.41% |
-| 8 | KDA other | `gluon_kda_fused_paged_decode_vmajor_gfx1250.kd` | 27.720 | 4,416 | 6.3 | 4.49% |
-| 9 | other | `_fp8_quantize_kernel.kd` | 27.408 | 11,776 | 2.3 | 4.44% |
-| 10 | MoE | `_decode_sigmoid_bias_topk_kernel.kd` | 23.346 | 5,888 | 4.0 | 3.78% |
-| 11 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 21.180 | 4,480 | 4.7 | 3.43% |
-| 12 | MoE | `_precomputed_topk_route_m1_canonical_gfx1250_kernel.kd` | 17.912 | 5,888 | 3.0 | 2.90% |
-| 13 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 17.443 | 5,888 | 3.0 | 2.83% |
-| 14 | elementwise | `void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>) [clone .kd]` | 16.935 | 5,504 | 3.1 | 2.74% |
-| 15 | other | `_mla_reduce_project_value_kernel.kd` | 16.227 | 1,536 | 10.6 | 2.63% |
-| 16 | other | `gluon_mla_normalize_project_query_gfx1250.kd` | 14.516 | 1,536 | 9.5 | 2.35% |
-| 17 | rmsnorm | `_rmsnorm_kernel.kd` | 13.625 | 5,952 | 2.3 | 2.21% |
-| 18 | dense GEMM | `Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 7.646 | 1,536 | 5.0 | 1.24% |
-| 19 | other | `_attnres_partial_kernel.kd` | 6.685 | 960 | 7.0 | 1.08% |
-| 20 | other | `_mla_rope_set_kv_buffer_kernel.kd` | 4.057 | 1,536 | 2.6 | 0.66% |
+| 1 | MoE | `_matmul_decode.kd` | 90.508 | 11,776 | 7.7 | 13.98% |
+| 2 | other | `gluon_linear_attnres_partials_gfx1250.kd` | 72.519 | 5,440 | 13.3 | 11.20% |
+| 3 | input projections | `gluon_latent_input_decode_gfx1250.kd` | 64.766 | 5,888 | 11.0 | 10.00% |
+| 4 | dense GEMM | `_rowcta_gemv_kernel.kd` | 52.938 | 12,480 | 4.2 | 8.18% |
+| 5 | other | `_attnres_combine_kernel.kd` | 46.181 | 11,840 | 3.9 | 7.13% |
+| 6 | dense GEMM | `_rowcta_gemv_add3_kernel.kd` | 38.930 | 5,888 | 6.6 | 6.01% |
+| 7 | MLA attention | `_mla_decode_fwd_kernel_num_query_heads_12_num_queries_per_kv_NONE_num_tokens_per_seq_1_TILE_SIZE_64_KV_LORA_RANK_512_QK_ROPE_HEAD_DIM_64_BLOCK_Q_1_BLOCK_M_16_NUM_HEAD_BLOCKS_1_NUM_KV_SPLITS_64_num_warps_2_num_stages_2.kd` | 36.160 | 1,536 | 23.5 | 5.58% |
+| 8 | MoE | `_decode_sigmoid_bias_topk_kernel.kd` | 29.470 | 5,888 | 5.0 | 4.55% |
+| 9 | KDA other | `gluon_kda_fused_paged_decode_vmajor_gfx1250.kd` | 29.086 | 4,416 | 6.6 | 4.49% |
+| 10 | other | `_fp8_quantize_kernel.kd` | 27.195 | 11,776 | 2.3 | 4.20% |
+| 11 | MoE | `_precomputed_topk_route_m1_canonical_gfx1250_kernel.kd` | 24.587 | 5,888 | 4.2 | 3.80% |
+| 12 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA128_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 21.672 | 4,480 | 4.8 | 3.35% |
+| 13 | rmsnorm | `_rmsnorm_kernel.kd` | 19.535 | 5,952 | 3.3 | 3.02% |
+| 14 | elementwise | `void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>) [clone .kd]` | 17.365 | 5,504 | 3.2 | 2.68% |
+| 15 | other | `_mla_reduce_project_value_kernel.kd` | 16.721 | 1,536 | 10.9 | 2.58% |
+| 16 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 16.505 | 5,888 | 2.8 | 2.55% |
+| 17 | other | `gluon_mla_normalize_project_query_gfx1250.kd` | 14.591 | 1,536 | 9.5 | 2.25% |
+| 18 | dense GEMM | `Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 8.000 | 1,536 | 5.2 | 1.24% |
+| 19 | other | `_attnres_partial_kernel.kd` | 7.917 | 960 | 8.2 | 1.22% |
+| 20 | other | `_mla_rope_set_kv_buffer_kernel.kd` | 3.834 | 1,536 | 2.5 | 0.59% |
 
 ## Method and limitations
 

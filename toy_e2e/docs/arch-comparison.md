@@ -180,6 +180,15 @@ an older revision and supplies only the Python environment, so a commit that
 requires a newer dependency will fail at import. The dummy-weight smoke test
 catches this too.
 
+**Profiles taken across a reboot are not comparable.** Short kernels on this
+gfx1250 node ran about 35% slower after a reboot than before it, at identical
+code: `_rmsnorm_kernel` went 2.29 to 3.28 us per call, and `copyBuffer`, a ROCm
+runtime primitive no commit can touch, went 1.73 to 2.41. Kernels above roughly
+10 us were unaffected. Comparing two commits profiled either side of a reboot
+therefore invents a regression that is not there. Profile both commits of a
+comparison on the same boot, and if the node restarts midway, re-profile the
+earlier commit rather than reusing the old numbers.
+
 **Identical results across runs do not prove the kernel wrote them.** PyTorch's
 caching allocator hands back the same block, so stale memory is deterministic.
 To find out whether a kernel writes a buffer, free a same-shaped buffer full of
