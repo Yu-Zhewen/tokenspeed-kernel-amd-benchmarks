@@ -1291,7 +1291,8 @@ def main() -> int:
         try:
             for concurrency in concurrencies:
                 print(
-                    f"Running C{concurrency} full 4K/1K warmup "
+                    f"Running C{concurrency} warmup, "
+                    f"{args.prompt_tokens}/{args.output_tokens} tokens "
                     f"({args.warmup_waves * concurrency} requests)",
                     flush=True,
                 )
@@ -1310,7 +1311,8 @@ def main() -> int:
                     run_label="warmup",
                 )
                 print(
-                    f"Measuring C{concurrency} full 4K/1K rolling graph "
+                    f"Measuring C{concurrency} rolling graph, "
+                    f"{args.prompt_tokens}/{args.output_tokens} tokens "
                     f"({args.measurement_waves * concurrency} requests)",
                     flush=True,
                 )
