@@ -180,6 +180,13 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         )
     if args.prompt_tokens <= 0 or args.decode_steps < 0:
         raise ValueError("token count must be positive and step count non-negative")
+    if args.output_tokens <= 0:
+        raise ValueError("--output-tokens must be positive")
+    if args.decode_steps > args.output_tokens:
+        raise ValueError(
+            "--decode-steps cannot exceed --output-tokens; the KV allocation "
+            "is sized from --output-tokens"
+        )
     if args.chunked_prefill_size <= 0 or args.cache_gib <= 0:
         raise ValueError("prefill size and cache GiB must be positive")
     if args.synthetic_vocabulary_size <= 0:
@@ -206,7 +213,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         server_args, model_config, runner = load_logical_rank(
             args.checkpoint,
             load_format=load_format,
-            max_model_len=args.prompt_tokens + max(args.decode_steps, 1) + 1,
+            max_model_len=args.prompt_tokens + args.output_tokens,
             max_num_seqs=max(concurrencies),
             chunked_prefill_size=args.chunked_prefill_size,
         )
@@ -422,6 +429,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--chunked-prefill-size", type=int, default=8192)
     parser.add_argument("--cache-gib", type=float, default=32.0)
     parser.add_argument("--decode-steps", type=int, default=64)
+    # Sizes the KV allocation, matching benchmark_logical_rank.py. Keeping
+    # this separate from --decode-steps means the number of forwards we
+    # capture cannot change the memory geometry being profiled.
+    parser.add_argument("--output-tokens", type=int, default=1024)
     parser.add_argument(
         "--shapes-only",
         action="store_true",
