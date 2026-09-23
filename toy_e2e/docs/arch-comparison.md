@@ -150,6 +150,19 @@ will not die. A wedged container may need a host power cycle.
 survives and keeps queueing. Kill it on the remote host, or it competes with
 your own next attempt.
 
+**Killing the `flock` wrapper does not release the lock.** Its `docker run`
+child inherits the open file descriptor and survives as an orphan, so the lock
+stays held by a process that is not a `flock` process. Counting your own
+`flock` processes will therefore report the lock free while another user waits
+on it. Always verify with the descriptor holder, which names whoever actually
+has it regardless of the process:
+
+```bash
+fuser -v /data/lock/amd-gpu.lock
+```
+
+Kill that PID, then re-run the same command and confirm it prints nothing.
+
 **`pkill -f` matches your own shell.** The pattern appears in the invoking
 command line, so `pkill -f run_matrix.sh` kills the shell running it before it
 does anything. Use `pkill -f "run_matrix[.]sh"`.
