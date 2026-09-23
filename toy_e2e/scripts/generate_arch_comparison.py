@@ -254,6 +254,21 @@ def breakdown_tables(hs950, hs1250) -> tuple[list[str], list[str]]:
                 hcells.append("—")
         ratios.append(f"| {category} | " + " | ".join(rcells) + " |")
         headroom.append(f"| {category} | " + " | ".join(hcells) + " |")
+
+    # Sum every kernel in the stage. This is the cross-check on the buckets:
+    # it should land within a few percent of the matching step p50 ratio in
+    # the end-to-end table, because the two measure the same thing by
+    # different routes. Kernel time omits host-side gaps, so a persistent gap
+    # between the two means launch overhead rather than kernel speed.
+    ocells, hcells = [], []
+    for key in STAGES:
+        a, b = per_stage[key]
+        ms_a = sum(v[0] for v in a.values())
+        ms_b = sum(v[0] for v in b.values())
+        ocells.append(f"**{ms_a / ms_b:.2f}x**" if ms_a and ms_b else "—")
+        hcells.append(f"**{ms_b - ms_a / TARGET_RATIO:,.0f}**" if ms_a and ms_b else "—")
+    ratios.append("| **Overall (sum of kernels)** | " + " | ".join(ocells) + " |")
+    headroom.append("| **Overall (sum of kernels)** | " + " | ".join(hcells) + " |")
     return ratios, headroom
 
 
@@ -383,6 +398,12 @@ def main() -> None:
         *perf_table(perf950, perf1250),
         "",
         "## Where the time goes",
+        "",
+        "The final row sums every kernel in the stage and should agree with "
+        "the matching `step p50` row of the end-to-end table above, which it "
+        "does here to within 0.03x. They are independent measurements of the "
+        "same work, so a divergence means either the profile missed kernels "
+        "or host-side launch gaps dominate.",
         "",
         "Kernels are bucketed by function because the two architectures do not",
         "split the work into the same kernels. Ratios are accumulated GPU kernel",

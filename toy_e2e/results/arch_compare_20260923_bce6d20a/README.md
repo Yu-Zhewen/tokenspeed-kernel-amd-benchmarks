@@ -43,6 +43,8 @@ MI455X either way.
 
 ## Where the time goes
 
+The final row sums every kernel in the stage and should agree with the matching `step p50` row of the end-to-end table above, which it does here to within 0.03x. They are independent measurements of the same work, so a divergence means either the profile missed kernels or host-side launch gaps dominate.
+
 Kernels are bucketed by function because the two architectures do not
 split the work into the same kernels. Ratios are accumulated GPU kernel
 duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.
@@ -60,6 +62,7 @@ duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.
 | add3 | 2.81x | 2.80x | — | — |
 | other | 2.23x | 2.38x | 0.94x | 0.65x |
 | MoE | 1.74x | 1.77x | 1.50x | 1.04x |
+| **Overall (sum of kernels)** | **1.34x** | **1.36x** | **1.33x** | **1.33x** |
 
 The same buckets, expressed as the milliseconds MI455X would save if a
 bucket reached 1.5x, the ratio its strongest buckets already
@@ -79,6 +82,7 @@ nothing to give relative to MI355X whatever its absolute cost.
 | add3 | -237 | -15 | — | — |
 | other | -339 | -22 | 8 | 19 |
 | MoE | -1,168 | -85 | 0 | 48 |
+| **Overall (sum of kernels)** | **3,330** | **187** | **139** | **70** |
 
 ## Heaviest kernels
 
