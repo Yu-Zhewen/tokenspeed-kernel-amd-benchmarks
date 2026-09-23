@@ -1,15 +1,19 @@
 # Kimi-K3 toy-rank and real-TP8 runbook
 
-This runbook collects the three targets in [`TEST_PLAN.md`](TEST_PLAN.md).
+This runbook collects the targets in [`TEST_PLAN.md`](TEST_PLAN.md). For a
+MI355X versus MI455X comparison at one commit, follow
+[`docs/arch-comparison.md`](docs/arch-comparison.md) instead; it wraps the
+steps below with the per-commit worktree and generation flow.
 Run performance without a profiler, then collect stage hotspots in a separate
 eager run.
 
 ## 1. Common inputs
 
-Use these exact revisions for the current matched set:
+Set the commit under test. Every run in one result entry must use the same
+value, and for a cross-architecture entry both architectures must use it too:
 
 ```bash
-export TOKENSPEED_SHA=0b1061eb9fe1df36a4e48e5c9c291cd753af9e89
+export TOKENSPEED_SHA=<commit under test>
 export MODEL_SHA=eaf5a944bfc8c57438bbce226feef9f6bdbdaae1
 export TS_SHORT_SHA="${TOKENSPEED_SHA:0:8}"
 export BENCHMARKS_ROOT=/workspace/tokenspeed-kernel-amd-benchmarks

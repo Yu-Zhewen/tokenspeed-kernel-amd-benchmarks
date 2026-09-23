@@ -82,6 +82,9 @@ def _category(kernel_name: str) -> str:
             "scatter_kernel",
             "split_epilogue",
             "situ_",
+            "latent_input",
+            "packed_projection",
+            "packed_input_projection",
         )
     ):
         return "moe"
@@ -93,9 +96,6 @@ def _category(kernel_name: str) -> str:
             "gdn_",
             "fla_kda",
             "linear_attention",
-            "latent_input",
-            "packed_projection",
-            "packed_input_projection",
             "state_scan",
             "preprocess_intra",
         )
@@ -125,6 +125,8 @@ def _category(kernel_name: str) -> str:
             "mxfp",
             "mfma",
             "cijk_",
+            "quantize",
+            "dequantize",
         )
     ):
         return "gemm_or_quant"
@@ -147,6 +149,21 @@ def _category(kernel_name: str) -> str:
     ):
         return "elementwise_or_reduction"
     return "other"
+
+
+def _interval_union_us(intervals: list[tuple[float, float]]) -> float:
+    if not intervals:
+        return 0.0
+    ordered = sorted(intervals)
+    union = 0.0
+    start, end = ordered[0]
+    for next_start, next_end in ordered[1:]:
+        if next_start <= end:
+            end = max(end, next_end)
+            continue
+        union += end - start
+        start, end = next_start, next_end
+    return union + end - start
 
 
 def _rank_trace(path: Path) -> dict[str, Any]:
@@ -175,6 +192,7 @@ def _rank_trace(path: Path) -> dict[str, Any]:
     categories: dict[str, dict[str, float | int]] = defaultdict(
         lambda: {"calls": 0, "total_ms": 0.0}
     )
+    kernel_intervals_us: list[tuple[float, float]] = []
     for event in report.get("traceEvents", []):
         if (
             event.get("ph") != "X"
@@ -186,6 +204,10 @@ def _rank_trace(path: Path) -> dict[str, Any]:
         # Chrome trace timestamps and durations are expressed in microseconds.
         # displayTimeUnit controls only the viewer's presentation.
         elapsed_ms = float(event["dur"]) / 1e3
+        timestamp = event.get("ts")
+        if isinstance(timestamp, (int, float)):
+            start_us = float(timestamp)
+            kernel_intervals_us.append((start_us, start_us + float(event["dur"])))
         kernels[name]["calls"] = int(kernels[name]["calls"]) + 1
         kernels[name]["total_ms"] = float(kernels[name]["total_ms"]) + elapsed_ms
         category = _category(name)
@@ -193,6 +215,8 @@ def _rank_trace(path: Path) -> dict[str, Any]:
         categories[category]["total_ms"] = (
             float(categories[category]["total_ms"]) + elapsed_ms
         )
+    kernel_ms = sum(float(item["total_ms"]) for item in kernels.values())
+    kernel_union_ms = _interval_union_us(kernel_intervals_us) / 1e3
     return {
         "source": source,
         "setting": setting,
@@ -201,7 +225,9 @@ def _rank_trace(path: Path) -> dict[str, Any]:
         "stage": stage,
         "path": str(path),
         "kernel_calls": sum(int(item["calls"]) for item in kernels.values()),
-        "kernel_ms": sum(float(item["total_ms"]) for item in kernels.values()),
+        "kernel_ms": kernel_ms,
+        "kernel_union_ms": kernel_union_ms,
+        "kernel_overlap_ms": max(0.0, kernel_ms - kernel_union_ms),
         "kernels": dict(kernels),
         "categories": dict(categories),
     }
@@ -272,6 +298,8 @@ def summarize(trace_paths: list[Path], *, top_k: int) -> dict[str, Any]:
     for (source, setting, profile_id, stage), ranks in sorted(groups.items()):
         ranks.sort(key=lambda item: item["rank"])
         rank_kernel_ms = [float(rank["kernel_ms"]) for rank in ranks]
+        rank_kernel_union_ms = [float(rank["kernel_union_ms"]) for rank in ranks]
+        rank_kernel_overlap_ms = [float(rank["kernel_overlap_ms"]) for rank in ranks]
         mean_kernel_ms = statistics.fmean(rank_kernel_ms)
         all_categories = _aggregate_items(ranks, "categories", top_k=None)
         all_kernels = _aggregate_items(ranks, "kernels", top_k=None)
@@ -295,6 +323,25 @@ def summarize(trace_paths: list[Path], *, top_k: int) -> dict[str, Any]:
                         else 0.0
                     ),
                 },
+                "rank_kernel_union_ms": {
+                    "total": sum(rank_kernel_union_ms),
+                    "min": min(rank_kernel_union_ms),
+                    "mean": statistics.fmean(rank_kernel_union_ms),
+                    "max": max(rank_kernel_union_ms),
+                },
+                "rank_kernel_overlap_ms": {
+                    "total": sum(rank_kernel_overlap_ms),
+                    "min": min(rank_kernel_overlap_ms),
+                    "mean": statistics.fmean(rank_kernel_overlap_ms),
+                    "max": max(rank_kernel_overlap_ms),
+                    "mean_pct_of_kernel_sum": (
+                        100.0
+                        * statistics.fmean(rank_kernel_overlap_ms)
+                        / mean_kernel_ms
+                        if mean_kernel_ms
+                        else 0.0
+                    ),
+                },
                 "kernel_calls_per_rank": {
                     "min": min(rank["kernel_calls"] for rank in ranks),
                     "mean": statistics.fmean(
@@ -310,6 +357,8 @@ def summarize(trace_paths: list[Path], *, top_k: int) -> dict[str, Any]:
                         "rank": rank["rank"],
                         "kernel_calls": rank["kernel_calls"],
                         "kernel_ms": rank["kernel_ms"],
+                        "kernel_union_ms": rank["kernel_union_ms"],
+                        "kernel_overlap_ms": rank["kernel_overlap_ms"],
                         "trace": rank["path"],
                     }
                     for rank in ranks

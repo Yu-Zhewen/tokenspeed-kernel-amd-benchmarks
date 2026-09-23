@@ -17,6 +17,7 @@ def test_summary_reports_common_p90_metric():
 
     assert result["p50"] == 3.0
     assert result["p90"] == pytest.approx(4.6)
+    assert result["stdev"] == pytest.approx(2.0**0.5)
 
 
 def test_hotspot_summary_sorts_modules_and_reports_model_share():

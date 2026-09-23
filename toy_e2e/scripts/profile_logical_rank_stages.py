@@ -17,6 +17,7 @@ from typing import Any
 import torch
 import transformers
 import triton
+from tokenspeed_kernel.profiling import start_shape_capture, stop_shape_capture
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
@@ -44,44 +45,74 @@ class StageTrace:
         phase: str,
         output: Path,
         max_steps: int | None,
+        shapes_output: Path | None = None,
+        capture_trace: bool = True,
     ) -> None:
         self.phase = phase
         self.output = output
+        self.shapes_output = shapes_output or output.with_suffix(".shapes.json")
         self.max_steps = max_steps
+        self.capture_trace = capture_trace
         self.steps = 0
         self._profiler: Any | None = None
+        self._active = False
+        self._shape_capture_active = False
 
     def before_forward(self, phase: str) -> None:
-        if phase != self.phase or self._profiler is not None:
+        if phase != self.phase or self._active:
             return
         if self.max_steps is not None and self.steps >= self.max_steps:
             return
         self.output.parent.mkdir(parents=True, exist_ok=True)
-        self._profiler = torch.profiler.profile(
-            activities=[
-                torch.profiler.ProfilerActivity.CPU,
-                torch.profiler.ProfilerActivity.CUDA,
-            ],
-            record_shapes=False,
-            with_stack=False,
-        )
-        self._profiler.start()
+        self.shapes_output.parent.mkdir(parents=True, exist_ok=True)
+        start_shape_capture()
+        self._shape_capture_active = True
+        self._active = True
+        try:
+            if self.capture_trace:
+                self._profiler = torch.profiler.profile(
+                    activities=[
+                        torch.profiler.ProfilerActivity.CPU,
+                        torch.profiler.ProfilerActivity.CUDA,
+                    ],
+                    record_shapes=(
+                        os.environ.get("TOKENSPEED_TORCH_PROFILER_RECORD_SHAPES")
+                        == "1"
+                    ),
+                    with_stack=False,
+                )
+                self._profiler.start()
+        except BaseException:
+            self._active = False
+            self._stop_shape_capture()
+            raise
 
     def after_forward(self, phase: str) -> None:
-        if phase != self.phase or self._profiler is None:
+        if phase != self.phase or not self._active:
             return
         self.steps += 1
         if self.max_steps is not None and self.steps >= self.max_steps:
             self.close()
 
     def close(self) -> None:
-        if self._profiler is None:
+        if not self._active:
             return
-        torch.cuda.synchronize()
+        self._active = False
         profiler = self._profiler
         self._profiler = None
-        profiler.stop()
-        profiler.export_chrome_trace(str(self.output))
+        try:
+            if profiler is not None:
+                torch.cuda.synchronize()
+                profiler.stop()
+                profiler.export_chrome_trace(str(self.output))
+        finally:
+            self._stop_shape_capture()
+
+    def _stop_shape_capture(self) -> None:
+        if not self._shape_capture_active:
+            return
+        self._shape_capture_active = False
+        stop_shape_capture(self.shapes_output)
 
 
 def _profile_stage(
@@ -98,12 +129,14 @@ def _profile_stage(
     phase: str,
     steps: int,
     output: Path,
+    capture_trace: bool = True,
 ) -> dict[str, Any]:
     output_tokens = 1 if phase == "prefill" else steps + 1
     trace = StageTrace(
         phase=phase,
         output=output,
         max_steps=steps,
+        capture_trace=capture_trace,
     )
     try:
         workload = _run_workload(
@@ -127,12 +160,13 @@ def _profile_stage(
             f"captured {trace.steps} {phase} forwards at C{concurrency}; "
             f"expected {steps}"
         )
-    if not output.is_file():
+    if capture_trace and not output.is_file():
         raise RuntimeError(f"profiler did not create {output}")
     return {
         "phase": phase,
         "forward_count": trace.steps,
-        "trace": str(output),
+        "trace": str(output) if capture_trace else None,
+        "shapes": str(trace.shapes_output),
         "model_ms": workload["model_ms"].get(phase, {"count": 0}),
         "collectives": workload["collectives"].get(phase, {}),
     }
@@ -144,20 +178,24 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "logical-rank profiling requires exactly one visible GPU; set "
             "ROCR_VISIBLE_DEVICES and HIP_VISIBLE_DEVICES"
         )
-    if args.prompt_tokens <= 0 or args.decode_steps <= 0:
-        raise ValueError("token and step counts must be positive")
+    if args.prompt_tokens <= 0 or args.decode_steps < 0:
+        raise ValueError("token count must be positive and step count non-negative")
     if args.chunked_prefill_size <= 0 or args.cache_gib <= 0:
         raise ValueError("prefill size and cache GiB must be positive")
     if args.synthetic_vocabulary_size <= 0:
         raise ValueError("synthetic vocabulary size must be positive")
+    if args.profile_kimi3_moe:
+        from tokenspeed.runtime.layers.moe import latent
+
+        enable_profiling = getattr(latent, "enable_kimi3_moe_profiling", None)
+        if enable_profiling is not None:
+            enable_profiling()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     torch.cuda.set_device(0)
     architecture = torch.cuda.get_device_properties(0).gcnArchName
     if not architecture.startswith(args.expected_arch):
-        raise RuntimeError(
-            f"expected {args.expected_arch}, detected {architecture}"
-        )
+        raise RuntimeError(f"expected {args.expected_arch}, detected {architecture}")
     concurrencies = tuple(dict.fromkeys(args.concurrency))
     load_format: str | type = {
         "raw-rank-state": RawRankStateLoader,
@@ -168,7 +206,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         server_args, model_config, runner = load_logical_rank(
             args.checkpoint,
             load_format=load_format,
-            max_model_len=args.prompt_tokens + args.decode_steps + 1,
+            max_model_len=args.prompt_tokens + max(args.decode_steps, 1) + 1,
             max_num_seqs=max(concurrencies),
             chunked_prefill_size=args.chunked_prefill_size,
         )
@@ -232,31 +270,48 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 phase="prefill",
                 steps=prefill_steps,
                 output=prefill_path,
+                capture_trace=not args.shapes_only,
             )
-            print(
-                f"Capturing C{concurrency} decode ({args.decode_steps} forwards)",
-                flush=True,
-            )
-            decode_path = (
-                args.output_dir
-                / f"c{concurrency}"
-                / "decode"
-                / f"toy-c{concurrency}-TP0-DECODE.trace.json"
-            )
-            decode = _profile_stage(
-                runner=runner,
-                backend=backend,
-                pool=pool,
-                logical_backend=logical_backend,
-                concurrency=concurrency,
-                prompt_tokens=args.prompt_tokens,
-                chunked_prefill_size=args.chunked_prefill_size,
-                prompt_seed=args.prompt_seed,
-                synthetic_vocabulary_size=args.synthetic_vocabulary_size,
-                phase="decode",
-                steps=args.decode_steps,
-                output=decode_path,
-            )
+            if args.decode_steps:
+                print(
+                    f"Capturing C{concurrency} decode "
+                    f"({args.decode_steps} forwards)",
+                    flush=True,
+                )
+                decode_path = (
+                    args.output_dir
+                    / f"c{concurrency}"
+                    / "decode"
+                    / f"toy-c{concurrency}-TP0-DECODE.trace.json"
+                )
+                decode = _profile_stage(
+                    runner=runner,
+                    backend=backend,
+                    pool=pool,
+                    logical_backend=logical_backend,
+                    concurrency=concurrency,
+                    prompt_tokens=args.prompt_tokens,
+                    chunked_prefill_size=args.chunked_prefill_size,
+                    prompt_seed=args.prompt_seed,
+                    synthetic_vocabulary_size=args.synthetic_vocabulary_size,
+                    phase="decode",
+                    steps=args.decode_steps,
+                    output=decode_path,
+                    capture_trace=not args.shapes_only,
+                )
+            else:
+                print(
+                    f"Skipping C{concurrency} decode capture",
+                    flush=True,
+                )
+                decode = {
+                    "phase": "decode",
+                    "forward_count": 0,
+                    "trace": None,
+                    "shapes": None,
+                    "model_ms": {"count": 0},
+                    "collectives": {},
+                }
             runs.append(
                 {
                     "concurrency": concurrency,
@@ -276,6 +331,18 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         },
         "software": {
             "tokenspeed_revision": args.tokenspeed_revision,
+            "tokenspeed_worktree_sha256": os.environ.get(
+                "TOKENSPEED_WORKTREE_SHA256", "unavailable"
+            ),
+            "tokenspeed_worktree_dirty": os.environ.get(
+                "TOKENSPEED_WORKTREE_DIRTY", "unavailable"
+            ),
+            "benchmarks_worktree_sha256": os.environ.get(
+                "BENCHMARKS_WORKTREE_SHA256", "unavailable"
+            ),
+            "benchmarks_worktree_dirty": os.environ.get(
+                "BENCHMARKS_WORKTREE_DIRTY", "unavailable"
+            ),
             "model_revision": args.model_revision,
             "pytorch": torch.__version__,
             "hip": torch.version.hip,
@@ -283,7 +350,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "triton": triton.__version__,
             "profile_backend": os.environ.get(
                 "TOKENSPEED_KERNEL_PROFILE_BACKEND", "torch-default"
-            ),
+            )
+            if not args.shapes_only
+            else "shape-capture-only",
+            "kimi3_moe_scopes": args.profile_kimi3_moe,
             "container_image": args.container_image,
             "os": platform.platform(),
         },
@@ -352,6 +422,16 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--chunked-prefill-size", type=int, default=8192)
     parser.add_argument("--cache-gib", type=float, default=32.0)
     parser.add_argument("--decode-steps", type=int, default=64)
+    parser.add_argument(
+        "--shapes-only",
+        action="store_true",
+        help="capture exact selected-kernel shapes without GPU trace files",
+    )
+    parser.add_argument(
+        "--profile-kimi3-moe",
+        action="store_true",
+        help="record named semantic scopes for the Kimi-K3 MoE flow",
+    )
     parser.add_argument("--prompt-seed", type=int, default=DEFAULT_PROMPT_SEED)
     parser.add_argument(
         "--synthetic-vocabulary-size",

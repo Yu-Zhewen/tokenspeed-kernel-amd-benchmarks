@@ -1,16 +1,21 @@
 # Kimi-K3 toy-rank and real-TP8 benchmarks
 
-This package maintains three Kimi-K3 TP8/EP1 measurement targets:
+This package measures Kimi-K3 TP8/EP1 on AMD GPUs. Two workflows are current:
 
-| Target | Physical GPUs | Purpose | Status |
-|---|---:|---|---|
-| gfx950 toy 1-GPU | 1 | logical TP8 rank-0 compute estimate | [complete](results/gfx950_toy_1gpu_0b1061eb/) |
-| gfx950 real 8-GPU | 8 | physical TP8/EP1 serving | [complete](results/gfx950_real_8gpu_0b1061eb/) |
-| gfx1250 toy 1-GPU | 1 | logical TP8 rank-0 compute estimate | [complete](results/gfx1250_toy_1gpu_0b1061eb/) |
+| Workflow | GPUs | Purpose | Procedure |
+|---|---|---|---|
+| cross-architecture comparison | 1 per architecture | MI355X vs MI455X on one TokenSpeed commit | [docs/arch-comparison.md](docs/arch-comparison.md) |
+| real 8-GPU serving | 8 | physical TP8/EP1 serving | [RUNBOOK.md](RUNBOOK.md) |
 
-“Toy 1-GPU” means one physical GPU executes rank 0 of a TP8 model with local
-substitutes for rank-spanning collectives. It is not TP1. “Real 8-GPU”
-executes ranks 0–7 with physical RCCL/Iris collectives and HTTP serving.
+"Toy 1-GPU" means one physical GPU executes rank 0 of a TP8 model with local
+substitutes for rank-spanning collectives. It is not TP1. "Real 8-GPU"
+executes ranks 0-7 with physical RCCL/Iris collectives and HTTP serving.
+
+The cross-architecture workflow is the one to reach for when asking whether a
+TokenSpeed change helped, or where MI455X still trails MI355X. It produces a
+committed result directory per commit under `results/`, generated from four
+JSON files by `scripts/generate_arch_comparison.py`, so any entry can be
+rebuilt from its inputs.
 
 ## Documentation
 

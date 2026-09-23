@@ -57,56 +57,54 @@ def _summary_table(hotspots: dict, manifest: dict) -> str:
     profiles = _profile_lookup(hotspots)
     forwards = _forward_lookup(manifest)
     rows = [SUMMARY_HEADER, SUMMARY_SEPARATOR]
-    for concurrency in (1, 16):
-        for stage in ("prefill", "decode"):
-            profile = profiles[(concurrency, stage)]
-            categories = {
-                item["name"]: float(item["gpu_time_pct"])
-                for item in profile["top_categories"]
-            }
-            other = sum(
-                share
-                for name, share in categories.items()
-                if name not in CORE_CATEGORIES
-            )
-            rows.append(
-                "| "
-                f"{concurrency} | {stage} | {profile['rank_count']} | "
-                f"{forwards[(concurrency, stage)]} | "
-                f"{profile['rank_kernel_ms']['total']:,.2f} ms | "
-                f"{categories.get('communication', 0.0):.2f}% | "
-                f"{categories.get('moe', 0.0):.2f}% | "
-                f"{categories.get('kda_attention', 0.0):.2f}% | "
-                f"{categories.get('mla_or_attention', 0.0):.2f}% | "
-                f"{categories.get('gemm_or_quant', 0.0):.2f}% | "
-                f"{other:.2f}% |"
-            )
+    profile_keys = sorted(
+        profiles,
+        key=lambda item: (item[0], item[1] != "prefill"),
+    )
+    for concurrency, stage in profile_keys:
+        profile = profiles[(concurrency, stage)]
+        categories = {
+            item["name"]: float(item["gpu_time_pct"])
+            for item in profile["top_categories"]
+        }
+        other = sum(
+            share
+            for name, share in categories.items()
+            if name not in CORE_CATEGORIES
+        )
+        rows.append(
+            "| "
+            f"{concurrency} | {stage} | {profile['rank_count']} | "
+            f"{forwards[(concurrency, stage)]} | "
+            f"{profile['rank_kernel_ms']['total']:,.2f} ms | "
+            f"{categories.get('communication', 0.0):.2f}% | "
+            f"{categories.get('moe', 0.0):.2f}% | "
+            f"{categories.get('kda_attention', 0.0):.2f}% | "
+            f"{categories.get('mla_or_attention', 0.0):.2f}% | "
+            f"{categories.get('gemm_or_quant', 0.0):.2f}% | "
+            f"{other:.2f}% |"
+        )
     return "\n".join(rows)
 
 
-def _kernel_table(csv_dir: Path) -> str:
+def _kernel_table(csv_dir: Path, profile_keys: list[tuple[int, str]]) -> str:
     rows = [KERNEL_HEADER, KERNEL_SEPARATOR]
-    for concurrency in (1, 16):
-        for stage, csv_stage in (("prefill", "extend"), ("decode", "decode")):
-            with (csv_dir / f"c{concurrency}_{csv_stage}.csv").open(
-                newline="", encoding="utf-8"
-            ) as handle:
-                kernels = list(csv.DictReader(handle))[:10]
-            if len(kernels) != 10:
-                raise ValueError(
-                    f"expected 10 kernels for C{concurrency} {stage}, "
-                    f"found {len(kernels)}"
-                )
-            for order, kernel in enumerate(kernels, start=1):
-                rows.append(
-                    "| "
-                    f"{concurrency} | {stage} | {order} | "
-                    f"`{kernel['kernel_name']}` | "
-                    f"{int(kernel['calls']):,} | "
-                    f"{float(kernel['total_ms']):,.2f} ms | "
-                    f"{float(kernel['gpu_time_pct']):.2f}% | "
-                    f"{float(kernel['avg_us']):,.2f} µs |"
-                )
+    for concurrency, stage in profile_keys:
+        csv_stage = "extend" if stage == "prefill" else "decode"
+        with (csv_dir / f"c{concurrency}_{csv_stage}.csv").open(
+            newline="", encoding="utf-8"
+        ) as handle:
+            kernels = list(csv.DictReader(handle))[:10]
+        for order, kernel in enumerate(kernels, start=1):
+            rows.append(
+                "| "
+                f"{concurrency} | {stage} | {order} | "
+                f"`{kernel['kernel_name']}` | "
+                f"{int(kernel['calls']):,} | "
+                f"{float(kernel['total_ms']):,.2f} ms | "
+                f"{float(kernel['gpu_time_pct']):.2f}% | "
+                f"{float(kernel['avg_us']):,.2f} µs |"
+            )
     return "\n".join(rows)
 
 
@@ -129,7 +127,13 @@ def update_readme(
     rendered = _replace_table(
         rendered,
         KERNEL_HEADER,
-        _kernel_table(csv_dir),
+        _kernel_table(
+            csv_dir,
+            sorted(
+                _profile_lookup(hotspots),
+                key=lambda item: (item[0], item[1] != "prefill"),
+            ),
+        ),
     )
     if check:
         if rendered != original:

@@ -80,6 +80,11 @@ class LogicalRankCommBackend:
         del group, hidden_dim
         return False
 
+    def prepare_all_reduce_buffers(self, group, **kwargs):
+        # No persistent collective buffers here, same as the base backend.
+        del group, kwargs
+        return False
+
     def can_acquire_all_reduce_outputs(self, shapes, like, group, op=None):
         del shapes, like, group, op
         return False
@@ -99,6 +104,13 @@ class LogicalRankCommBackend:
         gathered = torch.cat([input] * len(group), dim=0)
         output.copy_(gathered.reshape_as(output))
         self._record("all_gather_into_tensor", group, input, output)
+
+    def all_gather_single(self, output, input, group):
+        # Flat-buffer all-gather: output holds one rank-major copy per rank,
+        # whatever shape it carries them in.
+        gathered = torch.cat([input.reshape(-1)] * len(group), dim=0)
+        output.copy_(gathered.reshape_as(output))
+        self._record("all_gather_single", group, input, output)
 
     def reduce_scatter(self, tensor, group, op=None):
         del op
@@ -139,7 +151,7 @@ class LogicalRankCommBackend:
 def logical_rank_runtime():
     """Install the local collective backend for a TP8/EP1 rank-0 process."""
     from tokenspeed.runtime.distributed.comm_backend import registry
-    from tokenspeed.runtime.models import kimi_k3
+    from tokenspeed.runtime.models import kimi_k3, kimi_k3_comm
 
     backend = LogicalRankCommBackend()
 
@@ -151,6 +163,17 @@ def logical_rank_runtime():
         output = reduced if prefix_sum is None else prefix_sum + reduced
         return output, None
 
+    def no_fused_attnres_reduce(self, partial, residual, combine, score_weight):
+        # Newer TokenSpeed asks whether the collective can absorb the AttnRes
+        # epilogue, which needs a live device process group this single-rank
+        # process has none of. Answering False leaves the rest of the layer's
+        # availability logic untouched, so it still picks the same AttnRes
+        # path it picked before this probe existed -- patching the layer's
+        # own _fused_attnres_graph_available instead would silently move the
+        # work off the fused kernel and onto the partial/combine fallback.
+        del self, partial, residual, combine, score_weight
+        return False
+
     original_backend = registry._global_backend
     registry._global_backend = backend
     try:
@@ -159,6 +182,13 @@ def logical_rank_runtime():
                 kimi_k3.KimiLinearDecoderLayer,
                 "_reduce_attn_accumulate",
                 new=local_reduce_attn,
+            ),
+            # Added in #1545; absent on older revisions, hence create=True.
+            mock.patch.object(
+                kimi_k3_comm.K3AttnComm,
+                "fused_attnres_reduce_available",
+                new=no_fused_attnres_reduce,
+                create=True,
             ),
             # CudaGraphWrapper brackets capture with a distributed barrier.
             # This process intentionally emulates TP8 in one rank and has no
@@ -297,6 +327,9 @@ def create_logical_executor(
         attn_backend=backend,
         token_to_kv_pool=pool,
     )
+    capture_graphs = getattr(executor, "capture_graphs", None)
+    if callable(capture_graphs):
+        capture_graphs()
     return executor, DeviceHandle(executor)
 
 

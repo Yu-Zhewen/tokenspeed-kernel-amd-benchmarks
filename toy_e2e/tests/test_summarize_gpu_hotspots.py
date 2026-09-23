@@ -64,3 +64,46 @@ def test_summarize_gpu_hotspots_aggregates_across_tp_ranks(tmp_path):
 def test_category_recognizes_generated_gemm_names():
     assert _category("_rowcta_gemv_add3_kernel") == "gemm_or_quant"
     assert _category("Cijk_Alik_Bljk_generated_solution") == "gemm_or_quant"
+    assert _category("_fp8_quantize_kernel") == "gemm_or_quant"
+
+
+def test_category_keeps_moe_latent_projections_out_of_attention():
+    assert _category("_packed_input_projections_kernel") == "moe"
+    assert _category("_packed_projection_gemm_kernel") == "moe"
+    assert _category("_latent_input_decode_kernel") == "moe"
+
+
+def test_summarize_reports_cross_stream_kernel_overlap(tmp_path):
+    trace_dir = tmp_path / "c16" / "prefill"
+    trace_dir.mkdir(parents=True)
+    trace = trace_dir / "real-c16-TP0-EXTEND.trace.json"
+    trace.write_text(
+        json.dumps(
+            {
+                "displayTimeUnit": "ms",
+                "traceEvents": [
+                    {
+                        "ph": "X",
+                        "cat": "kernel",
+                        "name": "kernel_a",
+                        "ts": 1000,
+                        "dur": 2000,
+                    },
+                    {
+                        "ph": "X",
+                        "cat": "kernel",
+                        "name": "kernel_b",
+                        "ts": 2000,
+                        "dur": 2000,
+                    },
+                ],
+            }
+        )
+    )
+
+    profile = summarize([trace], top_k=5)["profiles"][0]
+
+    assert profile["rank_kernel_ms"]["mean"] == 4.0
+    assert profile["rank_kernel_union_ms"]["mean"] == 3.0
+    assert profile["rank_kernel_overlap_ms"]["mean"] == 1.0
+    assert profile["rank_kernel_overlap_ms"]["mean_pct_of_kernel_sum"] == 25.0

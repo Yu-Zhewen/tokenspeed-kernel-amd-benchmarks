@@ -23,13 +23,16 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import math
+import os
 import platform
 import statistics
 import sys
 import time
 from collections import defaultdict, deque
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -57,6 +60,30 @@ from toy_e2e.workload import (  # noqa: E402
 )
 
 
+@contextmanager
+def _optional_gpu_trace(path: Path | None):
+    if path is None:
+        yield
+        return
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    profiler = torch.profiler.profile(
+        activities=[
+            torch.profiler.ProfilerActivity.CPU,
+            torch.profiler.ProfilerActivity.CUDA,
+        ],
+        record_shapes=False,
+        with_stack=False,
+    )
+    profiler.start()
+    try:
+        yield
+    finally:
+        torch.cuda.synchronize()
+        profiler.stop()
+        profiler.export_chrome_trace(str(path))
+
+
 def _percentile(values: list[float], quantile: float) -> float:
     ordered = sorted(values)
     position = (len(ordered) - 1) * quantile
@@ -75,6 +102,7 @@ def _summary(values: list[float]) -> dict[str, float | int]:
         "count": len(values),
         "min": min(values),
         "mean": statistics.fmean(values),
+        "stdev": statistics.pstdev(values),
         "p50": statistics.median(values),
         "p90": _percentile(values, 0.90),
         "p95": _percentile(values, 0.95),
@@ -236,8 +264,82 @@ def _execute_forward(runner, prepared: PreparedForward):
                 "extend_prefix_lens": prepared.extend_prefix_lens,
             }
         )
+    attributor = _copy_attributor()
     with torch.inference_mode(), active_forward(prepared.ctx):
-        return runner.forward(**kwargs)
+        if attributor is None:
+            return runner.forward(**kwargs)
+        with attributor:
+            out = runner.forward(**kwargs)
+    # Dump after every forward: atexit does not survive the profiling driver.
+    attributor.dump()
+    return out
+
+
+_COPY_ATTRIBUTOR = None
+
+
+def _copy_attributor():
+    """A dispatch mode that attributes copy launches, when asked for.
+
+    Set TOKENSPEED_ATTRIBUTE_COPIES=1 to count the aten ops that lower to a
+    device-to-device copy kernel and record the innermost tokenspeed frame that
+    issued each one. Off by default; the mode is not free.
+    """
+    global _COPY_ATTRIBUTOR
+    if os.environ.get("TOKENSPEED_ATTRIBUTE_COPIES") != "1":
+        return None
+    if _COPY_ATTRIBUTOR is None:
+        import collections
+        import traceback
+
+        from torch.utils._python_dispatch import TorchDispatchMode
+
+        copy_ops = {
+            "aten.copy_.default",
+            "aten._to_copy.default",
+            "aten.clone.default",
+            "aten.cat.default",
+            "aten.contiguous.default",
+        }
+
+        class _Attributor(TorchDispatchMode):
+            def __init__(self) -> None:
+                self.counts = collections.Counter()
+
+            def __torch_dispatch__(self, func, types, args=(), kwargs=None):
+                name = str(func)
+                if name in copy_ops:
+                    site = "<unattributed>"
+                    for frame in reversed(traceback.extract_stack()[:-1]):
+                        if "/tokenspeed" in frame.filename and "toy_e2e" not in frame.filename:
+                            tail = frame.filename.split("/tokenspeed")[-1]
+                            site = f"{tail}:{frame.lineno} in {frame.name}"
+                            break
+                    self.counts[(name, site)] += 1
+                return func(*args, **(kwargs or {}))
+
+            def dump(self) -> None:
+                path = os.environ.get(
+                    "TOKENSPEED_ATTRIBUTE_COPIES_OUT",
+                    "/data/results/copy-attribution.json",
+                )
+                rows = [
+                    {"op": op, "site": site, "count": n}
+                    for (op, site), n in self.counts.most_common()
+                ]
+                payload = {"total": sum(self.counts.values()), "rows": rows}
+                try:
+                    with open(path, "w", encoding="utf-8") as handle:
+                        json.dump(payload, handle, indent=2)
+                except OSError:
+                    pass
+
+            def report(self) -> None:
+                self.dump()
+
+        _COPY_ATTRIBUTOR = _Attributor()
+        atexit.register(_COPY_ATTRIBUTOR.report)
+    return _COPY_ATTRIBUTOR
 
 
 def _create_cache(server_args, model_config, cache_bytes: int):
@@ -249,13 +351,18 @@ def _create_cache(server_args, model_config, cache_bytes: int):
         "profile_available_cache_memory_bytes",
         return_value=cache_bytes,
     ):
-        backend, pool, _, _, storage = attention_registry.create_attn_components(
+        build = attention_registry.create_attn_components(
             server_args,
             model_config,
             gpu_id=0,
             rank=0,
             gpu_memory=total_gib,
         )
+    # Newer TokenSpeed returns an AttentionBuild; older revisions returned the
+    # bare tuple. Keep both so a run can be pinned to either.
+    if hasattr(build, "attn_backend"):
+        return build.attn_backend, build.token_to_kv_pool, build.cache_storage
+    backend, pool, _, _, storage = build
     return backend, pool, storage
 
 
@@ -342,6 +449,19 @@ def _prepare_forward(
         list(forward_op.extend_prefix_lens), dtype=torch.int32
     )
     extend_prefix_lens = extend_prefix_lens_cpu.to("cuda")
+    # Host-only extend facts newer TokenSpeed requires, taken from the same
+    # forward-op fields ModelExecutor reads. Absent on older revisions, where
+    # no replay happens and the chunk that ends a prompt is not distinguished.
+    extend_replay_lens_cpu = torch.tensor(
+        list(getattr(forward_op, "extend_replay_lens", []))[:num_extends]
+        or [0] * num_extends,
+        dtype=torch.int32,
+    )
+    extend_prompt_lens_cpu = torch.tensor(
+        list(getattr(forward_op, "prefill_lengths", []))[:num_extends]
+        or input_lengths[:num_extends],
+        dtype=torch.int32,
+    )
     positions = torch.cat(
         [
             torch.arange(start, end, dtype=torch.int64, device="cuda")
@@ -433,6 +553,8 @@ def _prepare_forward(
             extend_seq_lens_cpu=extend_seq_lens_cpu,
             extend_prefix_lens=extend_prefix_lens,
             extend_prefix_lens_cpu=extend_prefix_lens_cpu,
+            extend_replay_lens_cpu=extend_replay_lens_cpu,
+            extend_prompt_lens_cpu=extend_prompt_lens_cpu,
             **metadata_kwargs,
         )
     gather_ids = torch.cumsum(
@@ -489,6 +611,12 @@ def _run_workload(
     )
 
     pool.clear_kv_buffers()
+    try:
+        from tokenspeed.runtime.layers.paged_attention import bind_cache_groups
+    except ImportError:
+        pass
+    else:
+        bind_cache_groups(runner.model, pool)
     scheduler, geometry, effective_chunk = _new_scheduler(
         pool,
         concurrency=concurrency,
@@ -826,6 +954,7 @@ def _run_rolling_phase(
                 ],
                 dp_metadata=None,
                 grammar_inputs=None,
+                ngram_inputs=None,
                 multimodal_context=None,
             )
             pending_round = _PendingRound(
@@ -836,7 +965,7 @@ def _run_rolling_phase(
                 decode_contexts=tuple(decode_contexts),
             )
 
-        pending = device_handle.execute(execution_plan, planned)
+        pending = device_handle.execute(execution_plan, planned, submit_remote_prefill=True)
         if pending is not None:
             if pending_round is None:
                 raise RuntimeError("executor returned a result for an empty round")
@@ -1050,15 +1179,20 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--concurrency",
         type=int,
-        choices=(1, 16),
+        choices=(1, 2, 4, 8, 16, 32),
         nargs="+",
         required=True,
-        help="one or more serving batch sizes (for example: 1 16)",
+        help="one or more serving batch sizes (for example: 1 2 4 8 16 32)",
     )
     parser.add_argument("--chunked-prefill-size", type=int, default=8192)
     parser.add_argument("--cache-gib", type=float, default=32.0)
     parser.add_argument("--warmup-waves", type=int, default=1)
     parser.add_argument("--measurement-waves", type=int, default=3)
+    parser.add_argument(
+        "--profile-dir",
+        type=Path,
+        help="capture each measured rolling graph workload as a GPU trace",
+    )
     parser.add_argument("--prompt-seed", type=int, default=DEFAULT_PROMPT_SEED)
     parser.add_argument(
         "--synthetic-vocabulary-size",
@@ -1091,6 +1225,9 @@ def main() -> int:
             f"expected {args.expected_arch}, detected {architecture}"
         )
     concurrencies = tuple(dict.fromkeys(args.concurrency))
+    capture_sizes = DEFAULT_CUDAGRAPH_CAPTURE_SIZES + (
+        (32,) if 32 in concurrencies else ()
+    )
     load_format: str | type = {
         "raw-rank-state": RawRankStateLoader,
         "dummy": "dummy",
@@ -1105,11 +1242,11 @@ def main() -> int:
             max_model_len=args.prompt_tokens + args.output_tokens,
             max_num_seqs=max(
                 max(concurrencies),
-                max(DEFAULT_CUDAGRAPH_CAPTURE_SIZES),
+                max(capture_sizes),
             ),
             chunked_prefill_size=args.chunked_prefill_size,
             enforce_eager=False,
-            cudagraph_capture_sizes=DEFAULT_CUDAGRAPH_CAPTURE_SIZES,
+            cudagraph_capture_sizes=capture_sizes,
         )
         if args.synthetic_vocabulary_size > model_config.vocab_size:
             raise ValueError(
@@ -1131,7 +1268,7 @@ def main() -> int:
         )
         print(
             "Capturing production decode graphs for "
-            f"{list(DEFAULT_CUDAGRAPH_CAPTURE_SIZES)}",
+            f"{list(capture_sizes)}",
             flush=True,
         )
         graph_capture_started = time.perf_counter()
@@ -1145,7 +1282,7 @@ def main() -> int:
         )
         graph_capture_wall_s = time.perf_counter() - graph_capture_started
         captured_batch_sizes = list(executor.forward_step.capture_bs)
-        if captured_batch_sizes != list(DEFAULT_CUDAGRAPH_CAPTURE_SIZES):
+        if captured_batch_sizes != list(capture_sizes):
             raise RuntimeError(
                 "unexpected CUDA graph capture sizes: "
                 f"{captured_batch_sizes}"
@@ -1177,20 +1314,30 @@ def main() -> int:
                     f"({args.measurement_waves * concurrency} requests)",
                     flush=True,
                 )
-                benchmark = _run_rolling_phase(
-                    device_handle=device_handle,
-                    pool=pool,
-                    logical_backend=logical_backend,
-                    concurrency=concurrency,
-                    total_requests=args.measurement_waves * concurrency,
-                    prompt_tokens=args.prompt_tokens,
-                    output_tokens=args.output_tokens,
-                    chunked_prefill_size=args.chunked_prefill_size,
-                    prompt_seed=args.prompt_seed,
-                    synthetic_vocabulary_size=args.synthetic_vocabulary_size,
-                    request_index_offset=args.warmup_waves * concurrency,
-                    run_label="measure",
+                trace_path = (
+                    args.profile_dir
+                    / f"c{concurrency}"
+                    / f"toy-c{concurrency}-TP0-GRAPH.trace.json"
+                    if args.profile_dir is not None
+                    else None
                 )
+                with _optional_gpu_trace(trace_path):
+                    benchmark = _run_rolling_phase(
+                        device_handle=device_handle,
+                        pool=pool,
+                        logical_backend=logical_backend,
+                        concurrency=concurrency,
+                        total_requests=args.measurement_waves * concurrency,
+                        prompt_tokens=args.prompt_tokens,
+                        output_tokens=args.output_tokens,
+                        chunked_prefill_size=args.chunked_prefill_size,
+                        prompt_seed=args.prompt_seed,
+                        synthetic_vocabulary_size=args.synthetic_vocabulary_size,
+                        request_index_offset=args.warmup_waves * concurrency,
+                        run_label="measure",
+                    )
+                if trace_path is not None:
+                    benchmark["trace"] = str(trace_path)
                 runs.append(
                     {
                         "concurrency": concurrency,
@@ -1219,6 +1366,18 @@ def main() -> int:
             },
             "software": {
                 "tokenspeed_revision": args.tokenspeed_revision,
+                "tokenspeed_worktree_sha256": os.environ.get(
+                    "TOKENSPEED_WORKTREE_SHA256", "unavailable"
+                ),
+                "tokenspeed_worktree_dirty": os.environ.get(
+                    "TOKENSPEED_WORKTREE_DIRTY", "unavailable"
+                ),
+                "benchmarks_worktree_sha256": os.environ.get(
+                    "BENCHMARKS_WORKTREE_SHA256", "unavailable"
+                ),
+                "benchmarks_worktree_dirty": os.environ.get(
+                    "BENCHMARKS_WORKTREE_DIRTY", "unavailable"
+                ),
                 "model_revision": args.model_revision,
                 "pytorch": torch.__version__,
                 "hip": torch.version.hip,
@@ -1255,6 +1414,7 @@ def main() -> int:
                 "prefill": "eager",
                 "decode": "rolling replay",
                 "overlap_schedule_depth": 1,
+                "profiled": args.profile_dir is not None,
             },
             "checkpoint": str(args.checkpoint),
             "load_format": args.load_format,
