@@ -180,14 +180,19 @@ an older revision and supplies only the Python environment, so a commit that
 requires a newer dependency will fail at import. The dummy-weight smoke test
 catches this too.
 
-**Profiles taken across a reboot are not comparable.** Short kernels on this
-gfx1250 node ran about 35% slower after a reboot than before it, at identical
-code: `_rmsnorm_kernel` went 2.29 to 3.28 us per call, and `copyBuffer`, a ROCm
-runtime primitive no commit can touch, went 1.73 to 2.41. Kernels above roughly
-10 us were unaffected. Comparing two commits profiled either side of a reboot
-therefore invents a regression that is not there. Profile both commits of a
-comparison on the same boot, and if the node restarts midway, re-profile the
-earlier commit rather than reusing the old numbers.
+**A node left degraded by a GPU fault reports short kernels ~35% slow.**
+Measured three times at identical code on this gfx1250 node:
+`_rmsnorm_kernel` per call was 2.29 us, then 3.28 us after a run faulted and
+wedged the node, then 2.25 us after a later clean reboot. `copyBuffer`, a ROCm
+runtime primitive no commit can touch, tracked it: 1.73, 2.41, 1.54. Kernels
+above roughly 10 us were unaffected.
+
+So the degraded state is the outlier, not the baseline, and rebooting does not
+by itself restore it -- the reboot that followed the wedge still measured slow.
+Before trusting a profile, check a short kernel against a known-good figure;
+`copyBuffer` works well because no change of ours can alter it. Profile both
+commits of a comparison on the same boot, and re-profile rather than reuse if
+anything faulted in between.
 
 **Identical results across runs do not prove the kernel wrote them.** PyTorch's
 caching allocator hands back the same block, so stale memory is deterministic.
