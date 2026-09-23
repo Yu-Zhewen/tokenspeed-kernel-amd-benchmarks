@@ -49,14 +49,14 @@ duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.
 
 | Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
 |---|---:|---:|---:|---:|
-| AttnRes | 0.65x | 0.65x | 0.58x | 0.44x |
-| dense GEMM | 1.13x | 1.15x | 1.43x | 0.88x |
+| AttnRes | 0.65x | 0.65x | 0.58x | 1.32x |
+| dense GEMM | 1.13x | 1.15x | 1.43x | 1.71x |
 | input projections | 1.13x | 1.13x | 1.56x | 1.64x |
 | KDA state scan | 1.00x | 0.98x | — | — |
-| MLA attention | 1.23x | 1.37x | 1.58x | 2.63x |
-| other | 1.21x | 1.22x | 0.50x | 1.29x |
+| MLA attention | 1.25x | 1.39x | 1.58x | 2.09x |
+| other | 1.19x | 1.19x | 0.50x | 0.49x |
 | elementwise | 1.10x | 1.11x | 0.95x | 1.28x |
-| KDA other | 1.41x | 1.41x | 1.52x | 1.15x |
+| KDA other | 1.41x | 1.42x | 1.52x | 1.15x |
 | rmsnorm | 1.76x | 1.77x | 1.22x | 0.98x |
 | add3 | 2.94x | 2.93x | — | — |
 | MoE | 1.88x | 1.97x | 1.48x | 1.09x |
@@ -68,14 +68,14 @@ nothing to give relative to MI355X whatever its absolute cost.
 
 | Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
 |---|---:|---:|---:|---:|
-| AttnRes | 3,800 | 239 | 133 | 2 |
-| dense GEMM | 2,406 | 138 | 12 | 49 |
+| AttnRes | 3,800 | 239 | 133 | 14 |
+| dense GEMM | 2,406 | 138 | 12 | -17 |
 | input projections | 1,137 | 71 | -4 | -6 |
 | KDA state scan | 790 | 54 | — | — |
-| MLA attention | 495 | 13 | -5 | -27 |
-| other | 240 | 14 | 24 | 25 |
+| MLA attention | 469 | 11 | -5 | -20 |
+| other | 273 | 16 | 24 | 29 |
 | elementwise | 179 | 12 | 29 | 3 |
-| KDA other | 89 | 6 | -0 | 6 |
+| KDA other | 82 | 5 | -0 | 6 |
 | rmsnorm | -35 | -2 | 4 | 5 |
 | add3 | -257 | -16 | — | — |
 | MoE | -1,806 | -145 | 7 | 41 |
@@ -167,20 +167,20 @@ not wall time, and kernels may overlap. The heaviest
 | Rank | Category | Exact kernel name | GPU duration (ms) | Calls | Mean/call (us) | Stage GPU time |
 |---:|---|---|---:|---:|---:|---:|
 | 1 | input projections | `gluon_latent_input_decode_gfx950.kd` | 107.287 | 5,888 | 18.2 | 13.01% |
-| 2 | other | `gluon_linear_attnres_partials_gfx950.kd` | 98.984 | 5,440 | 18.2 | 12.01% |
+| 2 | AttnRes | `gluon_linear_attnres_partials_gfx950.kd` | 98.984 | 5,440 | 18.2 | 12.01% |
 | 3 | MLA attention | `_mla_decode_gluon.kd` | 94.406 | 1,536 | 61.5 | 11.45% |
 | 4 | MoE | `_warp_decode_precomputed_situ_stage1_kernel.kd` | 71.912 | 5,888 | 12.2 | 8.72% |
 | 5 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x128_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR0_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB256_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT2_1_MO40_NTn1_NTA4_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR0_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW1_SK3_SKFTR0_SKXCCM8_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS64_WG16_4_4.kd` | 66.156 | 5,952 | 11.1 | 8.03% |
-| 6 | add3 | `_rowcta_gemv_add3_kernel.kd` | 62.763 | 5,888 | 10.7 | 7.61% |
-| 7 | other | `_attnres_combine_kernel.kd` | 44.153 | 11,840 | 3.7 | 5.36% |
+| 6 | dense GEMM | `_rowcta_gemv_add3_kernel.kd` | 62.763 | 5,888 | 10.7 | 7.61% |
+| 7 | AttnRes | `_attnres_combine_kernel.kd` | 44.153 | 11,840 | 3.7 | 5.36% |
 | 8 | MoE | `_warp_decode_stage2_fp8_mxfp4_kernel.kd` | 36.223 | 5,888 | 6.2 | 4.39% |
 | 9 | KDA other | `gluon_kda_fused_paged_decode_vmajor_gfx950.kd` | 31.595 | 4,416 | 7.2 | 3.83% |
-| 10 | other | `_kimi3_projection_gemv_kernel.kd` | 29.247 | 5,888 | 5.0 | 3.55% |
+| 10 | dense GEMM | `_kimi3_projection_gemv_kernel.kd` | 29.247 | 5,888 | 5.0 | 3.55% |
 | 11 | MoE | `_kimi3_sigmoid_bias_topk_kernel.kd` | 22.997 | 5,888 | 3.9 | 2.79% |
 | 12 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT16x16x128_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR0_CADS0_DTLA0_DTLB0_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA8_GRVWB8_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI0_LBSPPA256_LBSPPB256_LBSPPM0_LPA16_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT1_1_MO40_NTn1_NTA4_NTB0_NTC0_NTD0_NTM0_NEPBS0_NLCA1_NLCB1_ONLL1_PGR2_PLR0_PKA1_SIA3_SS1_SPO0_SRVW0_SSO0_SVW1_SK3_SKFTR0_SKXCCM8_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS64_WG16_4_4.kd` | 21.893 | 4,416 | 5.0 | 2.66% |
 | 13 | elementwise | `void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>) [clone .kd]` | 20.723 | 5,504 | 3.8 | 2.51% |
 | 14 | MoE | `_moe_partial_reduce.kd` | 20.709 | 5,888 | 3.5 | 2.51% |
-| 15 | other | `_mla_reduce_project_value_kernel.kd` | 14.427 | 1,536 | 9.4 | 1.75% |
+| 15 | MLA attention | `_mla_reduce_project_value_kernel.kd` | 14.427 | 1,536 | 9.4 | 1.75% |
 | 16 | rmsnorm | `_rmsnorm_kernel.kd` | 13.127 | 5,952 | 2.2 | 1.59% |
 | 17 | MoE | `_dynamic_fp8_single_pass_kernel.kd` | 12.306 | 5,888 | 2.1 | 1.49% |
 | 18 | other | `gluon_mla_normalize_project_query_gfx950.kd` | 11.582 | 1,536 | 7.5 | 1.40% |
@@ -209,7 +209,7 @@ not wall time, and kernels may overlap. The heaviest
 | 16 | KDA other | `_causal_conv1d_fwd_kernel.kd` | 217.656 | 6,762 | 32.2 | 0.59% |
 | 17 | MoE | `_precomputed_topk_route_large_stage4_gfx1250_kernel.kd` | 204.918 | 9,016 | 22.7 | 0.55% |
 | 18 | MoE | `_precomputed_topk_route_large_stage1_gfx1250_kernel.kd` | 143.686 | 9,016 | 15.9 | 0.39% |
-| 19 | KDA other | `gluon_kda_paged_prefill_gfx1250.kd` | 119.196 | 7,866 | 15.2 | 0.32% |
+| 19 | other | `gluon_kda_paged_prefill_gfx1250.kd` | 119.196 | 7,866 | 15.2 | 0.32% |
 | 20 | other | `_mla_nope_quantize_fp8_kernel.kd` | 110.560 | 2,352 | 47.0 | 0.30% |
 
 ### MI455X (gfx1250) prefill c1
@@ -235,7 +235,7 @@ not wall time, and kernels may overlap. The heaviest
 | 17 | KDA other | `_causal_conv1d_fwd_kernel.kd` | 13.966 | 483 | 28.9 | 0.60% |
 | 18 | MoE | `_precomputed_topk_route_large_stage4_gfx1250_kernel.kd` | 13.623 | 644 | 21.2 | 0.59% |
 | 19 | MoE | `_precomputed_topk_route_large_stage1_gfx1250_kernel.kd` | 10.257 | 644 | 15.9 | 0.44% |
-| 20 | KDA other | `gluon_kda_paged_prefill_gfx1250.kd` | 7.787 | 552 | 14.1 | 0.34% |
+| 20 | other | `gluon_kda_paged_prefill_gfx1250.kd` | 7.787 | 552 | 14.1 | 0.34% |
 
 ### MI455X (gfx1250) decode c16
 
@@ -267,12 +267,12 @@ not wall time, and kernels may overlap. The heaviest
 | Rank | Category | Exact kernel name | GPU duration (ms) | Calls | Mean/call (us) | Stage GPU time |
 |---:|---|---|---:|---:|---:|---:|
 | 1 | MoE | `_matmul_decode.kd` | 91.734 | 11,776 | 7.8 | 15.19% |
-| 2 | other | `gluon_linear_attnres_partials_gfx1250.kd` | 72.273 | 5,440 | 13.3 | 11.97% |
+| 2 | AttnRes | `gluon_linear_attnres_partials_gfx1250.kd` | 72.273 | 5,440 | 13.3 | 11.97% |
 | 3 | input projections | `gluon_latent_input_decode_gfx1250.kd` | 65.263 | 5,888 | 11.1 | 10.81% |
 | 4 | dense GEMM | `_rowcta_gemv_kernel.kd` | 50.917 | 12,480 | 4.1 | 8.43% |
 | 5 | dense GEMM | `_rowcta_gemv_add3_kernel.kd` | 38.441 | 5,888 | 6.5 | 6.37% |
 | 6 | MLA attention | `_mla_decode_fwd_kernel_num_query_heads_12_num_queries_per_kv_NONE_num_tokens_per_seq_1_TILE_SIZE_64_KV_LORA_RANK_512_QK_ROPE_HEAD_DIM_64_BLOCK_Q_1_BLOCK_M_16_NUM_HEAD_BLOCKS_1_NUM_KV_SPLITS_64_num_warps_2_num_stages_2.kd` | 35.915 | 1,536 | 23.4 | 5.95% |
-| 7 | other | `_attnres_combine_kernel.kd` | 33.811 | 11,840 | 2.9 | 5.60% |
+| 7 | AttnRes | `_attnres_combine_kernel.kd` | 33.811 | 11,840 | 2.9 | 5.60% |
 | 8 | KDA other | `gluon_kda_fused_paged_decode_vmajor_gfx1250.kd` | 27.514 | 4,416 | 6.2 | 4.56% |
 | 9 | other | `_fp8_quantize_kernel.kd` | 23.931 | 11,776 | 2.0 | 3.96% |
 | 10 | MoE | `_decode_sigmoid_bias_topk_kernel.kd` | 23.419 | 5,888 | 4.0 | 3.88% |
@@ -280,11 +280,11 @@ not wall time, and kernels may overlap. The heaviest
 | 12 | MoE | `_precomputed_topk_route_m1_canonical_gfx1250_kernel.kd` | 17.991 | 5,888 | 3.1 | 2.98% |
 | 13 | elementwise | `void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>) [clone .kd]` | 17.171 | 5,504 | 3.1 | 2.84% |
 | 14 | MoE | `_weighted_topk_reduce_gfx1250_kernel.kd` | 16.801 | 5,888 | 2.9 | 2.78% |
-| 15 | other | `_mla_reduce_project_value_kernel.kd` | 16.170 | 1,536 | 10.5 | 2.68% |
+| 15 | MLA attention | `_mla_reduce_project_value_kernel.kd` | 16.170 | 1,536 | 10.5 | 2.68% |
 | 16 | other | `gluon_mla_normalize_project_query_gfx1250.kd` | 14.308 | 1,536 | 9.3 | 2.37% |
 | 17 | rmsnorm | `_rmsnorm_kernel.kd` | 13.381 | 5,952 | 2.2 | 2.22% |
 | 18 | dense GEMM | `Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd` | 7.422 | 1,536 | 4.8 | 1.23% |
-| 19 | other | `_attnres_partial_kernel.kd` | 6.461 | 960 | 6.7 | 1.07% |
+| 19 | AttnRes | `_attnres_partial_kernel.kd` | 6.461 | 960 | 6.7 | 1.07% |
 | 20 | other | `_mla_rope_set_kv_buffer_kernel.kd` | 3.862 | 1,536 | 2.5 | 0.64% |
 
 ## Method and limitations

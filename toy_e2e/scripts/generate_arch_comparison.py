@@ -27,40 +27,37 @@ from pathlib import Path
 
 # (category, gfx950 pattern, gfx1250 pattern). First match wins, so order
 # matters: narrower categories come before the buckets that would swallow them.
+# One pattern per category, matched against the kernel name with its arch
+# suffix stripped, so a kernel present on both architectures cannot land in
+# different buckets. Order matters: the first match wins, so a narrow pattern
+# must precede any broader one that would swallow it. `_rowcta_gemv_add3` is
+# the example that caught me out -- it is a GEMV with a fused add, so it
+# belongs with the GEMMs and must be claimed before the add3 bucket sees it.
 CATEGORIES = [
-    ("KDA state scan", r"state_scan", r"state_scan"),
+    ("KDA state scan", r"state_scan"),
     (
         "MoE",
         r"mxfp4_moe|gather_package|warp_decode|moe_partial_reduce"
-        r"|dynamic_fp8_single_pass|sigmoid_bias_topk|sigmoid_mul|_situ_kernel",
-        r"^_matmul\.|^_matmul_decode\.|topk_route|weighted_topk_reduce"
-        r"|sigmoid_bias_topk|sigmoid_mul|_situ_kernel",
+        r"|dynamic_fp8_single_pass|sigmoid_bias_topk|sigmoid_mul|_situ_kernel"
+        r"|^_matmul\.|^_matmul_decode\.|topk_route|weighted_topk_reduce",
     ),
     (
         "dense GEMM",
-        r"mm_a16w16|^Cijk_|^Custom_Cijk_",
-        r"wmma_tdm_dense|^Cijk_|^Custom_Cijk_|rowcta_gemv|smallm",
+        r"rowcta_gemv|projection_gemv|wmma_tdm_dense|mm_a16w16|^Cijk_"
+        r"|^Custom_Cijk_|smallm|gluon_bmm|torch_mm|torch_bmm",
     ),
-    (
-        "input projections",
-        r"packed_input_projections|latent_input",
-        r"packed_input_projections|latent_input",
-    ),
-    ("MLA attention", r"mla_prefill|mla_decode", r"mla_prefill|mla_decode"),
-    ("AttnRes", r"attn_res", r"attn_res"),
+    ("input projections", r"packed_input_projections|latent_input"),
+    ("MLA attention", r"mla_prefill|mla_decode|project_value|kv_pack"),
+    ("AttnRes", r"attn_res|attnres"),
     (
         "KDA other",
         r"kda_paged_prefill_preprocess|kda_paged_prefill_wu_vector"
         r"|kda_paged_prefill_solve_merge|kda_paged_prefill_gfx|kda_fused"
         r"|causal_conv1d",
-        r"kda_paged_prefill_preprocess|kda_paged_prefill_wu_vector"
-        r"|kda_paged_prefill_solve_merge|kda_paged_prefill_gfx|kda_fused"
-        r"|causal_conv1d",
     ),
-    ("add3", r"_add3_kernel", r"_add3_kernel|wmma_tdm_add3"),
-    ("rmsnorm", r"rmsnorm|layernorm", r"rmsnorm|layernorm"),
-    ("elementwise", r"elementwise|CatArrayBatched|copyBuffer",
-     r"elementwise|CatArrayBatched|copyBuffer"),
+    ("add3", r"^_add3_kernel|^_wmma_tdm_add3"),
+    ("rmsnorm", r"rmsnorm|layernorm"),
+    ("elementwise", r"elementwise|CatArrayBatched|copyBuffer"),
 ]
 
 STAGES = [("EXTEND", "c16"), ("EXTEND", "c1"), ("DECODE", "c16"), ("DECODE", "c1")]
@@ -77,9 +74,16 @@ TARGET_RATIO = 1.5
 ARCHES = [("gfx950", "MI355X"), ("gfx1250", "MI455X")]
 
 
-def categorize(name: str, arch_index: int) -> str:
-    for category, *patterns in CATEGORIES:
-        if re.search(patterns[arch_index], name):
+def strip_arch(name: str) -> str:
+    """Drop the arch suffix so both architectures match the same pattern."""
+    return re.sub(r"_gfx\d+", "", name)
+
+
+def categorize(name: str, arch_index: int = 0) -> str:
+    """Bucket a kernel by function. ``arch_index`` is accepted and ignored."""
+    bare = strip_arch(name)
+    for category, pattern in CATEGORIES:
+        if re.search(pattern, bare):
             return category
     return "other"
 
@@ -101,6 +105,29 @@ def read_hotspots(path: Path, arch_index: int):
         rows.sort(key=lambda r: -r["ms"])
         stages[key] = rows
     return stages
+
+
+def check_bucket_symmetry(stages_a, stages_b) -> list[str]:
+    """Report kernels that both architectures run but that bucket differently.
+
+    A mismatch silently ruins a ratio: the kernel counts towards one bucket on
+    one side and another on the other, so neither total describes the same
+    work. This has gone wrong three times, so it is checked rather than
+    assumed.
+    """
+    seen = {}
+    problems = []
+    for stages, label in ((stages_a, "gfx950"), (stages_b, "gfx1250")):
+        for rows in stages.values():
+            for row in rows:
+                bare = strip_arch(row["name"])
+                prior = seen.setdefault(bare, (row["category"], label))
+                if prior[0] != row["category"]:
+                    problems.append(
+                        f"{bare}: {prior[1]} -> {prior[0]}, {label} -> "
+                        f"{row['category']}"
+                    )
+    return sorted(set(problems))
 
 
 def read_performance(path: Path):
@@ -255,6 +282,12 @@ def main() -> None:
     hs950 = read_hotspots(args.gfx950_hotspots, 0)
     hs1250 = read_hotspots(args.gfx1250_hotspots, 1)
 
+    mismatches = check_bucket_symmetry(hs950, hs1250)
+    if mismatches:
+        raise SystemExit(
+            "kernels bucket differently per architecture, so the ratios would "
+            "compare unlike work:\n  " + "\n  ".join(mismatches)
+        )
     work = doc950["workload"]
     ratios, headroom = breakdown_tables(hs950, hs1250)
     dates = collected_dates([

@@ -1,11 +1,11 @@
 category,kernel_name,calls,total_ms,avg_us,stage_gpu_time_pct
 MoE,_matmul_decode.kd,11776,91.734,7.790,15.1906
-other,gluon_linear_attnres_partials_gfx1250.kd,5440,72.273,13.285,11.9680
+AttnRes,gluon_linear_attnres_partials_gfx1250.kd,5440,72.273,13.285,11.9680
 input projections,gluon_latent_input_decode_gfx1250.kd,5888,65.263,11.084,10.8072
 dense GEMM,_rowcta_gemv_kernel.kd,12480,50.917,4.080,8.4315
 dense GEMM,_rowcta_gemv_add3_kernel.kd,5888,38.441,6.529,6.3656
 MLA attention,_mla_decode_fwd_kernel_num_query_heads_12_num_queries_per_kv_NONE_num_tokens_per_seq_1_TILE_SIZE_64_KV_LORA_RANK_512_QK_ROPE_HEAD_DIM_64_BLOCK_Q_1_BLOCK_M_16_NUM_HEAD_BLOCKS_1_NUM_KV_SPLITS_64_num_warps_2_num_stages_2.kd,1536,35.915,23.382,5.9473
-other,_attnres_combine_kernel.kd,11840,33.811,2.856,5.5990
+AttnRes,_attnres_combine_kernel.kd,11840,33.811,2.856,5.5990
 KDA other,gluon_kda_fused_paged_decode_vmajor_gfx1250.kd,4416,27.514,6.231,4.5562
 other,_fp8_quantize_kernel.kd,11776,23.931,2.032,3.9629
 MoE,_decode_sigmoid_bias_topk_kernel.kd,5888,23.419,3.977,3.8781
@@ -13,11 +13,11 @@ dense GEMM,Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_
 MoE,_precomputed_topk_route_m1_canonical_gfx1250_kernel.kd,5888,17.991,3.056,2.9793
 elementwise,"void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>) [clone .kd]",5504,17.171,3.120,2.8434
 MoE,_weighted_topk_reduce_gfx1250_kernel.kd,5888,16.801,2.853,2.7821
-other,_mla_reduce_project_value_kernel.kd,1536,16.170,10.527,2.6776
+MLA attention,_mla_reduce_project_value_kernel.kd,1536,16.170,10.527,2.6776
 other,gluon_mla_normalize_project_query_gfx1250.kd,1536,14.308,9.315,2.3694
 rmsnorm,_rmsnorm_kernel.kd,5952,13.381,2.248,2.2158
 dense GEMM,Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x16x32_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSTI0_LBSPPA512_LBSPPB128_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA16_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT1_1_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR0_PKA1_SGROB0_SIA3_SS0_SPO0_SRVW0_SSO0_SVW8_SK0_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMLWS0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSM1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_2_1_WGMXCC1.kd,1536,7.422,4.832,1.2290
-other,_attnres_partial_kernel.kd,960,6.461,6.730,1.0699
+AttnRes,_attnres_partial_kernel.kd,960,6.461,6.730,1.0699
 other,_mla_rope_set_kv_buffer_kernel.kd,1536,3.862,2.515,0.6396
 AttnRes,gluon_attn_res_fwd_gfx1250.kd,64,2.132,33.319,0.3531
 elementwise,__amd_rocclr_copyBuffer.kd,1269,1.953,1.539,0.3234

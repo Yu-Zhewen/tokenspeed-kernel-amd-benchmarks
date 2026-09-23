@@ -182,3 +182,33 @@ def test_kernel_tables_are_capped_but_csvs_are_complete(generated):
             rows = list(csv.DictReader(path.open()))
             assert len(rows) == expected
             assert {"category", "kernel_name", "calls", "total_ms"} <= set(rows[0])
+
+
+def test_bucket_symmetry_guard_catches_a_split_kernel(tmp_path):
+    """A kernel both architectures run must not bucket differently.
+
+    This went wrong three times in practice: `_rowcta_gemv_add3_kernel` landed
+    in add3 on one side and dense GEMM on the other, which made a bucket that
+    gfx1250 led by 1.55x read as 0.86x against it.
+    """
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("gen", SCRIPT)
+    gen = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gen)
+
+    stages_a = {("DECODE", "c1"): [
+        {"name": "_rowcta_gemv_add3_kernel.kd", "category": "add3"},
+    ]}
+    stages_b = {("DECODE", "c1"): [
+        {"name": "_rowcta_gemv_add3_kernel.kd", "category": "dense GEMM"},
+    ]}
+    problems = gen.check_bucket_symmetry(stages_a, stages_b)
+    assert len(problems) == 1
+    assert "_rowcta_gemv_add3_kernel" in problems[0]
+
+    # And the shipped categories must already be symmetric.
+    for name in ("_rowcta_gemv_add3_kernel.kd", "_rowcta_gemv_kernel.kd",
+                 "gluon_kda_paged_prefill_state_scan_gfx950.kd",
+                 "gluon_kda_paged_prefill_state_scan_gfx1250.kd"):
+        assert gen.categorize(name, 0) == gen.categorize(name, 1)

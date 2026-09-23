@@ -17,7 +17,7 @@ MoE,gluon_sigmoid_bias_topk_gfx1250.kd,9016,234.607,26.021,0.6311
 KDA other,_causal_conv1d_fwd_kernel.kd,6762,217.656,32.188,0.5855
 MoE,_precomputed_topk_route_large_stage4_gfx1250_kernel.kd,9016,204.918,22.728,0.5513
 MoE,_precomputed_topk_route_large_stage1_gfx1250_kernel.kd,9016,143.686,15.937,0.3865
-KDA other,gluon_kda_paged_prefill_gfx1250.kd,7866,119.196,15.153,0.3207
+other,gluon_kda_paged_prefill_gfx1250.kd,7866,119.196,15.153,0.3207
 other,_mla_nope_quantize_fp8_kernel.kd,2352,110.560,47.007,0.2974
 other,attn_merge_state_kernel.kd,3504,109.466,31.240,0.2945
 KDA other,gluon_kda_paged_prefill_solve_merge_gfx1250.kd,7866,109.423,13.911,0.2944
@@ -26,7 +26,7 @@ MoE,_sigmoid_mul_kernel.kd,2352,81.830,34.792,0.2201
 rmsnorm,_rmsnorm_gated_kernel.kd,6762,79.063,11.692,0.2127
 MoE,_situ_kernel.kd,9016,78.348,8.690,0.2108
 other,_fused_qkv_split_kernel.kd,5727,67.146,11.725,0.1806
-other,_mla_kv_pack_quantize_fp8_kernel.kd,3504,57.075,16.289,0.1535
+MLA attention,_mla_kv_pack_quantize_fp8_kernel.kd,3504,57.075,16.289,0.1535
 other,_pack_prefill_recurrent_inputs_kernel.kd,2070,50.917,24.598,0.1370
 MoE,_precomputed_topk_route_large_stage3_gfx1250_kernel.kd,9016,40.945,4.541,0.1102
 elementwise,"void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native::index_put_kernel_impl<at::native::OpaqueType<4> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_put_kernel_impl<at::native::OpaqueType<4> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1}>(long, at::native::gpu_index_kernel<at::native::index_put_kernel_impl<at::native::OpaqueType<4> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1}>(at::TensorIteratorBase&, c10::ArrayRef<long>, c10::ArrayRef<long>, at::native::index_put_kernel_impl<at::native::OpaqueType<4> >(at::TensorIterator&, c10::ArrayRef<long>, c10::ArrayRef<long>)::{lambda(char*, char const*, long)#1} const&, bool)::{lambda(int)#1}) [clone .kd]",5658,36.983,6.536,0.0995
