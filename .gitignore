@@ -6,3 +6,6 @@ __pycache__/
 *.safetensors
 *.safetensors.part
 reduced_checkpoint_manifest.json
+# One-off kernel experiment scripts, not part of the documented workflow.
+toy_e2e/scripts/benchmark_*
+toy_e2e/scripts/profile_kimi3_*
