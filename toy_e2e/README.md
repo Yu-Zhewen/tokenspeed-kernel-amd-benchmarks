@@ -1,118 +1,88 @@
-# Kimi-K3 toy-rank and real-TP8 benchmarks
+# Kimi-K3 toy logical-rank benchmark
 
-This package measures Kimi-K3 TP8/EP1 on AMD GPUs. Two workflows are current:
+This package measures Kimi-K3 TP8/EP1 on one AMD GPU per architecture and
+produces a per-commit comparison of MI355X (`gfx950`) against MI455X
+(`gfx1250`).
 
-| Workflow | GPUs | Purpose | Procedure |
-|---|---|---|---|
-| cross-architecture comparison | 1 per architecture | MI355X vs MI455X on one TokenSpeed commit | [docs/arch-comparison.md](docs/arch-comparison.md) |
-| real 8-GPU serving | 8 | physical TP8/EP1 serving | [RUNBOOK.md](RUNBOOK.md) |
+## What "toy logical rank" means
 
-"Toy 1-GPU" means one physical GPU executes rank 0 of a TP8 model with local
-substitutes for rank-spanning collectives. It is not TP1. "Real 8-GPU"
-executes ranks 0-7 with physical RCCL/Iris collectives and HTTP serving.
+One physical GPU executes **rank 0 of a TP8 model**, with local substitutes
+standing in for every rank-spanning collective. It is not TP1: the model is
+configured exactly as rank 0 of an eight-way tensor-parallel deployment, so
+every weight shard, expert assignment, and kernel shape matches what rank 0
+would see in a real TP8 run.
 
-The cross-architecture workflow is the one to reach for when asking whether a
-TokenSpeed change helped, or where MI455X still trails MI355X. It produces a
-committed result directory per commit under `results/`, generated from four
-JSON files by `scripts/generate_arch_comparison.py`, so any entry can be
-rebuilt from its inputs.
+What that buys, and what it costs:
 
-## Documentation
+| Property | Status |
+|---|---|
+| Per-rank kernel shapes and dtypes | real |
+| Weight shards, MoE expert assignment, layer count | real |
+| Scheduler, CUDA graph capture, rolling KV metadata | real, production `ModelExecutor` |
+| Physical RCCL/Iris collectives | substituted locally |
+| HTTP serving and tokenizer text | absent |
+| MoE routing semantics | rank-local, so not equivalent to full TP8 |
 
-- [`TEST_PLAN.md`](TEST_PLAN.md): exact workload, required metrics, profile
-  coverage, naming, and completion rules.
-- [`RUNBOOK.md`](RUNBOOK.md): step-by-step setup, performance collection, and
-  hotspot collection for all three targets.
-- [`RESULT_TEMPLATE.md`](RESULT_TEMPLATE.md): required uniform result README.
-- [`results/README.md`](results/README.md): the three approved result entries.
-- [`docs/checkpoint-preparation.md`](docs/checkpoint-preparation.md): portable
-  raw TP8 rank-0 checkpoint contract.
+So the numbers are a **compute estimate for one rank**, useful for comparing
+architectures or commits against each other, and not a serving figure. Two
+consequences worth keeping in mind: decoded output is not semantically valid
+text because seven TP contributions are missing, and any change that shifts
+communication cost is invisible here.
 
-The organization follows the repository's `attention/` benchmark pattern:
-one explicit test contract, one reusable result template, revision-scoped raw
-artifacts, complete/incomplete status, exact commands, and no silent omission
-of unavailable data.
+Prompts are deterministic varied synthetic token IDs (seed 7, vocabulary
+160,000), not a repeated token, so prefill does real work rather than hitting
+degenerate cache behaviour.
 
-## Matched contract
+## Producing a per-commit comparison
 
-All targets use:
+Read [`docs/arch-comparison.md`](docs/arch-comparison.md). The short version is
+four runs and one command:
 
-- Kimi-K3 revision
-  `eaf5a944bfc8c57438bbce226feef9f6bdbdaae1`;
-- TokenSpeed revision
-  `0b1061eb9fe1df36a4e48e5c9c291cd753af9e89` for the current result set;
-- attention TP8, dense TP8, MoE TP8, EP1;
-- exact 4096-token input and 1024-token output;
-- concurrency 1 and 16;
-- 8192-token prefill budget;
-- FP8 E4M3 KV cache;
-- no prefix cache or host KV store;
-- decode graphs for batches 1, 2, 4, 8, and 16 with eager prefill;
-- one full warmup wave and three measured closed-loop waves;
-- unprofiled performance plus separate eager C1/C16 prefill/decode profiles.
+1. Create a detached worktree at the commit on each host.
+2. Smoke-test the harness against it with `--load-format dummy`, which catches
+   API drift in about forty seconds instead of after a ten-minute checkpoint
+   load.
+3. Run `performance` then `hotspots` on each architecture, same commit, same
+   workload.
+4. Run `scripts/generate_arch_comparison.py` over the four resulting JSON files
+   to write `results/arch_compare_<short-sha>/`.
 
-Toy performance uses TokenSpeed's production `ModelExecutor` graph wrapper,
-persistent input/runtime buffers, rolling KV metadata, greedy rank-local
-sampling, and depth-1 dispatch/commit overlap. Prompts are deterministic varied
-synthetic token IDs (seed 7, range 160,000), not repeated token 1.
-
-Every hotspot result uses
-[`scripts/summarize_gpu_hotspots.py`](scripts/summarize_gpu_hotspots.py).
-It reports the same semantic categories and exact-name CSV columns for one
-rank or eight ranks:
-
-```text
-kernel_name,calls,total_ms,gpu_time_pct,avg_us
-```
-
-This removes the prior mismatch where the toy report used model-component
-hooks and the real report used GPU kernels.
-
-## Current gfx950 results
-
-| Target | C1 primary decode | C16 primary decode | C1 overall output | C16 overall output |
-|---|---:|---:|---:|---:|
-| toy 1-GPU logical rank | 12.531 ms TPOT | 25.418 ms TPOT | 78.12 tok/s | 586.09 tok/s |
-| real 8-GPU serving | 12.36 ms TPOT | 24.28 ms TPOT | 78.22 tok/s | 556.13 tok/s |
-
-The units share a table shape but not an execution scope. Toy rolling TPOT
-excludes physical communication and serving; real TPOT includes the physical
-TP8 path. Rank-local toy outputs and MoE routes are not semantically equivalent
-to the real model because seven TP contributions are absent.
-
-The unified eager hotspot results show:
-
-- toy C1 prefill is MoE-heavy (45.99%); varied-token C16 prefill is led by a
-  generic direct-copy kernel (41.07%);
-- toy decode is led by GEMM/quant: 30.56% at C1 and 36.36% at C16;
-- real prefill is split between MoE and communication;
-- real decode is communication-dominated: 88.55% at C1 and 62.52% at C16.
+Results live in [`results/`](results/README.md), one directory per commit.
 
 ## Package files
 
-- `benchmark_logical_rank.py`: one-GPU production-wrapper rolling graph and
-  logical-collective benchmark.
-- `logical_rank.py`: TP8/EP1 rank-0 model configuration and local collective
-  substitutes.
-- `workload.py`: shared deterministic varied synthetic-token generator.
+- `benchmark_logical_rank.py`: the rolling-graph performance run.
+- `logical_rank.py`: TP8/EP1 rank-0 model configuration and the local
+  collective substitutes.
+- `workload.py`: deterministic synthetic-token generator.
 - `rank_checkpoint.py`: portable raw rank-state writer and loader.
-- `scripts/export_rank_local_checkpoint.py`: one-time rank-0 checkpoint export.
-- `scripts/profile_logical_rank_stages.py`: toy prefill/decode GPU traces.
-- `scripts/run_evalscope_4k1k.sh`: exact real-serving C1/C16 load contract.
-- `scripts/collect_real_serving_results.py`: normalize EvalScope outputs.
-- `scripts/profile_serving_stages.py`: real all-rank prefill/decode traces.
-- `scripts/summarize_gpu_hotspots.py`: shared category and exact-kernel
-  aggregation.
+- `scripts/export_rank_local_checkpoint.py`: one-time rank-0 checkpoint export;
+  see [`docs/checkpoint-preparation.md`](docs/checkpoint-preparation.md).
+- `scripts/profile_logical_rank_stages.py`: per-stage GPU traces.
+- `scripts/summarize_gpu_hotspots.py`: kernel aggregation shared by every
+  hotspot result.
+- `scripts/generate_arch_comparison.py`: builds a result entry from four JSON
+  files.
+- `scripts/collect_gpu_telemetry.py`, `scripts/source_tree_snapshot.py`:
+  called by the host runner scripts to record telemetry and provenance.
+- `scripts/summarize_attention_shapes.py`, `summarize_gemm_shapes.py`,
+  `summarize_kimi3_moe_stages.py`, `summarize_stream_overlap.py`: optional
+  per-area breakdowns from the same traces.
 
 ## Validate the package
 
-Run in a matching TokenSpeed environment:
+`generate_arch_comparison.py` and its test need no GPU:
+
+```bash
+python3 -m pytest -q -p no:cacheprovider toy_e2e/tests/test_generate_arch_comparison.py
+python3 -m ruff check toy_e2e
+```
+
+The remaining tests import `tokenspeed_kernel`, which requires a GPU device:
 
 ```bash
 export PYTHONPATH="/path/to/this/repo:/path/to/tokenspeed/python:/path/to/tokenspeed/tokenspeed-kernel/python:/path/to/tokenspeed/tokenspeed-kernel-amd/python"
 python3 -m pytest -q -p no:cacheprovider toy_e2e/tests
-python3 -m ruff check toy_e2e
 ```
 
-The tests cover checkpoint integrity, architecture-neutral load order,
-logical collective accounting, result normalization, and hotspot aggregation.
+Do not run them while a measurement holds the GPU; they will perturb it.

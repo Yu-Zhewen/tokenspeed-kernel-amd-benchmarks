@@ -4,12 +4,12 @@ Reproducible AMD kernel benchmarks and early model-integration prototypes.
 
 - [`attention/`](attention/): matched gfx950/gfx1250 attention benchmarks,
   plans, templates, and collected results.
-- [`toy_e2e/`](toy_e2e/): matched Kimi-K3 TP8/EP1 toy 1-GPU and real 8-GPU
-  benchmarks, with one test plan, runbook, result template, uniform kernel
-  hotspots, collected gfx950 results, and a pending physical gfx1250 run.
+- [`toy_e2e/`](toy_e2e/): Kimi-K3 TP8/EP1 logical rank 0 on one GPU per
+  architecture, producing a per-commit MI355X versus MI455X comparison.
 - [`frontier_e2e/`](frontier_e2e/): shared logical-rank harness and portable
   checkpoint format for DeepSeek-V4.1-Flash and GLM-5.3-Flash on gfx950/gfx1250.
 
 The repository preserves the revision history imported from the original
-benchmark gist. The toy E2E harness depends on a compatible TokenSpeed checkout;
-its README pins the tested revision and execution environment.
+benchmark gist. The toy E2E harness runs against a TokenSpeed worktree at the
+commit under test; see its README for the procedure and the harness
+compatibility notes.
