@@ -113,6 +113,16 @@ def fmt(value, digits=1):
     return f"{value:,.{digits}f}"
 
 
+def collected_dates(paths):
+    """Return the sorted set of UTC dates the inputs were generated on."""
+    dates = set()
+    for path in paths:
+        stamp = json.loads(path.read_text()).get("generated_at")
+        if stamp:
+            dates.add(stamp[:10])
+    return sorted(dates)
+
+
 PERF_METRICS = [
     ("prefill TTFT p50 (ms)", lambda b: b["time_to_first_token_ms"]["p50"], "lower"),
     ("prefill step p50 (ms)", lambda b: b["step_wall_ms"]["prefill"]["p50"], "lower"),
@@ -241,6 +251,16 @@ def main() -> None:
 
     work = doc950["workload"]
     ratios, headroom = breakdown_tables(hs950, hs1250)
+    dates = collected_dates([
+        args.gfx950_performance, args.gfx950_hotspots,
+        args.gfx1250_performance, args.gfx1250_hotspots,
+    ])
+    if not dates:
+        collected = "unknown"
+        slug = args.revision[:8]
+    else:
+        collected = dates[0] if len(dates) == 1 else f"{dates[0]} to {dates[-1]}"
+        slug = f"{dates[-1].replace('-', '')}_{args.revision[:8]}"
     short = args.revision[:8]
 
     lines = [
@@ -255,6 +275,7 @@ def main() -> None:
         "| Field | Value |",
         "|---|---|",
         f"| TokenSpeed revision | `{args.revision}` |",
+        f"| Collected | {collected} |",
         f"| Model revision | `{doc950['software']['model_revision']}` |",
         f"| Model | {doc950['model']['model_type']}, "
         f"{doc950['model']['num_layers']} layers, "
@@ -345,7 +366,7 @@ def main() -> None:
         "  --gfx950-hotspots <gfx950 hotspots.json> \\",
         "  --gfx1250-performance <gfx1250 performance result.json> \\",
         "  --gfx1250-hotspots <gfx1250 hotspots.json> \\",
-        f"  --output-dir toy_e2e/results/arch_compare_{short}",
+        f"  --output-dir toy_e2e/results/arch_compare_{slug}",
         "```",
         "",
     ]

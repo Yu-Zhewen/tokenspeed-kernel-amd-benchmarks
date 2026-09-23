@@ -117,8 +117,12 @@ python3 toy_e2e/scripts/generate_arch_comparison.py \
   --gfx950-hotspots     <gfx950 hs>/hotspots/hotspots.json \
   --gfx1250-performance <gfx1250 perf>/result.json \
   --gfx1250-hotspots    <gfx1250 hs>/hotspots/hotspots.json \
-  --output-dir "toy_e2e/results/arch_compare_${FULL_SHA:0:8}"
+  --output-dir "toy_e2e/results/arch_compare_$(date -u +%Y%m%d)_${FULL_SHA:0:8}"
 ```
+
+Name the directory `arch_compare_<YYYYMMDD>_<short-sha>` so entries sort by
+when they were collected; the document reports the same date, read from the
+inputs rather than the invocation, so the two cannot disagree.
 
 All four inputs must come from the same commit. The generator does not check
 this, because the recorded revision is the runner's metadata rather than a

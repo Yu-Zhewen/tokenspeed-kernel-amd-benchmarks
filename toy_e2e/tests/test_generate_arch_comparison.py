@@ -34,6 +34,7 @@ def _performance(arch: str, *, decode_tps: float, ttft: float) -> dict:
         }
 
     return {
+        "generated_at": "2026-09-23T08:22:04.130489+00:00",
         "device": f"{arch} device",
         "hardware": {"device": f"{arch} device", "architecture": arch},
         "model": {
@@ -64,6 +65,7 @@ def _performance(arch: str, *, decode_tps: float, ttft: float) -> dict:
 
 def _hotspots(kernels_by_stage: dict) -> dict:
     return {
+        "generated_at": "2026-09-23T08:31:50.316276+00:00",
         "profiles": [
             {
                 "stage": stage,
@@ -134,6 +136,7 @@ def generated(tmp_path):
 def test_records_provenance(generated):
     _, text = generated
     assert "a" * 40 in text
+    assert "2026-09-23" in text
     assert "modelsha" in text
     assert "50,000 / 1,024" in text
 
