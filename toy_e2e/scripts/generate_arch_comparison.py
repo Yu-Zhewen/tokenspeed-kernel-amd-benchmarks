@@ -227,11 +227,13 @@ def breakdown_tables(hs950, hs1250, perf950, perf1250) -> list[str]:
         for key in STAGES
     }
     categories = {c for a, b in per_stage.values() for c in set(a) | set(b)}
-
-    def rank_key(category):
-        return sum(b.get(category, [0.0, 0])[0] for _a, b in per_stage.values())
-
-    order = sorted(categories, key=rank_key, reverse=True)
+    # Fixed order, not size. Sorting by time moved a row whenever that bucket
+    # got faster, so the same category was not on the same line across commits.
+    named = [name for name, _pattern in CATEGORIES]
+    order = [name for name in named if name in categories]
+    order += sorted(categories - set(named) - {"other"})
+    if "other" in categories:
+        order.append("other")
     header = "| Category | " + " | ".join(
         STAGE_LABEL[s] for s in STAGES
     ) + " |"
@@ -395,7 +397,8 @@ def main() -> None:
         "against what the machine actually reported.",
         "",
         "Kernels are bucketed by function because the two architectures do not",
-        "split the work into the same kernels. Ratios are accumulated GPU kernel",
+        "split the work into the same kernels. Rows follow that category list,",
+        "the same order in every entry. Ratios are accumulated GPU kernel",
         "duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.",
         "",
         *ratios,

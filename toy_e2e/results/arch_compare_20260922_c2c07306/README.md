@@ -46,22 +46,23 @@ MI455X either way.
 The final row is the measured step latency from the end-to-end table above, not a total of the rows, so the buckets can be read against what the machine actually reported.
 
 Kernels are bucketed by function because the two architectures do not
-split the work into the same kernels. Ratios are accumulated GPU kernel
+split the work into the same kernels. Rows follow that category list,
+the same order in every entry. Ratios are accumulated GPU kernel
 duration, MI355X over MI455X, so above 1.00x means MI455X is ahead.
 
 | Category | prefill c16 | prefill c1 | decode c16 | decode c1 |
 |---|---:|---:|---:|---:|
-| dense GEMM | 1.13x | 1.15x | 1.10x | 1.71x |
+| KDA state scan | 1.00x | 0.98x | — | — |
 | MoE | 1.88x | 1.97x | 1.48x | 1.09x |
-| AttnRes | 0.65x | 0.65x | 0.58x | 1.32x |
+| dense GEMM | 1.13x | 1.15x | 1.10x | 1.71x |
 | input projections | 1.13x | 1.13x | 1.56x | 1.64x |
 | MLA attention | 1.25x | 1.39x | 1.58x | 2.09x |
-| KDA state scan | 1.00x | 0.98x | — | — |
+| AttnRes | 0.65x | 0.65x | 0.58x | 1.32x |
 | KDA other | 1.41x | 1.42x | 1.52x | 1.15x |
-| other | 1.19x | 1.19x | 0.50x | 0.49x |
-| elementwise | 1.10x | 1.11x | 0.95x | 1.28x |
 | add3 | 2.94x | 2.93x | — | — |
 | rmsnorm | 1.76x | 1.77x | 1.22x | 0.98x |
+| elementwise | 1.10x | 1.11x | 0.95x | 1.28x |
+| other | 1.19x | 1.19x | 0.50x | 0.49x |
 | **End-to-end (step p50)** | **1.23x** | **1.23x** | **1.17x** | **1.30x** |
 
 ## Heaviest kernels
