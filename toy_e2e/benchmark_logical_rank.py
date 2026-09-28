@@ -357,6 +357,11 @@ def _create_cache(server_args, model_config, cache_bytes: int):
             gpu_id=0,
             rank=0,
             gpu_memory=total_gib,
+            graph_reserve_bytes=0,
+            probe_batch_rows=None,
+            profiled_cache_bytes=None,
+            reuse_target_backend=None,
+            reuse_draft_backend=None,
         )
     # Newer TokenSpeed returns an AttentionBuild; older revisions returned the
     # bare tuple. Keep both so a run can be pinned to either.
@@ -955,6 +960,7 @@ def _run_rolling_phase(
                 dp_metadata=None,
                 grammar_inputs=None,
                 ngram_inputs=None,
+                request_history_seeds=None,
                 multimodal_context=None,
             )
             pending_round = _PendingRound(

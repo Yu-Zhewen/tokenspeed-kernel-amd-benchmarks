@@ -329,7 +329,11 @@ def create_logical_executor(
     )
     capture_graphs = getattr(executor, "capture_graphs", None)
     if callable(capture_graphs):
-        capture_graphs()
+        from tokenspeed.runtime.execution.memory_delta import (
+            NULL_MEMORY_DELTA_OBSERVER,
+        )
+
+        capture_graphs(entries=None, observer=NULL_MEMORY_DELTA_OBSERVER)
     return executor, DeviceHandle(executor)
 
 
