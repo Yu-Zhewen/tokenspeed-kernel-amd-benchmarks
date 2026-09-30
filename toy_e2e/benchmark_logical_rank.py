@@ -590,6 +590,25 @@ def _prepare_forward(
     )
 
 
+def _local_pages_to_zero(runner, pool, pages_to_zero):
+    """Translate scheduler page IDs to this rank's pages, as ModelExecutor does.
+
+    Newer pools accept only the translated 1-D integer arrays, not the
+    scheduler's lists.
+    """
+    try:
+        from tokenspeed.runtime.layers.attention.kv_cache.virtual_blocks import (
+            local_pages_by_group,
+        )
+    except ImportError:
+        return pages_to_zero
+    return local_pages_by_group(
+        pages_to_zero,
+        contract=pool.arena.runtime_contract,
+        rank=runner.mapping.attn.dcp_rank,
+    )
+
+
 def _run_workload(
     *,
     runner,
@@ -667,7 +686,7 @@ def _run_workload(
         pages_to_zero = dict(plan.pages_to_zero)
         zero_new_blocks = getattr(pool, "zero_new_blocks", None)
         if callable(zero_new_blocks):
-            zero_new_blocks(pages_to_zero)
+            zero_new_blocks(_local_pages_to_zero(runner, pool, pages_to_zero))
         else:
             pool.zero_new_pages(pages_to_zero)
         prepared = _prepare_forward(backend, pool, forward_op, cached_lengths)
