@@ -25,10 +25,13 @@ import re
 import statistics
 from pathlib import Path
 
+# A model without a speculative algorithm is the baseline for the speculative
+# model with the same label.
 MODELS = [
     ("glm53", "GLM-5.3", "MTP"),
     ("dsv41", "DeepSeek-V4.1-Flash", "DSPARK"),
     ("kimik3", "Kimi-K3", "EAGLE3"),
+    ("kimik3-nospec", "Kimi-K3", None),
 ]
 ARCHES = [("gfx950", "MI355X"), ("gfx1250", "MI455X")]
 
@@ -162,7 +165,8 @@ def read_steady_decode(path: Path) -> dict[int, float]:
 def read_run(root: Path) -> dict:
     rev = read_lines(root / "tokenspeed.rev")
     env = {}
-    for line in read_lines(root / next(iter(m for m, _, _ in MODELS)) / "env.txt"):
+    ran = [m for m, _, _ in MODELS if (root / m / "env.txt").exists()]
+    for line in read_lines(root / (ran[0] if ran else MODELS[0][0]) / "env.txt"):
         key, _, value = line.partition(" ")
         # "arch gfx1250 memory_gib 432.0" carries the memory size too.
         env[key] = value.split()[0] if key == "arch" and value else value
@@ -215,6 +219,41 @@ def perf_table(benches, steady) -> list[str]:
                 continue
             ratio = a / b if better == "lower" else b / a
             out.append(f"| {label} | {conc} | {fmt(a)} | {fmt(b)} | {ratio:.2f}x |")
+    return out
+
+
+def spec_gain_table(baseline, speculative, algo) -> list[str]:
+    """Each architecture's speculative run against its run without speculation.
+
+    Both arguments are the (benches, steady) pairs of the two models' sections.
+    """
+    labels = [label for _, label in ARCHES]
+    out = [
+        "| Metric | Batch | "
+        + " | ".join(f"{a} off | {a} {algo} | {a} gain" for a in labels)
+        + " |",
+        "|---|---:|" + "---:|" * (3 * len(labels)),
+    ]
+    (off_benches, off_steady), (on_benches, on_steady) = baseline, speculative
+    shared = set.intersection(*(set(b) for b in (*off_benches, *on_benches)))
+    for conc in sorted(shared):
+        per_arch = [
+            (
+                perf_rows(off_benches[i][conc], off_steady[i].get(conc)),
+                perf_rows(on_benches[i][conc], on_steady[i].get(conc)),
+            )
+            for i in range(len(ARCHES))
+        ]
+        for row, (label, _, better) in enumerate(per_arch[0][0]):
+            cells = []
+            for off_rows, on_rows in per_arch:
+                off, on = off_rows[row][1], on_rows[row][1]
+                if off is None or on is None:
+                    cells += ["—"] * 3
+                    continue
+                gain = off / on if better == "lower" else on / off
+                cells += [fmt(off), fmt(on), f"{gain:.2f}x"]
+            out.append(f"| {label} | {conc} | " + " | ".join(cells) + " |")
     return out
 
 
@@ -345,7 +384,7 @@ def main() -> None:
     revision = runs[0]["revision"]
     short = revision[:8]
 
-    sections, dates, accepts, all_warnings = [], set(), [], []
+    sections, dates, accepts, all_warnings, perf_by_model = [], set(), [], [], {}
     for model, label, algo in MODELS:
         dirs = [run["root"] / model for run in runs]
         if not all((d / "serve_bench.json").exists() for d in dirs):
@@ -359,10 +398,6 @@ def main() -> None:
             else {}
             for d in dirs
         ]
-        simulated = read_lines(dirs[0] / "simulation.txt")
-        accept = next(
-            (s.split("=", 1)[1] for s in simulated if s.startswith("TOKENSPEED_SPEC")), ""
-        )
         logged = []
         for d in dirs:
             text = " ".join(read_lines(d / "accept.txt"))
@@ -370,10 +405,20 @@ def main() -> None:
             logged.append(
                 f"{match[1]} ({match[2]} windows)" if match else "not logged"
             )
-        accepts.append((label, algo, accept, logged))
+        if algo:
+            simulated = read_lines(dirs[0] / "simulation.txt")
+            accept = next(
+                (s.split("=", 1)[1] for s in simulated if s.startswith("TOKENSPEED_SPEC")),
+                "",
+            )
+            accepts.append((label, algo, accept, logged))
+        elif any(entry != "not logged" for entry in logged):
+            all_warnings.append(f"{model} logged an accept length without speculation")
 
         steady = [read_steady_decode(d / "batches.log") for d in dirs]
-        lines = [f"## {label} {algo}", "", *perf_table(benches, steady), ""]
+        perf_by_model[model] = (benches, steady)
+        title = f"{label} {algo}" if algo else f"{label} without speculation"
+        lines = [f"## {title}", "", *perf_table(benches, steady), ""]
         if all(hotspots):
             table, warnings = breakdown_table(hotspots, benches, steady)
             all_warnings += [f"{label}: {w}" for w in warnings]
@@ -402,6 +447,20 @@ def main() -> None:
                         ]
         sections += lines
 
+    baselines = {label: m for m, label, algo in MODELS if not algo and m in perf_by_model}
+    for model, label, algo in MODELS:
+        if algo and model in perf_by_model and label in baselines:
+            sections += [
+                f"## {label}: {algo} against no speculation",
+                "",
+                f"Each architecture's {algo} run over its own run without",
+                f"speculation, from the two sections above. Above 1.00x means {algo}",
+                "is ahead.",
+                "",
+                *spec_gain_table(perf_by_model[baselines[label]], perf_by_model[model], algo),
+                "",
+            ]
+
     for warning in all_warnings:
         print(f"warning: {warning}")
     dates = sorted(dates)
@@ -412,14 +471,29 @@ def main() -> None:
     env950, env1250 = runs[0]["env"], runs[1]["env"]
     slug = f"{args.commit_date.replace('-', '')}_{short}"
 
+    if baselines:
+        intro = [
+            "# Emulated rank 0 with and without speculative decoding: MI355X vs "
+            f"MI455X at `{short}`",
+            "",
+            "One GPU per architecture serves global rank 0 of a TP8 deployment with",
+            "`tokenspeed serve --emulate-rank-zero`, dummy weights and uniform MoE",
+            "routing. Speculative runs fix a simulated accept length. Collectives",
+            "are local substitutes, so the numbers are a compute estimate, not",
+            "serving performance. Both architectures ran the same tree and workload.",
+        ]
+    else:
+        intro = [
+            f"# Emulated rank 0 with speculative decoding: MI355X vs MI455X at `{short}`",
+            "",
+            "One GPU per architecture serves global rank 0 of a TP8 deployment with",
+            "`tokenspeed serve --emulate-rank-zero`, dummy weights, uniform MoE",
+            "routing and a fixed simulated accept length. Collectives are local",
+            "substitutes, so the numbers are a compute estimate, not serving",
+            "performance. Both architectures ran the same tree and workload.",
+        ]
     lines = [
-        f"# Emulated rank 0 with speculative decoding: MI355X vs MI455X at `{short}`",
-        "",
-        "One GPU per architecture serves global rank 0 of a TP8 deployment with",
-        "`tokenspeed serve --emulate-rank-zero`, dummy weights, uniform MoE",
-        "routing and a fixed simulated accept length. Collectives are local",
-        "substitutes, so the numbers are a compute estimate, not serving",
-        "performance. Both architectures ran the same tree and workload.",
+        *intro,
         "",
         "## Provenance",
         "",
@@ -460,7 +534,8 @@ def main() -> None:
         "prefill. Steady decode TPOT is the median over the server's 40-step",
         "decode windows in which every request was decoding and no prefill ran;",
         "decode tok/s per user and the decode columns below use it. Both include",
-        "the speculative speedup.",
+        "the speculative speedup when speculation is on." if baselines
+        else "the speculative speedup.",
         "",
         *sections,
         "## Method and limitations",

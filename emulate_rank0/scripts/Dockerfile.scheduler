@@ -1,0 +1,13 @@
+# An earlier run's image with tokenspeed-scheduler rebuilt from the tree under
+# test, for when the scheduler is the only compiled package that changed since
+# the image's commit; run.sh puts everything else on PYTHONPATH. The build
+# context holds only tokenspeed-scheduler/, exported with git archive.
+ARG BASE
+FROM ${BASE}
+
+COPY tokenspeed-scheduler /tmp/tokenspeed-scheduler
+RUN CMAKE_BUILD_PARALLEL_LEVEL=16 python3 -m pip install --no-cache-dir \
+        --force-reinstall --no-deps /tmp/tokenspeed-scheduler && \
+    rm -rf /tmp/tokenspeed-scheduler && \
+    python3 -c "import importlib.metadata as m, tokenspeed_scheduler; \
+print('tokenspeed-scheduler', m.version('tokenspeed-scheduler'))"

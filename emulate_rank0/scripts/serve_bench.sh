@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Container side: serve MODEL as emulated rank 0 of a TP8 deployment with dummy
 # weights and simulated speculative acceptance, then a smoke test and the
-# 50k/500 benchmark at batch 1 and 16. Usage: serve_bench.sh <output-dir>
+# 50k/500 benchmark at batch 1 and 16. kimik3-nospec is kimik3 without
+# speculation. Usage: serve_bench.sh <output-dir>
 set -uo pipefail
 out="$1"
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,6 +12,7 @@ export PYTHONDONTWRITEBYTECODE=1
 
 # Accept lengths are the mean tokens per verify step that the matching CI job
 # logs on MI35x with real weights; see README.md for the source of each.
+accept=""
 case "${MODEL:-}" in
   glm53)
     name=glm-5.3
@@ -29,25 +31,32 @@ case "${MODEL:-}" in
       --dtype bfloat16 --moe-backend triton
       --speculative-algorithm DSPARK)
     ;;
-  kimik3)
+  kimik3 | kimik3-nospec)
     name=kimi-k3
     vocab=160000
-    accept=3.75
     model_args=(/data/models/kimi-k3-config --language-model-only
-      --attention-backend mla --kv-cache-dtype fp8_e4m3
-      --speculative-algorithm EAGLE3
-      --speculative-draft-model-path /data/models/kimi-k3-eagle3-mla-config
-      --speculative-draft-model-quantization unquant
-      --eagle3-layers-to-capture 2,46,90
-      --speculative-num-steps 3 --speculative-num-draft-tokens 4
-      --speculative-eagle-topk 1)
+      --attention-backend mla --kv-cache-dtype fp8_e4m3)
+    if [[ "$MODEL" == kimik3 ]]; then
+      accept=3.75
+      model_args+=(--speculative-algorithm EAGLE3
+        --speculative-draft-model-path /data/models/kimi-k3-eagle3-mla-config
+        --speculative-draft-model-quantization unquant
+        --eagle3-layers-to-capture 2,46,90
+        --speculative-num-steps 3 --speculative-num-draft-tokens 4
+        --speculative-eagle-topk 1)
+    fi
     ;;
   *)
-    echo "### unknown MODEL='${MODEL:-}', expected glm53, dsv41 or kimik3"
+    echo "### unknown MODEL='${MODEL:-}', expected glm53, dsv41, kimik3 or kimik3-nospec"
     exit 2
     ;;
 esac
-export TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN="${TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN:-$accept}"
+if [[ -n "$accept" ]]; then
+  export TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN="${TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN:-$accept}"
+else
+  # The server refuses a simulated accept length without speculation.
+  export TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN=""
+fi
 export TOKENSPEED_MOE_ROUTING_SIMULATION="${TOKENSPEED_MOE_ROUTING_SIMULATION:-uniform}"
 
 common=(

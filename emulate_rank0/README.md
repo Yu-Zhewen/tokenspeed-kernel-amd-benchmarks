@@ -10,6 +10,9 @@ three speculative-decoding deployments:
 | DeepSeek-V4.1-Flash | DSPARK, block size 5 from the config | TP8, rank 0 |
 | Kimi-K3 | EAGLE3 (`lightseekorg/kimi-k3-eagle3-mla`), 3 steps | TP8, rank 0 |
 
+An optional fourth run, `kimik3-nospec`, serves Kimi-K3 with the same flags
+and no speculation, as the baseline for its EAGLE3 run.
+
 The workload is 50,000 prompt tokens and 500 output tokens per request at
 batch 1 and 16, the same shape as TokenSpeed's Kimi-K3 EAGLE3 CI perf job.
 Written for an agent picking this up cold.
@@ -66,14 +69,29 @@ docker build --build-arg MAX_JOBS=16 -f docker/Dockerfile.amd \
 
 The first build downloads torch 2.14 (6.2 GB); later builds reuse that layer.
 
+When `tokenspeed-scheduler` is the only compiled package that changed since
+an earlier run's image, rebuilding just the scheduler is enough on either
+architecture. Check with `git diff --name-only <image commit> HEAD`: changes
+outside `tokenspeed-scheduler/` should be Python files, documentation, or CUDA
+sources that AMD builds skip. Then derive the image:
+
+```bash
+mkdir -p /tmp/scheduler-image
+git -C "$TS_ROOT" archive HEAD tokenspeed-scheduler | tar -x -C /tmp/scheduler-image
+docker build --network=host --build-arg BASE=<earlier image> \
+  -f emulate_rank0/scripts/Dockerfile.scheduler -t <new tag> /tmp/scheduler-image
+```
+
 ### TokenSpeed requirements
 
 Emulation arrived in TokenSpeed
 [#1938](https://github.com/lightseekorg/tokenspeed/pull/1938), together with
 the dummy-weight EAGLE3 embedding fix that Kimi-K3 needs at TP8. GLM-5.3's
 block-FP8 MoE has no gfx1250 kernel before
-[#1936](https://github.com/lightseekorg/tokenspeed/pull/1936). Until both
-merge, the tree under test is #1938's head with #1936's diff applied:
+[#1936](https://github.com/lightseekorg/tokenspeed/pull/1936), which merged
+on 2026-10-03. #1938's branch includes it from `9b707d56`, where it merged
+`main`, so from there the tree under test is #1938's head with nothing
+applied. Before that, it was #1938's head with #1936's diff applied:
 
 ```bash
 git worktree add --detach ~/worktrees/emulate-rank0-compare <1938-head>
@@ -168,8 +186,9 @@ Results land in `$RESULTS_ROOT/emulate-rank0-<arch>-<label>/<model>/`:
 | `serve.log`, `serve_hotspots.log` | server logs of the two phases |
 | `serve_cmd.txt`, `env.txt`, `simulation.txt` | exact command, package versions, simulation settings |
 
-`MODELS` picks a subset (`glm53 dsv41 kimik3`) and `PHASES` picks `perf`,
-`hotspots` or both. `BENCH_ARGS` passes extra client flags. A short check
+`MODELS` picks a subset (`glm53 dsv41 kimik3` by default; add
+`kimik3-nospec` for the baseline without speculation) and `PHASES` picks
+`perf`, `hotspots` or both. `BENCH_ARGS` passes extra client flags. A short check
 with `BENCH_ARGS="--prompt-tokens 2048 --output-tokens 64"` takes about 20
 minutes for all three models and catches flag or startup problems before
 committing to full runs. The full runs at `927562ef` took 39 minutes on
@@ -184,6 +203,8 @@ Check `accept.txt` before trusting a run. In full runs the logged median
 equals the simulated value, and only windows that straddle a prefill log
 less. A short check logs only a few windows, so its median can sit lower. A
 median far below the simulated value means the simulation did not apply.
+For `kimik3-nospec`, `accept.txt` should read `no avg_accept_len in the decode
+log`.
 
 ## 5. Generate the document
 
@@ -212,6 +233,10 @@ decoding, not on TPOT p50. At batch 16 all requests arrive at once, and a
 request whose prompt finishes early decodes between the other prompts'
 prefill chunks, so its TPOT mostly measures prefill. The generated document
 shows both.
+
+The generator covers whichever models both directories hold. When they
+include `kimik3-nospec`, the document adds a section comparing each
+architecture's Kimi-K3 EAGLE3 run with its run without speculation.
 
 The generator refuses to run when the two directories record different
 commits or diffs. It compares functional kernel groups rather than symbols,
@@ -278,3 +303,8 @@ when `hotspots exit 0` follows.
   was rerun after the `tokenizer_not_found` race, and MI355X's Kimi-K3
   hotspots were regenerated from its rocprofv3 output after the unreadable
   kernel name. Both are described in section 6.
+- [`results/arch_compare_20261005_9b707d56`](results/arch_compare_20261005_9b707d56/README.md):
+  #1938 at `9b707d56`, which includes #1936, with nothing applied. Kimi-K3
+  only, with EAGLE3 and with `kimik3-nospec`. The MI455X image is
+  `tokenspeed-gfx1250:d36f9bc8-torch214` with `tokenspeed-scheduler` rebuilt
+  at `9b707d56`. The two runs took 24 minutes on MI355X and 18 on MI455X.
