@@ -28,7 +28,7 @@ from pathlib import Path
 # A model without a speculative algorithm is the baseline for the speculative
 # model with the same label.
 MODELS = [
-    ("glm53", "GLM-5.3", "MTP"),
+    ("glm53flash", "GLM-5.3-Flash", "MTP"),
     ("dsv41", "DeepSeek-V4.1-Flash", "DSPARK"),
     ("kimik3", "Kimi-K3", "EAGLE3"),
     ("kimik3-nospec", "Kimi-K3", None),
@@ -44,12 +44,13 @@ CATEGORIES = [
         "KDA other",
         r"kda_paged_prefill_preprocess|kda_paged_prefill_wu_vector"
         r"|kda_paged_prefill_solve_merge|kda_paged_prefill$|kda_fused"
-        r"|causal_conv1d",
+        r"|causal_conv1d|recurrent_kda|prefill_recurrent|prefill_state_inputs"
+        r"|checkpoint_output|recurrent_checkpoints",
     ),
     (
         "MoE",
         r"moe|^_stage[12]_kernel$|^_routing_kernel$|^_combine_kernel$"
-        r"|gather_package|warp_decode|sigmoid_bias_topk"
+        r"|gather_package|warp_decode|fp8_warp_gemv|sigmoid_bias_topk"
         r"|sigmoid_mul|_situ_kernel|^_matmul$|^_matmul_decode$|topk_route"
         r"|weighted_topk_reduce|softplus_topk",
     ),
@@ -57,7 +58,7 @@ CATEGORIES = [
         "sparse attention",
         # Not torch's gpu_index_kernel, which is plain indexing.
         r"dsa_|indexer|index_k(?!ernel)|index_topk|sparse|flatkv|topk_to_global"
-        r"|selected_attention|dsv4_prefill|dsv4_decode",
+        r"|selected_attention|dsv4_prefill|dsv4_decode|kpool|hadamard",
     ),
     ("input projections", r"packed_input_projections|latent_input"),
     (
@@ -71,7 +72,7 @@ CATEGORIES = [
         r"mla_|attn_merge|flash_attn|fmha|paged_attention|unified_attention",
     ),
     ("AttnRes", r"attn_res|attnres"),
-    ("hyper-connections", r"^_mhc_"),
+    ("hyper-connections", r"^_mhc_|^gluon_mhc_"),
     # The elementwise add only; *_add3 GEMM epilogues are dense GEMM above.
     ("add3", r"^_add3_kernel$"),
     # Activation quantization stays here whichever op consumes it: gfx1250
@@ -183,6 +184,16 @@ def read_run(root: Path) -> dict:
         "image": image[1] if len(image) > 1 else (image[0] if image else ""),
         "env": env,
     }
+
+
+def read_layout(path: Path) -> str:
+    """The parallel layout a serve command emulates, such as `TP4`."""
+    command = " ".join(read_lines(path))
+    tp = re.search(r"--(?:tensor-parallel-size|attn-tp-size) (\d+)", command)
+    ep = re.search(r"--ep-size (\d+)", command)
+    if not tp:
+        return "unknown"
+    return f"TP{tp[1]}" + (f" EP{ep[1]}" if ep and int(ep[1]) > 1 else "")
 
 
 def fmt(value, digits=1):
@@ -405,13 +416,17 @@ def main() -> None:
             logged.append(
                 f"{match[1]} ({match[2]} windows)" if match else "not logged"
             )
+        layouts = {read_layout(d / "serve_cmd.txt") for d in dirs}
+        if len(layouts) != 1:
+            raise SystemExit(f"{model}: the two runs emulated different layouts {layouts}")
+        layout = layouts.pop()
         if algo:
             simulated = read_lines(dirs[0] / "simulation.txt")
             accept = next(
                 (s.split("=", 1)[1] for s in simulated if s.startswith("TOKENSPEED_SPEC")),
                 "",
             )
-            accepts.append((label, algo, accept, logged))
+            accepts.append((label, algo, layout, accept, logged))
         elif any(entry != "not logged" for entry in logged):
             all_warnings.append(f"{model} logged an accept length without speculation")
 
@@ -476,8 +491,8 @@ def main() -> None:
             "# Emulated rank 0 with and without speculative decoding: MI355X vs "
             f"MI455X at `{short}`",
             "",
-            "One GPU per architecture serves global rank 0 of a TP8 deployment with",
-            "`tokenspeed serve --emulate-rank-zero`, dummy weights and uniform MoE",
+            "One GPU per architecture serves global rank 0 of each model's CI layout",
+            "with `tokenspeed serve --emulate-rank-zero`, dummy weights and uniform MoE",
             "routing. Speculative runs fix a simulated accept length. Collectives",
             "are local substitutes, so the numbers are a compute estimate, not",
             "serving performance. Both architectures ran the same tree and workload.",
@@ -486,8 +501,8 @@ def main() -> None:
         intro = [
             f"# Emulated rank 0 with speculative decoding: MI355X vs MI455X at `{short}`",
             "",
-            "One GPU per architecture serves global rank 0 of a TP8 deployment with",
-            "`tokenspeed serve --emulate-rank-zero`, dummy weights, uniform MoE",
+            "One GPU per architecture serves global rank 0 of each model's CI layout",
+            "with `tokenspeed serve --emulate-rank-zero`, dummy weights, uniform MoE",
             "routing and a fixed simulated accept length. Collectives are local",
             "substitutes, so the numbers are a compute estimate, not serving",
             "performance. Both architectures ran the same tree and workload.",
@@ -519,11 +534,11 @@ def main() -> None:
         "windows that straddle a prefill keep fewer tokens. See",
         "`emulate_rank0/README.md` for where each simulated value comes from.",
         "",
-        "| Model | Simulated | MI355X logged | MI455X logged |",
-        "|---|---:|---|---|",
+        "| Model | Layout emulated | Simulated | MI355X logged | MI455X logged |",
+        "|---|---|---:|---|---|",
         *(
-            f"| {label} {algo} | {accept} | {logged[0]} | {logged[1]} |"
-            for label, algo, accept, logged in accepts
+            f"| {label} {algo} | {layout} | {accept} | {logged[0]} | {logged[1]} |"
+            for label, algo, layout, accept, logged in accepts
         ),
         "",
         "Latency rows are lower-is-better and throughput rows higher-is-better;",

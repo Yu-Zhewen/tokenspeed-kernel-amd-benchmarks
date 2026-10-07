@@ -31,7 +31,7 @@ echo "$IMAGE_REF" >> "$OUT/image.id"
 cp "$here"/*.sh "$here"/*.py "$OUT/"
 echo "### output $OUT"
 
-for model in ${MODELS:-glm53 dsv41 kimik3}; do
+for model in ${MODELS:-glm53flash dsv41 kimik3}; do
   if [[ -n "$(docker ps -aq --filter "name=^/${CONTAINER_NAME}$")" ]]; then
     echo "### container $CONTAINER_NAME already exists; remove it first"
     exit 1

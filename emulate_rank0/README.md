@@ -6,9 +6,11 @@ three speculative-decoding deployments:
 
 | Model | Speculative algorithm | Layout emulated |
 |---|---|---|
-| GLM-5.3 | MTP, 3 steps | TP8, rank 0 |
-| DeepSeek-V4.1-Flash | DSPARK, block size 5 from the config | TP8, rank 0 |
+| GLM-5.3-Flash | MTP, 3 steps | TP4 (attention TP4, MoE TP4), rank 0 |
+| DeepSeek-V4.1-Flash | DSPARK, block size 5 from the config | TP4, rank 0 |
 | Kimi-K3 | EAGLE3 (`lightseekorg/kimi-k3-eagle3-mla`), 3 steps | TP8, rank 0 |
+
+Each layout is the one the model's AMD CI job serves on MI35x.
 
 An optional fourth run, `kimik3-nospec`, serves Kimi-K3 with the same flags
 and no speculation, as the baseline for its EAGLE3 run.
@@ -19,7 +21,7 @@ Written for an agent picking this up cold.
 
 Unlike `toy_e2e/`, nothing here calls TokenSpeed internals. Each run is a real
 `tokenspeed serve` with `--emulate-rank-zero`: one GPU executes global rank 0
-of the TP8 layout with exact per-rank shapes, and collectives are replaced by
+of the model's layout with exact per-rank shapes, and collectives are replaced by
 local substitutes. Weights are `--load-format dummy`, so only each model's
 `config.json` and tokenizer files are needed, not a checkpoint. Two
 simulations stand in for what random weights cannot reproduce:
@@ -47,7 +49,8 @@ the document.
 `CONFIG_ROOT` must hold four config-only directories, mounted read-only at
 `/data/models` in the container:
 
-- `glm-5.3-config`
+- `glm-5.3-flash-config`, the config, tokenizer, chat template, processor
+  config and safetensors index of `zai-org/GLM-5.3-Flash` at `eb9eb208`
 - `deepseek-v4.1-flash-config`
 - `kimi-k3-config`
 - `kimi-k3-eagle3-mla-config`, which is only the 1 KB `config.json` from
@@ -86,7 +89,7 @@ docker build --network=host --build-arg BASE=<earlier image> \
 
 Emulation arrived in TokenSpeed
 [#1938](https://github.com/lightseekorg/tokenspeed/pull/1938), together with
-the dummy-weight EAGLE3 embedding fix that Kimi-K3 needs at TP8. GLM-5.3's
+the dummy-weight EAGLE3 embedding fix that Kimi-K3 needs at TP8. GLM-5.3-Flash's
 block-FP8 MoE has no gfx1250 kernel before
 [#1936](https://github.com/lightseekorg/tokenspeed/pull/1936), which merged
 on 2026-10-03. #1938's branch includes it from `9b707d56`, where it merged
@@ -114,17 +117,17 @@ on `main` at `b2dd427d` (MI35x):
 | Model | Value | Source job | Workload | Logged windows |
 |---|---:|---|---|---|
 | Kimi-K3 EAGLE3 | 3.75 | [`perf-kimi-k3-eagle3-mxfp4-tp8ep1-random-50k-500-mi35x`](https://github.com/lightseekorg/tokenspeed/actions/runs/37104243262/job/111153155794) | random 50k/500, batch 16 | 3.65, 3.85, 3.85 |
-| GLM-5.3 MTP | 2.9 | [`eval-glm-5.3-flash-fp8-mtp-aime26-amd`](https://github.com/lightseekorg/tokenspeed/actions/runs/37104243262/job/111153155786) | AIME26 | median 2.91 of 623, range 2.06 to 3.61 |
-| DeepSeek-V4.1 DSPARK | 3.9 | [`eval-deepseek-v4.1-flash-dspark-gsm8k-amd`](https://github.com/lightseekorg/tokenspeed/actions/runs/37104243262/job/111153155790) | gsm8k | median 3.93 of 68, range 3.69 to 4.20 |
+| GLM-5.3-Flash MTP | 2.9 | [`eval-glm-5.3-flash-fp8-mtp-aime26-amd`](https://github.com/lightseekorg/tokenspeed/actions/runs/37104243262/job/111153155786) | AIME26 | median 2.91 of 623, range 2.06 to 3.61 |
+| DeepSeek-V4.1-Flash DSPARK | 3.9 | [`eval-deepseek-v4.1-flash-dspark-gsm8k-amd`](https://github.com/lightseekorg/tokenspeed/actions/runs/37104243262/job/111153155790) | gsm8k | median 3.93 of 68, range 3.69 to 4.20 |
 
 Only Kimi-K3's value comes from this exact workload. Its first logged window,
 1.94, is excluded: it straddles the prefill, so it averages over too few
 verify steps.
 
 The workload matters a lot. Kimi-K3's own AIME26 eval job logs a median of
-2.41, against 3.75 on random prompts. GLM-5.3 and DeepSeek-V4.1 have no random
-50k/500 CI job, so their values describe real text and may not match what this
-workload would accept. Override a value with
+2.41, against 3.75 on random prompts. GLM-5.3-Flash and DeepSeek-V4.1-Flash
+have no random 50k/500 CI job, so their values describe real text and may not
+match what this workload would accept. Override a value with
 `TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN` when you have a better source.
 
 The value must lie between 1 and the verify width, the most tokens one step
@@ -140,16 +143,17 @@ Simulating speculative acceptance: every verify step keeps 3.9 tokens per reques
 
 ## 3. Serve flags
 
-`scripts/serve_bench.sh` holds every flag. Each model's flags follow its CI
-job, with these differences:
+`scripts/serve_bench.sh` holds every flag. Each model's flags follow its AMD
+CI job, including its parallel layout (`--attn-tp-size 4 --ep-size 1` for
+GLM-5.3-Flash, `--tensor-parallel-size 4` for DeepSeek-V4.1-Flash,
+`--tensor-parallel-size 8` for Kimi-K3) and automatic MoE kernel selection,
+with these differences:
 
 | Difference | Why |
 |---|---|
-| TP8 for all three | GLM-5.3 and DeepSeek-V4.1 CI run TP4 on MI35x. TP8 matches the Kimi-K3 job and earlier emulated runs |
 | `--language-model-only` for Kimi-K3, no `--mm-encoder-tp-mode data` | emulation rejects vision-encoder data parallelism |
 | `--attention-backend mla` for Kimi-K3 | TokenSpeed's AMD recipe for Kimi-K3; CI's `gluon` was not tried under emulation |
-| `--moe-backend triton` for DeepSeek-V4.1 | TokenSpeed's MI450 recipe for DeepSeek-V4-Flash |
-| `--max-model-len 65536`, `--max-num-seqs 16` | room for 16 requests of 50,500 tokens |
+| `--max-model-len 65536`, `--max-num-seqs 16`, no `--max-total-tokens` | room for 16 requests of 50,500 tokens; GLM-5.3-Flash's CI job caps the pool at 524,288 tokens, and DeepSeek-V4.1-Flash's allows 32 requests |
 | prefix caching and KV store off | every request is unique, and a warm cache would hide prefill |
 | `--sampling-backend greedy`, `--disable-sampling-tp-sync` | sampling is deterministic and has no peer ranks to sync with |
 
@@ -186,16 +190,16 @@ Results land in `$RESULTS_ROOT/emulate-rank0-<arch>-<label>/<model>/`:
 | `serve.log`, `serve_hotspots.log` | server logs of the two phases |
 | `serve_cmd.txt`, `env.txt`, `simulation.txt` | exact command, package versions, simulation settings |
 
-`MODELS` picks a subset (`glm53 dsv41 kimik3` by default; add
+`MODELS` picks a subset (`glm53flash dsv41 kimik3` by default; add
 `kimik3-nospec` for the baseline without speculation) and `PHASES` picks
 `perf`, `hotspots` or both. `BENCH_ARGS` passes extra client flags. A short check
-with `BENCH_ARGS="--prompt-tokens 2048 --output-tokens 64"` takes about 20
-minutes for all three models and catches flag or startup problems before
-committing to full runs. The full runs at `927562ef` took 39 minutes on
-MI355X and about 55 on MI455X, where GLM-5.3 alone took 38.
+with `BENCH_ARGS="--prompt-tokens 2048 --output-tokens 64"` catches flag or
+startup problems before committing to full runs; for the two Flash models it
+takes about 3 minutes. Their full runs at `927562ef` took 20 minutes on
+MI355X and 18 on MI455X.
 
 To redo one phase of one model, rerun with the same `LABEL` and, for example,
-`MODELS=glm53 PHASES=hotspots`. The hotspots phase clears its own outputs
+`MODELS=glm53flash PHASES=hotspots`. The hotspots phase clears its own outputs
 first. `run.sh` rewrites the script copies at the top of the result
 directory, so keep the first pass's copies if the scripts changed since.
 
@@ -217,12 +221,14 @@ python3 emulate_rank0/scripts/generate_arch_comparison.py \
 ```
 
 The generator reads only `tokenspeed.rev`, `tokenspeed.diff` and `image.id`
-at the top of each directory, and `env.txt`, `simulation.txt`, `accept.txt`,
-`serve_bench.json`, `batches.log` and `hotspots/hotspots.json` per model, so a
-local copy of the MI455X results needs only those:
+at the top of each directory, and `serve_cmd.txt`, `env.txt`,
+`simulation.txt`, `accept.txt`, `serve_bench.json`, `batches.log` and
+`hotspots/hotspots.json` per model, so a local copy of the MI455X results
+needs only those:
 
 ```bash
 rsync -am --include='*/' --include='tokenspeed.*' --include='image.id' \
+  --include='serve_cmd.txt' --include='copied-from.txt' \
   --include='env.txt' --include='simulation.txt' --include='accept.txt' \
   --include='serve_bench.json' --include='batches.log' --include='hotspots.json' \
   --exclude='*' <node>:/data/results/emulate-rank0-gfx1250-<label>/ <local copy>/
@@ -239,7 +245,7 @@ include `kimik3-nospec`, the document adds a section comparing each
 architecture's Kimi-K3 EAGLE3 run with its run without speculation.
 
 The generator refuses to run when the two directories record different
-commits or diffs. It compares functional kernel groups rather than symbols,
+commits, diffs or parallel layouts. It compares functional kernel groups rather than symbols,
 for the same reason as the toy comparison: the two architectures split the
 same work into different kernels.
 
@@ -299,10 +305,12 @@ when `hotspots exit 0` follows.
 ## 7. Results
 
 - [`results/arch_compare_20261003_927562ef`](results/arch_compare_20261003_927562ef/README.md):
-  #1938 at `927562ef` with #1936 applied. MI455X's GLM-5.3 hotspots phase
-  was rerun after the `tokenizer_not_found` race, and MI355X's Kimi-K3
-  hotspots were regenerated from its rocprofv3 output after the unreadable
-  kernel name. Both are described in section 6.
+  #1938 at `927562ef` with #1936 applied. GLM-5.3-Flash and
+  DeepSeek-V4.1-Flash were run at TP4 on 2026-10-07, replacing the earlier
+  TP8 runs of GLM-5.3 and DeepSeek-V4.1-Flash. Kimi-K3 at TP8 is copied from
+  the 2026-10-03 runs of the same tree, recorded in each `kimik3/copied-from.txt`;
+  MI355X's Kimi-K3 hotspots were regenerated from its rocprofv3 output after
+  the unreadable kernel name described in section 6.
 - [`results/arch_compare_20261005_9b707d56`](results/arch_compare_20261005_9b707d56/README.md):
   #1938 at `9b707d56`, which includes #1936, with nothing applied. Kimi-K3
   only, with EAGLE3 and with `kimik3-nospec`. The MI455X image is

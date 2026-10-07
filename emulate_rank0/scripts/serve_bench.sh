@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Container side: serve MODEL as emulated rank 0 of a TP8 deployment with dummy
-# weights and simulated speculative acceptance, then a smoke test and the
-# 50k/500 benchmark at batch 1 and 16. kimik3-nospec is kimik3 without
-# speculation. Usage: serve_bench.sh <output-dir>
+# Container side: serve MODEL as emulated rank 0 of its CI job's parallel
+# layout with dummy weights and simulated speculative acceptance, then a smoke
+# test and the 50k/500 benchmark at batch 1 and 16. kimik3-nospec is kimik3
+# without speculation. Usage: serve_bench.sh <output-dir>
 set -uo pipefail
 out="$1"
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -12,28 +12,30 @@ export PYTHONDONTWRITEBYTECODE=1
 
 # Accept lengths are the mean tokens per verify step that the matching CI job
 # logs on MI35x with real weights; see README.md for the source of each.
+# Layouts follow each model's AMD CI job.
 accept=""
 case "${MODEL:-}" in
-  glm53)
-    name=glm-5.3
+  glm53flash)
+    name=glm-5.3-flash
     vocab=154880
     accept=2.9
-    model_args=(/data/models/glm-5.3-config --kv-cache-dtype fp8_e4m3
+    layout=(--attn-tp-size 4 --ep-size 1)
+    model_args=(/data/models/glm-5.3-flash-config --language-model-only
       --speculative-algorithm MTP --speculative-num-steps 3
-      --speculative-num-draft-tokens 4 --speculative-eagle-topk 1
-      --draft-model-path-use-base)
+      --speculative-num-draft-tokens 4 --speculative-eagle-topk 1)
     ;;
   dsv41)
     name=deepseek-v41-flash
     vocab=129280
     accept=3.9
+    layout=(--tensor-parallel-size 4)
     model_args=(/data/models/deepseek-v4.1-flash-config --language-model-only
-      --dtype bfloat16 --moe-backend triton
-      --speculative-algorithm DSPARK)
+      --dtype bfloat16 --speculative-algorithm DSPARK)
     ;;
   kimik3 | kimik3-nospec)
     name=kimi-k3
     vocab=160000
+    layout=(--tensor-parallel-size 8)
     model_args=(/data/models/kimi-k3-config --language-model-only
       --attention-backend mla --kv-cache-dtype fp8_e4m3)
     if [[ "$MODEL" == kimik3 ]]; then
@@ -47,7 +49,7 @@ case "${MODEL:-}" in
     fi
     ;;
   *)
-    echo "### unknown MODEL='${MODEL:-}', expected glm53, dsv41, kimik3 or kimik3-nospec"
+    echo "### unknown MODEL='${MODEL:-}', expected glm53flash, dsv41, kimik3 or kimik3-nospec"
     exit 2
     ;;
 esac
@@ -64,7 +66,7 @@ common=(
   --served-model-name "$name"
   --trust-remote-code
   --load-format dummy
-  --tensor-parallel-size 8
+  "${layout[@]}"
   --emulate-rank-zero
   --max-model-len 65536
   --max-num-seqs 16
