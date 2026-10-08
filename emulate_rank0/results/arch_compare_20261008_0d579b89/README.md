@@ -11,11 +11,11 @@ GLM-5.3-Flash on MI455X is copied from the earlier run of that same tree.
 
 ![MI455X advantage over MI355X](speedup.svg)
 
-The bars are MI355X time divided by MI455X time. Above 1.0x, MI455X is
-faster. Gray is the 2026-10-03 comparison at `927562ef`. Blue is this run.
-The top row is total GPU kernel time. The bottom row is end to end:
-time to first token for prefill, steady decode time per output token
-for decode.
+The bars are end-to-end MI355X time divided by MI455X time. Above 1.0x,
+MI455X is faster. Gray is the 2026-10-03 comparison at `927562ef`. Blue is
+this run. Prefill is time to first token. Decode is steady time per output
+token. The model labels include the speculative method: MTP, DSPARK, and
+EAGLE3.
 
 ## Provenance
 
