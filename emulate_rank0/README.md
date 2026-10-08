@@ -304,6 +304,11 @@ when `hotspots exit 0` follows.
 
 ## 7. Results
 
+- [`results/arch_compare_20261008_0d579b89`](results/arch_compare_20261008_0d579b89/README.md):
+  emulation base `d4a92893` plus the changes in `0d579b89`, all three models
+  with speculative decoding. GLM-5.3-Flash on MI455X is copied from the
+  earlier run of that same tree. The [bar chart](results/arch_compare_20261008_0d579b89/speedup.svg)
+  compares MI455X's advantage over MI355X with the 2026-10-03 run.
 - [`results/arch_compare_20261003_927562ef`](results/arch_compare_20261003_927562ef/README.md):
   #1938 at `927562ef` with #1936 applied. GLM-5.3-Flash and
   DeepSeek-V4.1-Flash were run at TP4 on 2026-10-07, replacing the earlier
