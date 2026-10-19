@@ -304,6 +304,11 @@ when `hotspots exit 0` follows.
 
 ## 7. Results
 
+- [`results/arch_compare_20261019_04e6b3d2`](results/arch_compare_20261019_04e6b3d2/README.md):
+  the head of #2269 at `04e6b3d2`, on main `9f182dbc`, all three models with
+  speculative decoding and `--retraction-snapshot-host-gb 16`. The
+  [bar chart](results/arch_compare_20261019_04e6b3d2/speedup.svg) compares
+  end-to-end MI455X advantage over MI355X with the 2026-10-08 run.
 - [`results/arch_compare_20261008_0d579b89`](results/arch_compare_20261008_0d579b89/README.md):
   emulation base `d4a92893` plus the changes in `0d579b89`, all three models
   with speculative decoding. GLM-5.3-Flash on MI455X is copied from the
