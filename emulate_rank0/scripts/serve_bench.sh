@@ -20,6 +20,7 @@ case "${MODEL:-}" in
     vocab=154880
     accept=2.9
     layout=(--attn-tp-size 4 --ep-size 1)
+    prefill_graph=()
     model_args=(/data/models/glm-5.3-flash-config --language-model-only
       --speculative-algorithm MTP --speculative-num-steps 3
       --speculative-num-draft-tokens 4 --speculative-eagle-topk 1)
@@ -29,6 +30,7 @@ case "${MODEL:-}" in
     vocab=129280
     accept=3.9
     layout=(--tensor-parallel-size 4)
+    prefill_graph=(--prefill-graph-max-tokens 8192)
     model_args=(/data/models/deepseek-v4.1-flash-config --language-model-only
       --dtype bfloat16 --speculative-algorithm DSPARK)
     ;;
@@ -36,6 +38,7 @@ case "${MODEL:-}" in
     name=kimi-k3
     vocab=160000
     layout=(--tensor-parallel-size 8)
+    prefill_graph=(--disable-prefill-graph)
     model_args=(/data/models/kimi-k3-config --language-model-only
       --attention-backend mla --kv-cache-dtype fp8_e4m3)
     if [[ "$MODEL" == kimik3 ]]; then
@@ -71,7 +74,7 @@ common=(
   --max-model-len 65536
   --max-num-seqs 16
   --chunked-prefill-size 8192
-  --disable-prefill-graph
+  "${prefill_graph[@]}"
   --disable-kvstore
   --disable-prefix-caching
   --disable-autotune

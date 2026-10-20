@@ -154,12 +154,18 @@ with these differences:
 | `--language-model-only` for Kimi-K3, no `--mm-encoder-tp-mode data` | emulation rejects vision-encoder data parallelism |
 | `--attention-backend mla` for Kimi-K3 | TokenSpeed's AMD recipe for Kimi-K3; CI's `gluon` was not tried under emulation |
 | `--max-model-len 65536`, `--max-num-seqs 16`, no `--max-total-tokens` | room for 16 requests of 50,500 tokens; GLM-5.3-Flash's CI job caps the pool at 524,288 tokens, and DeepSeek-V4.1-Flash's allows 32 requests |
+| `--prefill-graph-max-tokens 8192` for DeepSeek-V4.1-Flash, not `--disable-prefill-graph` | its AMD CI job keeps eager prefill only until prefill graphs are validated on AMD; the NVIDIA CI job, the gfx950 recipe and the TP4 agentic configs serve with them, the latter two up to 8192 tokens |
 | prefix caching and KV store off | every request is unique, and a warm cache would hide prefill |
 | `--sampling-backend greedy`, `--disable-sampling-tp-sync` | sampling is deterministic and has no peer ranks to sync with |
 
 The `perf` phase serves with decode CUDA graphs at batch sizes 1, 2, 4, 8 and
-16. The `hotspots` phase serves eagerly with `--disable-overlap-schedule`, so
-every kernel is attributable to the forward that launched it.
+16. Prefill graphs follow each model's serving configuration:
+DeepSeek-V4.1-Flash captures them up to a full 8,192-token chunk,
+GLM-5.3-Flash keeps the server default, which captures forwards up to 2,048
+tokens and runs full chunks eagerly, and Kimi-K3 disables them, since its CI
+jobs run out of memory with them. The `hotspots` phase serves eagerly with
+`--disable-overlap-schedule`, so every kernel is attributable to the forward
+that launched it.
 
 ## 4. Collect the runs
 
