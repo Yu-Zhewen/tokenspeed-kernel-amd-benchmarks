@@ -1,5 +1,5 @@
 category,kernel_name,calls,total_ms,avg_us,stage_gpu_time_pct
-other,gluon_gemv_a16w16_gfx950,19456,193.236,9.932,17.8679
+dense GEMM,gluon_gemv_a16w16_gfx950,19456,193.236,9.932,17.8679
 AttnRes,gluon_attn_res_fwd_gfx950,11968,115.274,9.632,10.6590
 MoE,_warp_decode_precomputed_situ_stage1_kernel,5888,114.745,19.488,10.6101
 input projections,gluon_latent_input_small_batch_gfx950,5888,108.337,18.400,10.0176
@@ -15,7 +15,7 @@ dense GEMM,Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT16x16x128_MI16x16x1_SN
 attention,gluon_mla_project_value_gfx950,1536,22.772,14.825,2.1056
 input projections,gluon_latent_input_small_batch_epilogue_gfx950,5888,20.634,3.504,1.9080
 MoE,gluon_mxfp4_moe_stage2_reduce_kernel,5888,18.997,3.226,1.7565
-other,_rowcta_bf16_gemv_kernel,704,14.772,20.983,1.3659
+dense GEMM,_rowcta_bf16_gemv_kernel,704,14.772,20.983,1.3659
 rmsnorm,_rmsnorm_gated_kernel,4416,14.153,3.205,1.3087
 dense GEMM,Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x16x64_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR0_CADS0_DTLA1_DTLB1_DTVA0_DTVB0_EPS0_FDSI0_GRPM1_GRVWA2_GRVWB2_GSU0_GSUAMB_GLS0_ISA950_IU1_K1_LDSTI1_LBSPPA256_LBSPPB256_LBSPPM0_LPA0_LPB16_LPM0_LRVW8_LWPMn1_MIAV0_MIWT1_1_MO40_NTn1_NTA0_NTB0_NTC6_NTD0_NTM0_NEPBS14_NLCA1_NLCB1_ONLL1_PGR2_PLR1_PKA1_SIA3_SS1_SPO1_SRVW0_SSO0_SVW1_SK3_SKFTR0_SKXCCM0_TLDS1_ULSGRO0_USL1_UIOFGRO0_USFGRO1_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS64_WG64_4_1,1536,9.912,6.453,0.9166
 attention,gluon_mla_decode_fp8_query_blocks_reduce_gfx950,1536,8.128,5.291,0.7515

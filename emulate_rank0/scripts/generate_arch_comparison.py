@@ -52,18 +52,31 @@ CATEGORIES = [
         r"moe|^_stage[12]_kernel$|^_routing_kernel$|^_combine_kernel$"
         r"|gather_package|warp_decode|fp8_warp_gemv|sigmoid_bias_topk"
         r"|sigmoid_mul|_situ_kernel|^_matmul$|^_matmul_decode$|topk_route"
-        r"|weighted_topk_reduce|softplus_topk",
+        r"|weighted_topk_reduce|softplus_topk|fp8_block_(gate_up|down)",
+    ),
+    # Sparse attention splits into its three steps: score every KV row, select
+    # the rows to read, then attend over them.
+    (
+        "index top-k",
+        r"radix_topk|index_topk_select|index_block_select|sort_topk"
+        r"|topk_to_global|kpool_expand_slots",
+    ),
+    (
+        "index scoring",
+        # Not torch's gpu_index_kernel, which is plain indexing. The kpool
+        # prefill "topk" kernels write logits; the top-k step selects from them.
+        r"indexer|index_k(?!ernel)|index_topk|kpool_score|kpool_prefill_topk"
+        r"|dsa_(decode|prefill)_topk|hadamard",
     ),
     (
         "sparse attention",
-        # Not torch's gpu_index_kernel, which is plain indexing.
-        r"dsa_|indexer|index_k(?!ernel)|index_topk|sparse|flatkv|topk_to_global"
-        r"|selected_attention|dsv4_prefill|dsv4_decode|kpool|hadamard",
+        r"dsa_|sparse|flatkv|selected_attention|dsv4_prefill|dsv4_decode|kpool",
     ),
     ("input projections", r"packed_input_projections|latent_input"),
     (
         "dense GEMM",
-        r"rowcta_gemv|projection_gemv|wmma_tdm|wmma_dense|mm_a16w16|^Cijk_"
+        r"rowcta_(bf16_)?gemv|projection_gemv|gemv_a16w16|wmma_tdm|wmma_dense"
+        r"|mm_a16w16|^Cijk_"
         r"|^Custom_Cijk_|smallm|gluon_bmm|w8a8_block_fp8_matmul"
         r"|mm_fp8_blockscale|mm_mxfp8|mxfp8_split_reduce|torch_mm|torch_bmm",
     ),
@@ -80,7 +93,8 @@ CATEGORIES = [
     (
         "quantize",
         r"per_token_group_quant|fp8_quantize|fp8_token_group|quant_8bit"
-        r"|ue8m0_quantize|dynamic_fp8_|mxfp4_quantize",
+        r"|ue8m0_quantize|dynamic_fp8_|mxfp4_quantize|quantize_mxfp4"
+        r"|quantize_fp8_group32",
     ),
     ("rmsnorm", r"rmsnorm|layer_norm|layernorm"),
     ("top-k and sort", r"warptopk|mbtopk|sbtopk|radixSort|sort"),

@@ -23,6 +23,11 @@ this run. Prefill is time to first token. Decode is steady time per output
 token. The model labels include the speculative method: MTP, DSPARK, and
 EAGLE3.
 
+Kernel categories were revised on 2026-10-20 from the same profiles:
+sparse attention now splits into index scoring, index top-k and the
+attention over the selected rows, and kernels that had fallen into other
+now count as MoE, dense GEMM or quantize.
+
 ## Provenance
 
 | Field | Value |
@@ -84,9 +89,11 @@ is not a total of the rows.
 |---|---:|---:|---:|---:|
 | KDA state scan | 1.51x | 1.54x | — | — |
 | KDA other | 1.98x | 2.00x | 1.18x | 1.57x |
-| MoE | 14.78x | 14.38x | 5.76x | 31.76x |
-| sparse attention | 2.00x | 1.97x | 2.70x | 1.60x |
-| dense GEMM | 2.37x | 2.39x | 2.05x | 2.01x |
+| MoE | 2.08x | 2.04x | 1.98x | 3.05x |
+| index top-k | 0.76x | 0.76x | 0.81x | 0.79x |
+| index scoring | 0.96x | 0.92x | 1.74x | 3.05x |
+| sparse attention | 5.27x | 5.26x | 7.71x | 1.50x |
+| dense GEMM | 2.37x | 2.40x | 2.28x | 2.02x |
 | attention | 1.19x | 1.21x | 1.06x | 1.18x |
 | hyper-connections | 2.83x | 2.83x | 1.66x | 1.48x |
 | quantize | 1.47x | 1.51x | 1.30x | 1.59x |
@@ -94,7 +101,7 @@ is not a total of the rows.
 | top-k and sort | 1.13x | 1.26x | — | — |
 | sampling | 1.86x | 2.12x | 1.38x | 1.53x |
 | elementwise | 1.37x | 1.39x | 1.24x | 1.37x |
-| other | 0.20x | 0.20x | 0.67x | 0.19x |
+| other | 5.30x | 5.42x | 1.14x | 3.76x |
 | all kernels | 2.12x | 2.11x | 1.89x | 2.21x |
 | **End-to-end** | **1.89x** (TTFT) | **1.97x** (TTFT) | **2.12x** (steady TPOT) | **2.39x** (steady TPOT) |
 
@@ -107,11 +114,11 @@ is not a total of the rows.
 | 3 | MoE | `gluon_bf16_moe_stage1_kernel` | 322.353 | 294 | 1,096.4 | 16.32% |
 | 4 | MoE | `gluon_bf16_moe_stage2_kernel` | 138.717 | 294 | 471.8 | 7.03% |
 | 5 | hyper-connections | `gluon_mhc_prefill_project_gfx950` | 106.862 | 630 | 169.6 | 5.41% |
-| 6 | sparse attention | `gluon_kpool_prefill_topk_fp8_plan_gfx950` | 77.121 | 120 | 642.7 | 3.91% |
+| 6 | index scoring | `gluon_kpool_prefill_topk_fp8_plan_gfx950` | 77.121 | 120 | 642.7 | 3.91% |
 | 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT208x256x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_...` | 70.597 | 204 | 346.1 | 3.58% |
 | 8 | hyper-connections | `gluon_mhc_post_gfx950` | 63.851 | 630 | 101.4 | 3.23% |
 | 9 | KDA state scan | `gluon_kda_paged_prefill_state_scan_gfx950` | 63.192 | 238 | 265.5 | 3.20% |
-| 10 | sparse attention | `_dsa_oneblock_manual_radix_topk_kernel` | 60.130 | 146 | 411.9 | 3.05% |
+| 10 | index top-k | `_dsa_oneblock_manual_radix_topk_kernel` | 60.130 | 146 | 411.9 | 3.05% |
 
 </details>
 
@@ -124,10 +131,10 @@ is not a total of the rows.
 | 3 | MoE | `gluon_bf16_moe_stage1_kernel` | 4,962.300 | 4,116 | 1,205.6 | 16.01% |
 | 4 | MoE | `gluon_bf16_moe_stage2_kernel` | 2,148.641 | 4,116 | 522.0 | 6.93% |
 | 5 | hyper-connections | `gluon_mhc_prefill_project_gfx950` | 1,670.580 | 8,820 | 189.4 | 5.39% |
-| 6 | sparse attention | `gluon_kpool_prefill_topk_fp8_plan_gfx950` | 1,196.290 | 1,764 | 678.2 | 3.86% |
+| 6 | index scoring | `gluon_kpool_prefill_topk_fp8_plan_gfx950` | 1,196.290 | 1,764 | 678.2 | 3.86% |
 | 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT208x256x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_...` | 1,135.705 | 3,298 | 344.4 | 3.66% |
 | 8 | hyper-connections | `gluon_mhc_post_gfx950` | 1,020.661 | 8,820 | 115.7 | 3.29% |
-| 9 | sparse attention | `_dsa_oneblock_manual_radix_topk_kernel` | 1,018.226 | 2,372 | 429.3 | 3.28% |
+| 9 | index top-k | `_dsa_oneblock_manual_radix_topk_kernel` | 1,018.226 | 2,372 | 429.3 | 3.28% |
 | 10 | KDA state scan | `gluon_kda_paged_prefill_state_scan_gfx950` | 998.863 | 3,332 | 299.8 | 3.22% |
 
 </details>
@@ -143,7 +150,7 @@ is not a total of the rows.
 | 5 | MoE | `_stage2_fp8_warp_gemv` | 56.924 | 2,880 | 19.8 | 5.86% |
 | 6 | hyper-connections | `_mhc_prenorm_gemm_triton_kernel` | 55.600 | 5,760 | 9.7 | 5.72% |
 | 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT256x16x64_MI16x16x1_SN_LDSB1_AFC0_AFEM1_AFEM1_ASEM1_CLR1_CADS0_DTLA0_D...` | 32.401 | 2,368 | 13.7 | 3.33% |
-| 8 | sparse attention | `_dsa_oneblock_manual_radix_topk_kernel` | 29.469 | 896 | 32.9 | 3.03% |
+| 8 | index top-k | `_dsa_oneblock_manual_radix_topk_kernel` | 29.469 | 896 | 32.9 | 3.03% |
 | 9 | quantize | `_fp8_token_group_quantize_kernel` | 26.136 | 8,832 | 3.0 | 2.69% |
 | 10 | KDA other | `fused_recurrent_kda_mtp_fwd_kernel` | 23.664 | 2,176 | 10.9 | 2.43% |
 
@@ -156,7 +163,7 @@ is not a total of the rows.
 | 1 | MoE | `gluon_bf16_moe_stage1_kernel` | 618.361 | 2,688 | 230.0 | 33.65% |
 | 2 | MoE | `gluon_bf16_moe_stage2_kernel` | 250.544 | 2,688 | 93.2 | 13.64% |
 | 3 | dense GEMM | `_w8a8_block_fp8_matmul` | 157.751 | 8,832 | 17.9 | 8.59% |
-| 4 | sparse attention | `_kpool_score_dense_mma_kernel` | 77.665 | 896 | 86.7 | 4.23% |
+| 4 | index scoring | `_kpool_score_dense_mma_kernel` | 77.665 | 896 | 86.7 | 4.23% |
 | 5 | hyper-connections | `gluon_mhc_pre_gfx950` | 61.623 | 5,760 | 10.7 | 3.35% |
 | 6 | KDA other | `fused_recurrent_kda_mtp_fwd_kernel` | 49.243 | 2,176 | 22.6 | 2.68% |
 | 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x32x256_MI16x16x1_SN_LDSB0_AFC0_AFEM1_AFEM1_ASEM1_CLR0_CADS0_DTLA1_D...` | 46.064 | 2,176 | 21.2 | 2.51% |
@@ -170,11 +177,11 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | other | `_fp8_block_down_gfx1250` | 108.418 | 303 | 357.8 | 11.66% |
-| 2 | other | `_fp8_block_gate_up_gfx1250` | 97.376 | 303 | 321.4 | 10.47% |
+| 1 | MoE | `_fp8_block_down_gfx1250` | 108.418 | 303 | 357.8 | 11.66% |
+| 2 | MoE | `_fp8_block_gate_up_gfx1250` | 97.376 | 303 | 321.4 | 10.47% |
 | 3 | dense GEMM | `_w8a8_block_fp8_matmul` | 88.623 | 875 | 101.3 | 9.53% |
-| 4 | sparse attention | `_dsa_wave32_radix_topk_kernel` | 86.564 | 146 | 592.9 | 9.31% |
-| 5 | sparse attention | `gluon_kpool_prefill_topk_fp8_plan_gfx1250` | 80.905 | 120 | 674.2 | 8.70% |
+| 4 | index top-k | `_dsa_wave32_radix_topk_kernel` | 86.564 | 146 | 592.9 | 9.31% |
+| 5 | index scoring | `gluon_kpool_prefill_topk_fp8_plan_gfx1250` | 80.905 | 120 | 674.2 | 8.70% |
 | 6 | sparse attention | `_dsa_selected_dense_wmma_kernel` | 61.607 | 86 | 716.4 | 6.62% |
 | 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT208x256x128_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_AS...` | 51.387 | 204 | 251.9 | 5.52% |
 | 8 | KDA state scan | `gluon_kda_paged_prefill_state_scan_gfx1250` | 41.855 | 238 | 175.9 | 4.50% |
@@ -187,11 +194,11 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | other | `_fp8_block_down_gfx1250` | 1,718.688 | 4,246 | 404.8 | 11.73% |
-| 2 | other | `_fp8_block_gate_up_gfx1250` | 1,524.703 | 4,246 | 359.1 | 10.40% |
-| 3 | sparse attention | `_dsa_wave32_radix_topk_kernel` | 1,435.272 | 2,372 | 605.1 | 9.79% |
+| 1 | MoE | `_fp8_block_down_gfx1250` | 1,718.688 | 4,246 | 404.8 | 11.73% |
+| 2 | MoE | `_fp8_block_gate_up_gfx1250` | 1,524.703 | 4,246 | 359.1 | 10.40% |
+| 3 | index top-k | `_dsa_wave32_radix_topk_kernel` | 1,435.272 | 2,372 | 605.1 | 9.79% |
 | 4 | dense GEMM | `_w8a8_block_fp8_matmul` | 1,398.271 | 12,250 | 114.1 | 9.54% |
-| 5 | sparse attention | `gluon_kpool_prefill_topk_fp8_plan_gfx1250` | 1,304.707 | 1,764 | 739.6 | 8.90% |
+| 5 | index scoring | `gluon_kpool_prefill_topk_fp8_plan_gfx1250` | 1,304.707 | 1,764 | 739.6 | 8.90% |
 | 6 | sparse attention | `_dsa_selected_dense_wmma_kernel` | 982.962 | 1,208 | 813.7 | 6.71% |
 | 7 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT208x256x128_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_AS...` | 831.537 | 3,298 | 252.1 | 5.67% |
 | 8 | KDA state scan | `gluon_kda_paged_prefill_state_scan_gfx1250` | 648.681 | 3,332 | 194.7 | 4.43% |
@@ -205,13 +212,13 @@ is not a total of the rows.
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
 | 1 | dense GEMM | `_wmma_tdm_dense_kernel` | 38.875 | 9,408 | 4.1 | 7.55% |
-| 2 | sparse attention | `_dsa_wave32_radix_topk_kernel` | 37.688 | 896 | 42.1 | 7.32% |
-| 3 | other | `_fp8_block_gate_up_gfx1250` | 33.296 | 2,880 | 11.6 | 6.47% |
+| 2 | index top-k | `_dsa_wave32_radix_topk_kernel` | 37.688 | 896 | 42.1 | 7.32% |
+| 3 | MoE | `_fp8_block_gate_up_gfx1250` | 33.296 | 2,880 | 11.6 | 6.47% |
 | 4 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x16x64_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1...` | 33.038 | 5,376 | 6.1 | 6.42% |
 | 5 | hyper-connections | `gluon_mhc_mixes_reduce_gfx1250` | 27.254 | 5,760 | 4.7 | 5.29% |
 | 6 | dense GEMM | `gluon_mm_fp8_blockscale_gfx1250_bn16_bk2048_buf3_sk1_tdmf0` | 25.142 | 4,864 | 5.2 | 4.88% |
 | 7 | hyper-connections | `gluon_mhc_mixes_project_gfx1250` | 23.423 | 5,760 | 4.1 | 4.55% |
-| 8 | other | `_fp8_block_down_gfx1250` | 20.742 | 2,880 | 7.2 | 4.03% |
+| 8 | MoE | `_fp8_block_down_gfx1250` | 20.742 | 2,880 | 7.2 | 4.03% |
 | 9 | rmsnorm | `_rmsnorm_kernel` | 20.241 | 6,784 | 3.0 | 3.93% |
 | 10 | quantize | `_fp8_token_group_quantize_kernel` | 20.116 | 8,832 | 2.3 | 3.91% |
 
@@ -221,16 +228,16 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | other | `_fp8_block_gate_up_gfx1250` | 174.744 | 2,880 | 60.7 | 21.01% |
-| 2 | other | `_fp8_block_down_gfx1250` | 100.601 | 2,880 | 34.9 | 12.09% |
+| 1 | MoE | `_fp8_block_gate_up_gfx1250` | 174.744 | 2,880 | 60.7 | 21.01% |
+| 2 | MoE | `_fp8_block_down_gfx1250` | 100.601 | 2,880 | 34.9 | 12.09% |
 | 3 | dense GEMM | `_wmma_tdm_dense_kernel` | 64.985 | 10,112 | 6.4 | 7.81% |
-| 4 | sparse attention | `_dsa_wave32_radix_topk_kernel` | 40.375 | 896 | 45.1 | 4.85% |
+| 4 | index top-k | `_dsa_wave32_radix_topk_kernel` | 40.375 | 896 | 45.1 | 4.85% |
 | 5 | dense GEMM | `Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x32x64_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1...` | 32.348 | 5,120 | 6.3 | 3.89% |
 | 6 | hyper-connections | `gluon_mhc_mixes_reduce_gfx1250` | 28.013 | 5,760 | 4.9 | 3.37% |
 | 7 | hyper-connections | `gluon_mhc_mixes_project_gfx1250` | 27.099 | 5,760 | 4.7 | 3.26% |
 | 8 | KDA other | `fused_recurrent_kda_mtp_fwd_kernel` | 26.479 | 2,176 | 12.2 | 3.18% |
 | 9 | sparse attention | `_dsa_selected_dense_wmma_kernel` | 23.731 | 896 | 26.5 | 2.85% |
-| 10 | sparse attention | `_kpool_score_dense_mma_kernel` | 23.653 | 896 | 26.4 | 2.84% |
+| 10 | index scoring | `_kpool_score_dense_mma_kernel` | 23.653 | 896 | 26.4 | 2.84% |
 
 </details>
 
@@ -257,15 +264,17 @@ is not a total of the rows.
 | Category | prefill c1 | prefill c16 | decode c1 | decode c16 |
 |---|---:|---:|---:|---:|
 | MoE | 2.56x | 2.58x | 2.51x | 2.49x |
-| sparse attention | 2.34x | 2.34x | 0.86x | 1.51x |
-| dense GEMM | 1.29x | 1.27x | 1.47x | 1.36x |
+| index top-k | 0.48x | 0.48x | 0.48x | 0.48x |
+| index scoring | 6.51x | 6.56x | 3.02x | 5.60x |
+| sparse attention | 1.10x | 1.10x | 1.44x | 1.15x |
+| dense GEMM | 1.29x | 1.27x | 1.50x | 1.36x |
 | hyper-connections | 1.76x | 1.77x | 1.19x | 1.33x |
-| quantize | — | — | — | — |
+| quantize | 0.68x | 0.69x | 1.05x | 0.48x |
 | rmsnorm | 1.84x | 1.91x | 1.14x | 1.31x |
 | top-k and sort | 1.23x | 1.22x | — | — |
 | sampling | 1.42x | 1.77x | 1.40x | 1.41x |
 | elementwise | 1.35x | 1.36x | 1.31x | 1.40x |
-| other | 0.95x | 0.97x | 0.88x | 0.48x |
+| other | 1.73x | 1.73x | 1.31x | 1.35x |
 | all kernels | 1.95x | 1.95x | 1.37x | 1.68x |
 | **End-to-end** | **1.67x** (TTFT) | **1.76x** (TTFT) | **1.81x** (steady TPOT) | **1.91x** (steady TPOT) |
 
@@ -273,12 +282,12 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | sparse attention | `gluon_dsv41_index_topk_gfx950` | 282.604 | 593 | 476.6 | 36.11% |
+| 1 | index scoring | `gluon_dsv41_index_topk_gfx950` | 282.604 | 593 | 476.6 | 36.11% |
 | 2 | MoE | `gluon_mxfp4_moe_stage1_kernel` | 74.332 | 160 | 464.6 | 9.50% |
 | 3 | dense GEMM | `gluon_mm_mxfp8_gfx950` | 69.289 | 737 | 94.0 | 8.85% |
 | 4 | MoE | `gluon_mxfp4_moe_stage2_1x2_kernel` | 60.755 | 160 | 379.7 | 7.76% |
 | 5 | sparse attention | `gluon_dsv4_prefill_gfx950` | 55.188 | 160 | 344.9 | 7.05% |
-| 6 | sparse attention | `gluon_dsv41_index_topk_select_gfx950` | 30.485 | 593 | 51.4 | 3.90% |
+| 6 | index top-k | `gluon_dsv41_index_topk_select_gfx950` | 30.485 | 593 | 51.4 | 3.90% |
 | 7 | hyper-connections | `gluon_mhc_post_gfx950` | 30.406 | 320 | 95.0 | 3.89% |
 | 8 | hyper-connections | `gluon_mhc_mixes_project_gfx950` | 21.445 | 320 | 67.0 | 2.74% |
 | 9 | elementwise | `_rope_inplace_kernel` | 19.208 | 402 | 47.8 | 2.45% |
@@ -290,12 +299,12 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | sparse attention | `gluon_dsv41_index_topk_gfx950` | 4,527.069 | 9,566 | 473.2 | 36.56% |
+| 1 | index scoring | `gluon_dsv41_index_topk_gfx950` | 4,527.069 | 9,566 | 473.2 | 36.56% |
 | 2 | MoE | `gluon_mxfp4_moe_stage1_kernel` | 1,134.283 | 2,280 | 497.5 | 9.16% |
 | 3 | dense GEMM | `gluon_mm_mxfp8_gfx950` | 1,073.421 | 10,322 | 104.0 | 8.67% |
 | 4 | MoE | `gluon_mxfp4_moe_stage2_1x2_kernel` | 946.175 | 2,280 | 415.0 | 7.64% |
 | 5 | sparse attention | `gluon_dsv4_prefill_gfx950` | 892.206 | 2,880 | 309.8 | 7.21% |
-| 6 | sparse attention | `gluon_dsv41_index_topk_select_gfx950` | 490.528 | 9,566 | 51.3 | 3.96% |
+| 6 | index top-k | `gluon_dsv41_index_topk_select_gfx950` | 490.528 | 9,566 | 51.3 | 3.96% |
 | 7 | hyper-connections | `gluon_mhc_post_gfx950` | 485.353 | 4,560 | 106.4 | 3.92% |
 | 8 | hyper-connections | `gluon_mhc_mixes_project_gfx950` | 341.009 | 4,560 | 74.8 | 2.75% |
 | 9 | elementwise | `_rope_inplace_kernel` | 305.517 | 5,718 | 53.4 | 2.47% |
@@ -309,13 +318,13 @@ is not a total of the rows.
 |---:|---|---|---:|---:|---:|---:|
 | 1 | MoE | `_pipelined_moe_kernel_scaled_block_schedule` | 182.266 | 5,504 | 33.1 | 23.94% |
 | 2 | dense GEMM | `gluon_mm_mxfp8_decode_gfx950` | 119.246 | 14,528 | 8.2 | 15.66% |
-| 3 | sparse attention | `gluon_dsv41_index_topk_select_gfx950` | 46.528 | 512 | 90.9 | 6.11% |
+| 3 | index top-k | `gluon_dsv41_index_topk_select_gfx950` | 46.528 | 512 | 90.9 | 6.11% |
 | 4 | sparse attention | `gluon_dsv41_selected_attention_gfx950` | 45.128 | 2,560 | 17.6 | 5.93% |
 | 5 | dense GEMM | `gluon_mm_a16w16_medium_gfx950` | 43.300 | 5,312 | 8.2 | 5.69% |
 | 6 | hyper-connections | `gluon_mhc_mixes_reduce_gfx950` | 34.050 | 5,504 | 6.2 | 4.47% |
 | 7 | hyper-connections | `gluon_mhc_mixes_project_gfx950` | 28.939 | 5,504 | 5.3 | 3.80% |
 | 8 | hyper-connections | `gluon_mhc_apply_pre_gfx950` | 24.561 | 5,632 | 4.4 | 3.23% |
-| 9 | sparse attention | `gluon_dsv41_index_topk_gfx950` | 20.027 | 512 | 39.1 | 2.63% |
+| 9 | index scoring | `gluon_dsv41_index_topk_gfx950` | 20.027 | 512 | 39.1 | 2.63% |
 | 10 | sparse attention | `gluon_dsv41_selected_attention_reduce_gfx950` | 17.971 | 2,560 | 7.0 | 2.36% |
 
 </details>
@@ -327,9 +336,9 @@ is not a total of the rows.
 | 1 | MoE | `gluon_mxfp4_moe_stage1_kernel` | 451.326 | 2,752 | 164.0 | 25.70% |
 | 2 | MoE | `gluon_mxfp4_moe_stage2_1x2_kernel` | 247.837 | 2,752 | 90.1 | 14.11% |
 | 3 | dense GEMM | `gluon_mm_mxfp8_decode_gfx950` | 216.128 | 14,336 | 15.1 | 12.30% |
-| 4 | sparse attention | `gluon_dsv41_index_topk_gfx950` | 197.941 | 512 | 386.6 | 11.27% |
+| 4 | index scoring | `gluon_dsv41_index_topk_gfx950` | 197.941 | 512 | 386.6 | 11.27% |
 | 5 | sparse attention | `gluon_dsv41_selected_attention_gfx950` | 72.427 | 2,560 | 28.3 | 4.12% |
-| 6 | sparse attention | `gluon_dsv41_index_topk_select_gfx950` | 47.038 | 512 | 91.9 | 2.68% |
+| 6 | index top-k | `gluon_dsv41_index_topk_select_gfx950` | 47.038 | 512 | 91.9 | 2.68% |
 | 7 | dense GEMM | `gluon_mm_a16w16_medium_gfx950` | 38.433 | 2,752 | 14.0 | 2.19% |
 | 8 | hyper-connections | `gluon_mhc_mixes_project_gfx950` | 36.436 | 5,504 | 6.6 | 2.07% |
 | 9 | hyper-connections | `gluon_mhc_mixes_reduce_gfx950` | 33.991 | 5,504 | 6.2 | 1.94% |
@@ -341,11 +350,11 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | sparse attention | `gluon_dsv41_index_topk_select_gfx1250` | 64.143 | 593 | 108.2 | 15.96% |
+| 1 | index top-k | `gluon_dsv41_index_topk_select_gfx1250` | 64.143 | 593 | 108.2 | 15.96% |
 | 2 | sparse attention | `gluon_dsv4_prefill_gfx1250` | 50.149 | 160 | 313.4 | 12.48% |
 | 3 | dense GEMM | `gluon_mm_mxfp8_ue8m0_largem_gfx1250_bm128_bn256_buf2_sk1` | 46.694 | 512 | 91.2 | 11.62% |
 | 4 | MoE | `_matmul` | 46.287 | 240 | 192.9 | 11.52% |
-| 5 | sparse attention | `gluon_dsv41_index_topk_gfx1250` | 43.391 | 593 | 73.2 | 10.79% |
+| 5 | index scoring | `gluon_dsv41_index_topk_gfx1250` | 43.391 | 593 | 73.2 | 10.79% |
 | 6 | hyper-connections | `_mhc_post_hc4_triton_kernel` | 16.796 | 320 | 52.5 | 4.18% |
 | 7 | hyper-connections | `gluon_mhc_mixes_project_gfx1250` | 14.220 | 320 | 44.4 | 3.54% |
 | 8 | elementwise | `void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<float>, std::array<char*, 1ul> >(int, at::n...` | 10.430 | 600 | 17.4 | 2.59% |
@@ -358,11 +367,11 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | sparse attention | `gluon_dsv41_index_topk_select_gfx1250` | 1,027.785 | 9,566 | 107.4 | 16.19% |
+| 1 | index top-k | `gluon_dsv41_index_topk_select_gfx1250` | 1,027.785 | 9,566 | 107.4 | 16.19% |
 | 2 | sparse attention | `gluon_dsv4_prefill_gfx1250` | 811.008 | 2,880 | 281.6 | 12.77% |
 | 3 | dense GEMM | `gluon_mm_mxfp8_ue8m0_largem_gfx1250_bm128_bn256_buf2_sk1` | 757.115 | 8,325 | 90.9 | 11.92% |
 | 4 | MoE | `_matmul` | 756.701 | 3,920 | 193.0 | 11.92% |
-| 5 | sparse attention | `gluon_dsv41_index_topk_gfx1250` | 689.750 | 9,566 | 72.1 | 10.86% |
+| 5 | index scoring | `gluon_dsv41_index_topk_gfx1250` | 689.750 | 9,566 | 72.1 | 10.86% |
 | 6 | hyper-connections | `_mhc_post_hc4_triton_kernel` | 267.075 | 4,560 | 58.6 | 4.21% |
 | 7 | hyper-connections | `gluon_mhc_mixes_project_gfx1250` | 227.013 | 4,560 | 49.8 | 3.58% |
 | 8 | elementwise | `void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<float>, std::array<char*, 1ul> >(int, at::n...` | 157.132 | 9,664 | 16.3 | 2.47% |
@@ -375,7 +384,7 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | sparse attention | `gluon_dsv41_index_topk_select_gfx1250` | 102.374 | 512 | 199.9 | 18.41% |
+| 1 | index top-k | `gluon_dsv41_index_topk_select_gfx1250` | 102.374 | 512 | 199.9 | 18.41% |
 | 2 | MoE | `_matmul_decode` | 55.008 | 5,504 | 10.0 | 9.89% |
 | 3 | dense GEMM | `gluon_mm_mxfp8_ue8m0_gfx1250_bn16_bk512_buf3_sk1` | 50.293 | 11,776 | 4.3 | 9.05% |
 | 4 | sparse attention | `gluon_dsv41_selected_attention_gfx1250` | 31.786 | 2,560 | 12.4 | 5.72% |
@@ -383,7 +392,7 @@ is not a total of the rows.
 | 6 | dense GEMM | `_wmma_tdm_dense_kernel` | 30.307 | 6,592 | 4.6 | 5.45% |
 | 7 | hyper-connections | `gluon_mhc_mixes_project_gfx1250` | 21.813 | 5,504 | 4.0 | 3.92% |
 | 8 | dense GEMM | `Cijk_Alik_Bljk_BSS_BH_Bias_HA_S_SAV_UserArgs_MT256x128x64_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASE...` | 18.000 | 64 | 281.2 | 3.24% |
-| 9 | other | `triton_quantize_mxfp4_activation_gfx1250` | 14.967 | 5,504 | 2.7 | 2.69% |
+| 9 | quantize | `triton_quantize_mxfp4_activation_gfx1250` | 14.967 | 5,504 | 2.7 | 2.69% |
 | 10 | hyper-connections | `_mhc_post_hc4_triton_kernel` | 14.422 | 5,504 | 2.6 | 2.59% |
 
 </details>
@@ -393,12 +402,12 @@ is not a total of the rows.
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
 | 1 | MoE | `_matmul_decode` | 283.892 | 5,504 | 51.6 | 27.15% |
-| 2 | sparse attention | `gluon_dsv41_index_topk_select_gfx1250` | 102.627 | 512 | 200.4 | 9.81% |
+| 2 | index top-k | `gluon_dsv41_index_topk_select_gfx1250` | 102.627 | 512 | 200.4 | 9.81% |
 | 3 | sparse attention | `gluon_dsv41_selected_attention_gfx1250` | 79.467 | 2,560 | 31.0 | 7.60% |
-| 4 | other | `triton_quantize_mxfp4_activation_gfx1250` | 54.551 | 5,504 | 9.9 | 5.22% |
+| 4 | quantize | `triton_quantize_mxfp4_activation_gfx1250` | 54.551 | 5,504 | 9.9 | 5.22% |
 | 5 | dense GEMM | `gluon_mm_mxfp8_ue8m0_largem_gfx1250_bm128_bn32_buf3_sk1` | 48.527 | 6,016 | 8.1 | 4.64% |
 | 6 | dense GEMM | `_wmma_tdm_dense_kernel` | 37.154 | 5,696 | 6.5 | 3.55% |
-| 7 | sparse attention | `gluon_dsv41_index_topk_gfx1250` | 35.327 | 512 | 69.0 | 3.38% |
+| 7 | index scoring | `gluon_dsv41_index_topk_gfx1250` | 35.327 | 512 | 69.0 | 3.38% |
 | 8 | hyper-connections | `gluon_mhc_mixes_reduce_gfx1250` | 33.577 | 5,504 | 6.1 | 3.21% |
 | 9 | dense GEMM | `gluon_wmma_dense_reduce_gfx1250` | 31.662 | 11,328 | 2.8 | 3.03% |
 | 10 | dense GEMM | `gluon_mm_mxfp8_ue8m0_largem_gfx1250_bm128_bn64_buf3_sk2` | 26.542 | 2,816 | 9.4 | 2.54% |
@@ -431,7 +440,7 @@ is not a total of the rows.
 | KDA other | 1.72x | 1.73x | 1.23x | 1.30x |
 | MoE | 2.54x | 2.56x | 1.65x | 2.45x |
 | input projections | 1.56x | 1.59x | 2.69x | 2.42x |
-| dense GEMM | 1.94x | 1.95x | 0.70x | 2.02x |
+| dense GEMM | 1.95x | 1.96x | 1.88x | 2.03x |
 | attention | 1.83x | 1.69x | 1.53x | 2.00x |
 | AttnRes | 1.81x | 1.82x | 2.41x | 1.89x |
 | add3 | 2.92x | 2.94x | — | — |
@@ -440,7 +449,7 @@ is not a total of the rows.
 | top-k and sort | 1.31x | 1.28x | — | — |
 | sampling | 2.10x | 2.11x | 1.40x | 1.32x |
 | elementwise | 1.43x | 1.40x | 3.57x | 2.58x |
-| other | 1.71x | 1.69x | 37.45x | 1.23x |
+| other | 1.61x | 1.62x | 1.17x | 1.13x |
 | all kernels | 1.97x | 1.97x | 1.86x | 2.22x |
 | **End-to-end** | **1.75x** (TTFT) | **1.88x** (TTFT) | **1.86x** (steady TPOT) | **2.28x** (steady TPOT) |
 
@@ -482,7 +491,7 @@ is not a total of the rows.
 
 | Rank | Category | Kernel | GPU time (ms) | Calls | Mean/call (us) | Share |
 |---:|---|---|---:|---:|---:|---:|
-| 1 | other | `gluon_gemv_a16w16_gfx950` | 193.236 | 19,456 | 9.9 | 17.87% |
+| 1 | dense GEMM | `gluon_gemv_a16w16_gfx950` | 193.236 | 19,456 | 9.9 | 17.87% |
 | 2 | AttnRes | `gluon_attn_res_fwd_gfx950` | 115.274 | 11,968 | 9.6 | 10.66% |
 | 3 | MoE | `_warp_decode_precomputed_situ_stage1_kernel` | 114.745 | 5,888 | 19.5 | 10.61% |
 | 4 | input projections | `gluon_latent_input_small_batch_gfx950` | 108.337 | 5,888 | 18.4 | 10.02% |

@@ -1,11 +1,11 @@
 category,kernel_name,calls,total_ms,avg_us,stage_gpu_time_pct
 MoE,_matmul_decode,5504,283.892,51.579,27.1478
-sparse attention,gluon_dsv41_index_topk_select_gfx1250,512,102.627,200.443,9.8139
+index top-k,gluon_dsv41_index_topk_select_gfx1250,512,102.627,200.443,9.8139
 sparse attention,gluon_dsv41_selected_attention_gfx1250,2560,79.467,31.042,7.5992
-other,triton_quantize_mxfp4_activation_gfx1250,5504,54.551,9.911,5.2166
+quantize,triton_quantize_mxfp4_activation_gfx1250,5504,54.551,9.911,5.2166
 dense GEMM,gluon_mm_mxfp8_ue8m0_largem_gfx1250_bm128_bn32_buf3_sk1,6016,48.527,8.066,4.6405
 dense GEMM,_wmma_tdm_dense_kernel,5696,37.154,6.523,3.5530
-sparse attention,gluon_dsv41_index_topk_gfx1250,512,35.327,68.999,3.3783
+index scoring,gluon_dsv41_index_topk_gfx1250,512,35.327,68.999,3.3783
 hyper-connections,gluon_mhc_mixes_reduce_gfx1250,5504,33.577,6.101,3.2109
 dense GEMM,gluon_wmma_dense_reduce_gfx1250,11328,31.662,2.795,3.0278
 dense GEMM,gluon_mm_mxfp8_ue8m0_largem_gfx1250_bm128_bn64_buf3_sk2,2816,26.542,9.426,2.5382
@@ -21,7 +21,7 @@ MoE,_precomputed_topk_route_small_m_gfx1250_kernel,2752,11.790,4.284,1.1275
 sparse attention,_dsv4_sparse_attention_kernel,192,11.783,61.368,1.1267
 hyper-connections,gluon_mhc_apply_pre_fp8_group32_gfx1250,2752,9.879,3.590,0.9447
 hyper-connections,_mhc_pre_layer_norm_hc4_kernel,2752,9.051,3.289,0.8656
-other,gluon_quantize_fp8_group32_ue8m0_gfx1250,3008,8.454,2.810,0.8084
+quantize,gluon_quantize_fp8_group32_ue8m0_gfx1250,3008,8.454,2.810,0.8084
 dense GEMM,Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT32x32x64_MI16x16x1_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_BL1_BS1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS0_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA1_GRVWB1_GSU0_GSUAMB_GLS0_HPLR0_ISA1250_ICIW1_IU1_K1_LDSSI1_LDSTI0_LBSPPA256_LBSPPB256_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA8_LPB8_LPMXSA0_LPMXSB0_LPM0_LRVWn1_LWPMn1_MIAV1_MIWT1_1_MXLITDM_MXSFIMS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTG0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVG0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL1_PAP0_PGL0_PGR2_PLR1_PKA1_RAP0_SGROB0_SIA4_SS0_SPO0_SRVW0_SSO0_SVW8_SK3_SKFTR0_SKFDPO0_SKWS0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI3_TDMIM0_TDMLWS0_TDMPLB0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THG0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSMn1_ULSGRO0_USL1_USLMX0_UDFMAC0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA1_VWB1_WSGRA0_WSGRB0_WS32_WG32_4_1_WGMXCC1,512,8.409,16.424,0.8041
 elementwise,_swa_rope_insert,2560,8.211,3.207,0.7852
 rmsnorm,_rmsnorm_fp8_group32_ue8m0,2752,8.129,2.954,0.7773
@@ -30,7 +30,7 @@ elementwise,"void at::native::vectorized_elementwise_kernel<8, at::native::CUDAF
 dense GEMM,gluon_wmma_dense_reduce_fp8_gfx1250,2752,7.351,2.671,0.7030
 MoE,_weighted_topk_reduce_gfx1250_kernel,2752,6.807,2.473,0.6509
 dense GEMM,gluon_mm_mxfp8_ue8m0_largem_gfx1250_bm128_bn64_buf3_sk1,128,5.802,45.327,0.5548
-other,_index_block_select_kernel,64,4.077,63.706,0.3899
+index top-k,_index_block_select_kernel,64,4.077,63.706,0.3899
 elementwise,"void at::native::elementwise_kernel_manual_unroll<128, 8, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#1}::operator()() const::{lambda(unsigned char)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#1}::operator()() const::{lambda(unsigned char)#1} const&)::{lambda(int, bool)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#1}::operator()() const::{lambda(unsigned char)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#1}::operator()() const::{lambda(unsigned char)#1} const&)::{lambda(int, bool)#1})",1024,3.502,3.420,0.3349
 elementwise,_rope_inplace_kernel,1216,2.988,2.457,0.2857
 other,_pack_kernel,1024,2.901,2.833,0.2774
