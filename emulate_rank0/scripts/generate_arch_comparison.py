@@ -52,7 +52,10 @@ CATEGORIES = [
         r"moe|^_stage[12]_kernel$|^_routing_kernel$|^_combine_kernel$"
         r"|gather_package|warp_decode|fp8_warp_gemv|sigmoid_bias_topk"
         r"|sigmoid_mul|_situ_kernel|^_matmul$|^_matmul_decode$|topk_route"
-        r"|weighted_topk_reduce|softplus_topk|fp8_block_(gate_up|down)",
+        r"|weighted_topk_reduce|softplus_topk|fp8_block_(gate_up|down)"
+        # gfx950's packed FP8 MoE with its alignment kernels, and MXFP4 decode.
+        r"|fp8_packed_(large|small)_stage|^_(prepare_small|offsets|scatter)_kernel$"
+        r"|mxfp4_direct_mfma",
     ),
     # Sparse attention splits into its three steps: score every KV row, select
     # the rows to read, then attend over them.
@@ -66,7 +69,7 @@ CATEGORIES = [
         # Not torch's gpu_index_kernel, which is plain indexing. The kpool
         # prefill "topk" kernels write logits; the top-k step selects from them.
         r"indexer|index_k(?!ernel)|index_topk|kpool_score|kpool_prefill_topk"
-        r"|dsa_(decode|prefill)_topk|hadamard",
+        r"|dsa_(decode|prefill)_topk|hadamard|pack_index_queries",
     ),
     (
         "sparse attention",
