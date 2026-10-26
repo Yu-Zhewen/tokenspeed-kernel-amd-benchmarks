@@ -317,7 +317,9 @@ when `hotspots exit 0` follows.
   `tokenspeed-scheduler` and `tokenspeed-engine` built from the tree and the
   mooncake and smg wheels upgraded to its pins; the MI455X image also links
   the ROCm SDK's `libamdhip64.so` into `/usr/local/lib`, since TokenSpeed
-  loads it by name.
+  loads it by name. The
+  [bar chart](results/arch_compare_20261026_64c4fc93/speedup.svg) compares
+  end-to-end MI455X advantage over MI355X with the 2026-10-19 run.
 - [`results/arch_compare_20261019_04e6b3d2`](results/arch_compare_20261019_04e6b3d2/README.md):
   the head of #2269 at `04e6b3d2`, on main `9f182dbc`, all three models with
   speculative decoding and `--retraction-snapshot-host-gb 16`. The
