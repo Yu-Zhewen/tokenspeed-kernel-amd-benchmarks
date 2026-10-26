@@ -310,6 +310,14 @@ when `hotspots exit 0` follows.
 
 ## 7. Results
 
+- [`results/arch_compare_20261026_64c4fc93`](results/arch_compare_20261026_64c4fc93/README.md):
+  main `533394cc` with TokenSpeed#2713 and #2719 cherry-picked, at `64c4fc93`,
+  all three models with speculative decoding and
+  `--retraction-snapshot-host-gb 16`. Both images are earlier ones with
+  `tokenspeed-scheduler` and `tokenspeed-engine` built from the tree and the
+  mooncake and smg wheels upgraded to its pins; the MI455X image also links
+  the ROCm SDK's `libamdhip64.so` into `/usr/local/lib`, since TokenSpeed
+  loads it by name.
 - [`results/arch_compare_20261019_04e6b3d2`](results/arch_compare_20261019_04e6b3d2/README.md):
   the head of #2269 at `04e6b3d2`, on main `9f182dbc`, all three models with
   speculative decoding and `--retraction-snapshot-host-gb 16`. The
