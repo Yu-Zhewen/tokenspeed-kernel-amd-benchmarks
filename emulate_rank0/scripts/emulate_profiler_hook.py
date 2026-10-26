@@ -11,7 +11,12 @@ import importlib.util
 import os
 import sys
 
-_TARGET = "tokenspeed.runtime.engine.request_handler"
+# Module -> class owning start_profile/stop_profile. Trees before the Rust
+# control plane (TokenSpeed#2603) define them on RequestHandler.
+_TARGETS = {
+    "tokenspeed.runtime.engine.request_handler": "RequestHandler",
+    "tokenspeed.runtime.engine.profiler": "Profiler",
+}
 PID_FILE = "/tmp/emulate-scheduler.pid"
 _ROCTX_CANDIDATES = (
     "/opt/venv/lib/python3.12/site-packages/_rocm_sdk_core/lib/librocprofiler-sdk-roctx.so.1",
@@ -57,7 +62,7 @@ def _patch(cls):
 
 class _Finder(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path, target=None):
-        if fullname != _TARGET:
+        if fullname not in _TARGETS:
             return None
         sys.meta_path.remove(self)
         spec = importlib.util.find_spec(fullname)
@@ -67,7 +72,7 @@ class _Finder(importlib.abc.MetaPathFinder):
 
         def patched_exec(module):
             exec_module(module)
-            _patch(module.RequestHandler)
+            _patch(getattr(module, _TARGETS[fullname]))
 
         spec.loader.exec_module = patched_exec
         return spec
