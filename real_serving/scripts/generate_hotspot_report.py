@@ -109,9 +109,7 @@ def stage_scale(stage, decode_steps):
 def breakdown_table(hotspots, decode_steps, phases, rates, accept):
     per_stage = {key: ac.category_totals(hotspots.get(key, [])) for key in STAGES}
     present = {c for totals in per_stage.values() for c in totals}
-    order = [name for name, _ in ac.CATEGORIES if name in present and name != COMMUNICATION]
-    if COMMUNICATION in present:
-        order.append(COMMUNICATION)
+    order = [name for name, _ in ac.CATEGORIES if name in present]
     if "other" in present:
         order.append("other")
     lines = [
@@ -128,7 +126,8 @@ def breakdown_table(hotspots, decode_steps, phases, rates, accept):
     totals = {key: sum(t.values()) or 1.0 for key, t in per_stage.items()}
     for category in order:
         cells = [cell(per_stage[k].get(category, 0.0), totals[k], k) for k in STAGES]
-        lines.append(f"| {category} | " + " | ".join(cells) + " |")
+        name = f"**{category}**" if category == COMMUNICATION else category
+        lines.append(f"| {name} | " + " | ".join(cells) + " |")
     cells = []
     for key in STAGES:
         total = sum(per_stage[key].values())
