@@ -3,9 +3,10 @@
 Each model serves its real checkpoint over its CI job's parallel layout
 on MI455X (gfx1250) GPUs, with real MoE routing and real collectives
 (RCCL and Iris over the GPUs' scale-up fabric; `real_serving/README.md`
-describes the nodes). Speculative runs fix the accept length
-emulate_rank0 simulates, so a verify step does the same work as there.
-Kernel tables are rank 0's.
+describes the nodes). The one fixed input is the accept length: with
+`TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN` set, every verify step accepts
+that many tokens whatever the drafter proposes, since random prompts
+say little about a drafter. Kernel tables are rank 0's.
 
 ## Provenance
 
@@ -26,14 +27,14 @@ Kernel tables are rank 0's.
 Each node runs one container (`real_serving/scripts/run.sh`) that owns
 all of the node's GPUs and shares the host network. Inside it
 `serve_bench.sh` starts `tokenspeed.cli serve`, whose gateway listens
-on port 8000, and drives emulate_rank0's client against it: a smoke
+on port 8000, and drives the benchmark client against it: a smoke
 request, then the benchmark at each concurrency. Timing and profiling
 are two server launches with the same command; the second runs under
-`rocprofv3 --kernel-trace --marker-trace --selected-regions` with
-emulate_rank0's profiler hook, and the client opens one profiling
+`rocprofv3 --kernel-trace --marker-trace --selected-regions` with a
+profiler hook in every rank, and the client opens one profiling
 window per stage.
 
-| Model | Layout | Node rank: host | Ranks per node | Profiled ranks | Simulated accept |
+| Model | Layout | Node rank: host | Ranks per node | Profiled ranks | Fixed accept length |
 |---|---|---|---:|---|---:|
 | GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 0: `ctheliosr-1b112-a31-2` (10.5.212.237) | 4 | TP0, TP1, TP2, TP3 | 2.9 |
 | DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 0: `ctheliosr-1b112-a31-2` (10.5.212.237) | 4 | TP0, TP1, TP2, TP3 | 3.9 |
@@ -188,7 +189,7 @@ Node 1 runs the same command with `--node-rank 1`.
 Logged values are medians over the server's 40-step decode windows;
 windows that straddle a prefill keep fewer tokens.
 
-| Model | Layout | Simulated | Logged |
+| Model | Layout | Fixed | Logged |
 |---|---|---:|---:|
 | GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 2.9 | 2.9 |
 | DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 3.9 | 3.9 |
