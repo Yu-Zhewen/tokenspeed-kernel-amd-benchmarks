@@ -1,0 +1,65 @@
+# TokenSpeed at one main commit on top of the MI455X image (torch 2.14 + ROCm
+# 10.2 wheels, tokenspeed-triton 3.9.10). The install order follows
+# test/ci_system/install_deps_rocm.sh: kernel-amd, kernel (whose setup.py
+# installs requirements/rocm*.txt through a nested pip), scheduler, engine,
+# then TokenSpeed itself. The constraint file keeps the base image's ROCm
+# torch stack: PyPI has no gfx1250 builds of it. tokenspeed-triton and
+# tokenspeed-proton follow the tree's pins from PyPI.
+ARG BASE=tokenspeed-gfx1250:9b707d56-torch214-tt3910-sched0130
+FROM ${BASE}
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_INPUT=1 \
+    PIP_CONSTRAINT=/tmp/keep-rocm-stack.txt \
+    TOKENSPEED_KERNEL_BACKEND=rocm \
+    TRITON_LIBHIP_PATH=/opt/venv/lib/python3.12/site-packages/_rocm_sdk_core/lib/libamdhip64.so \
+    CARGO_HOME=/opt/cargo \
+    RUSTUP_HOME=/opt/rustup \
+    PATH=/opt/cargo/bin:${PATH}
+
+RUN python3 -m pip freeze \
+        | grep -iE '^(torch|torchvision|triton|rocm[a-z_-]*)==' \
+        > /tmp/keep-rocm-stack.txt \
+    && cat /tmp/keep-rocm-stack.txt \
+    && (command -v curl >/dev/null || (apt-get update && apt-get install -y --no-install-recommends curl ca-certificates)) \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+        | sh -s -- -y --profile minimal --default-toolchain stable --no-modify-path \
+    && cargo --version \
+    && python3 -m pip install "setuptools<82" wheel cmake ninja "apache-tvm-ffi==0.1.13.post3"
+
+COPY src /src
+
+RUN cd /src \
+    && python3 -m pip install --force-reinstall --no-deps --no-build-isolation \
+        /src/tokenspeed-kernel-amd \
+    && python3 -m pip install --no-build-isolation -v /src/tokenspeed-kernel/python \
+    && CMAKE_BUILD_PARALLEL_LEVEL=64 python3 -m pip install --no-cache-dir \
+        --force-reinstall --no-deps /src/tokenspeed-scheduler \
+    && CARGO_BUILD_JOBS=64 python3 -m pip install --force-reinstall --no-deps \
+        /src/tokenspeed-engine \
+    && python3 -m pip install --no-build-isolation /src/python
+
+RUN python3 - <<'PY'
+import importlib.metadata as m
+import os
+import shutil
+import iris
+import torch
+import tokenspeed
+import tokenspeed_engine
+import tokenspeed_kernel_amd
+import tokenspeed_scheduler
+import tokenspeed_triton
+for dist in ("torch", "tokenspeed-triton", "tokenspeed-iris", "tokenspeed-scheduler",
+             "tokenspeed-engine", "tokenspeed-smg", "tokenspeed-mooncake",
+             "tokenspeed-kernel", "tokenspeed-kernel-amd", "tokenspeed"):
+    print(dist, m.version(dist))
+assert torch.__version__.startswith("2.14"), torch.__version__
+assert m.version("tokenspeed-triton") == "3.9.10.post20261028"
+assert m.version("tokenspeed-scheduler") == "0.1.45"
+assert m.version("tokenspeed-smg") == "1.13.0.post20261027"
+assert os.access(tokenspeed_engine.host_binary(), os.X_OK)
+assert tokenspeed.__file__.startswith("/opt/venv"), tokenspeed.__file__
+assert shutil.which("ts")
+print("revision", open("/src/REVISION").read().strip())
+PY

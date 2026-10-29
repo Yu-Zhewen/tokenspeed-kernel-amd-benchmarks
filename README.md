@@ -8,6 +8,9 @@ Reproducible AMD kernel benchmarks and early model-integration prototypes.
   architecture, producing a per-commit MI355X versus MI455X comparison.
 - [`frontier_e2e/`](frontier_e2e/): shared logical-rank harness and portable
   checkpoint format for DeepSeek-V4.1-Flash and GLM-5.3-Flash on gfx950/gfx1250.
+- [`real_serving/`](real_serving/): the same three speculative deployments
+  served with real checkpoints over their multi-GPU MI455X layouts, with
+  rank 0's hotspots and the cost of their collectives.
 
 The repository preserves the revision history imported from the original
 benchmark gist. The toy E2E harness runs against a TokenSpeed worktree at the

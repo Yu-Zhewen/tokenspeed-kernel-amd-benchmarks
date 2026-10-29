@@ -18,6 +18,9 @@ _TARGETS = {
     "tokenspeed.runtime.engine.profiler": "Profiler",
 }
 PID_FILE = "/tmp/emulate-scheduler.pid"
+# One file per profiled process, named after its pid and holding its rank tag
+# (such as `TP0`), for servers that run several ranks in one container.
+RANK_DIR = "/tmp/emulate-scheduler.d"
 _ROCTX_CANDIDATES = (
     "/opt/venv/lib/python3.12/site-packages/_rocm_sdk_core/lib/librocprofiler-sdk-roctx.so.1",
     "/opt/rocm/lib/librocprofiler-sdk-roctx.so.1",
@@ -45,6 +48,9 @@ def _patch(cls):
         result = start(self, *args, **kwargs)
         with open(PID_FILE, "w") as f:
             f.write(str(os.getpid()))
+        os.makedirs(RANK_DIR, exist_ok=True)
+        with open(os.path.join(RANK_DIR, str(os.getpid())), "w") as f:
+            f.write(getattr(self, "profile_rank_tag", ""))
         lib.roctxProfilerResume(0)
         lib.roctxRangePushA(str(self.profiler_output_dir).encode())
         return result

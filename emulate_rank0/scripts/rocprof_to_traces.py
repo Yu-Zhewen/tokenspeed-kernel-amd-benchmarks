@@ -2,33 +2,41 @@
 """Split rocprofv3 kernel records into one Chrome trace per profile window.
 
 Windows are the roctx ranges the profiler hook names after each window's
-output directory (``.../c{C}/{prefill,decode}``).
+output directory (``.../c{C}/{prefill,decode}``). rocprofv3 writes one
+``<pid>_*.csv`` set per process; ``--pid`` keeps only one process's, such as
+rank 0 of a multi-GPU server.
 """
 
+import argparse
 import csv
 import json
-import sys
 from collections import Counter
 from pathlib import Path
 
 
-def rows(root, suffix):
-    for path in sorted(root.rglob(f"*{suffix}")):
+def rows(root, suffix, pid=None):
+    prefix = f"{pid}_" if pid is not None else ""
+    for path in sorted(root.rglob(f"{prefix}*{suffix}")):
         # rocprofv3 can write the bytes behind a stale name pointer, NULs included.
         with open(path, newline="", encoding="utf-8", errors="replace") as f:
             yield from csv.DictReader(line.replace("\0", "") for line in f)
 
 
 def main():
-    src, dst = Path(sys.argv[1]), Path(sys.argv[2])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("src", type=Path, help="rocprofv3 output directory")
+    parser.add_argument("dst", type=Path, help="trace output directory")
+    parser.add_argument("--pid", type=int, help="keep only this process's records")
+    args = parser.parse_args()
+    src, dst = args.src, args.dst
     windows = []
-    for row in rows(src, "marker_api_trace.csv"):
+    for row in rows(src, "marker_api_trace.csv", args.pid):
         message = row.get("Function") or row.get("Message") or ""
         parts = Path(message).parts
         if len(parts) >= 2 and parts[-1] in ("prefill", "decode") and parts[-2].startswith("c"):
             windows.append((int(row["Start_Timestamp"]), int(row["End_Timestamp"]), parts[-2], parts[-1]))
     kernels, unreadable, skipped = [], Counter(), 0
-    for r in rows(src, "kernel_trace.csv"):
+    for r in rows(src, "kernel_trace.csv", args.pid):
         try:
             begin, finish = int(r["Start_Timestamp"]), int(r["End_Timestamp"])
         except (TypeError, ValueError):
@@ -40,6 +48,9 @@ def main():
             name = f"<unreadable name, kernel id {r['Kernel_Id']}>"
         kernels.append((begin, finish, name, r.get("Queue_Id", "0")))
     print(f"{len(kernels)} kernel records, {len(windows)} windows")
+    repeated = [k for k, n in Counter((w[2], w[3]) for w in windows).items() if n > 1]
+    if repeated:
+        raise SystemExit(f"several processes opened windows {repeated}; pass --pid")
     for kernel_id, count in sorted(unreadable.items()):
         print(f"warning: {count} records of kernel id {kernel_id} have an unreadable name")
     if skipped:
