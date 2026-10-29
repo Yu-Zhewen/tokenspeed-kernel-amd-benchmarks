@@ -21,6 +21,168 @@ Kernel tables are rank 0's.
 | torch / tokenspeed-triton | 2.14.0+rocm10.2.0a20260923 / 3.9.10.post20261028 |
 | Image | `tokenspeed-gfx1250:main-f198a543` |
 
+## How each model was run
+
+Each node runs one container (`real_serving/scripts/run.sh`) that owns
+all of the node's GPUs and shares the host network. Inside it
+`serve_bench.sh` starts `tokenspeed.cli serve`, whose gateway listens
+on port 8000, and drives emulate_rank0's client against it: a smoke
+request, then the benchmark at each concurrency. Timing and profiling
+are two server launches with the same command; the second runs under
+`rocprofv3 --kernel-trace --marker-trace --selected-regions` with
+emulate_rank0's profiler hook, and the client opens one profiling
+window per stage.
+
+| Model | Layout | Node rank: host | Ranks per node | Profiled ranks | Simulated accept |
+|---|---|---|---:|---|---:|
+| GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 0: `ctheliosr-1b112-a31-2` (10.5.212.237) | 4 | TP0, TP1, TP2, TP3 | 2.9 |
+| DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 0: `ctheliosr-1b112-a31-2` (10.5.212.237) | 4 | TP0, TP1, TP2, TP3 | 3.9 |
+| Kimi-K3 EAGLE3 | TP8 (2 nodes x 4 GPUs) | 0: `ctheliosr-1b112-a31-1` (10.5.212.227), 1: `ctheliosr-1b112-a31-2` (10.5.212.237) | 4 | TP0, TP1, TP2, TP3 | 3.75 |
+
+Every container also gets these settings, and `TOKENSPEED_HOST_IP`
+set to its node's address (`real_serving/README.md` says why):
+
+- `LD_LIBRARY_PATH=/opt/venv/lib/python3.12/site-packages/_rocm_sdk_core/lib`
+- `GLOO_SOCKET_IFNAME=enp4s0np0`
+- `NCCL_GRAPH_REGISTER=0`
+- `NCCL_IB_GID_INDEX=1`
+- `NCCL_IB_HCA=ionic_0`
+- `NCCL_SOCKET_IFNAME=enp4s0np0`
+
+### Kimi-K3 across 2 nodes
+
+The 8 ranks form one TP8 group: TP0–TP3 on `ctheliosr-1b112-a31-1`, TP4–TP7 on `ctheliosr-1b112-a31-2`.
+Every node runs the same `tokenspeed.cli serve` command except
+`--node-rank`, binds `--host 0.0.0.0`, and joins the group at
+node 0's `--dist-init-addr 10.5.212.227:25000`. The other
+nodes serve engines only; node 0 also runs the gateway and the
+client and holds the results, so the profiled ranks are node 0's
+and the kernel tables are TP0's.
+
+Each phase is its own launch, since the other nodes restart with
+their phase's flags: `run.sh` with `ROLE=follower` and `NODE_RANK`
+on every other node (detached), then `ROLE=leader` on node 0, which
+returns when the phase ends; the follower containers are then
+removed. Per phase, with `IMAGE_REF`, `OUT`, `MODELS_ROOT`, the
+`NCCL_*`/`GLOO_*` settings above and `CONTAINER_LD_LIBRARY_PATH`
+(which becomes the container's `LD_LIBRARY_PATH`) also set:
+
+```bash
+# node 1, ctheliosr-1b112-a31-2
+MODEL=kimik3 ROLE=follower NNODES=2 NODE_RANK=1 \
+HEAD_ADDR=10.5.212.227:25000 NODE_IP=10.5.212.237 PHASES=<perf|hotspots> \
+  real_serving/scripts/run.sh
+# node 0, ctheliosr-1b112-a31-1
+MODEL=kimik3 ROLE=leader NNODES=2 NODE_RANK=0 \
+HEAD_ADDR=10.5.212.227:25000 NODE_IP=10.5.212.227 PHASES=<perf|hotspots> \
+  real_serving/scripts/run.sh
+```
+
+RCCL sees the GPUs of both a31 trays as one scale-up domain: it
+reports `UALoE-enabled (aka MNNVL)` at 1.8 Tb/s, counts one node of
+8 local ranks, and connects its rings `via P2P/CUMEMMNNVL`.
+
+<details><summary>Serve commands</summary>
+
+GLM-5.3-Flash MTP, node 0, for both phases:
+
+```bash
+TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN=2.9 python3 -m tokenspeed.cli serve /data/models/GLM-5.3-Flash \
+  --language-model-only \
+  --speculative-algorithm MTP \
+  --speculative-num-steps 3 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-eagle-topk 1 \
+  --served-model-name glm-5.3-flash \
+  --trust-remote-code \
+  --attn-tp-size 4 \
+  --ep-size 1 \
+  --max-model-len 65536 \
+  --max-num-seqs 16 \
+  --chunked-prefill-size 8192 \
+  --disable-kvstore \
+  --disable-prefix-caching \
+  --disable-autotune \
+  --disable-sampling-tp-sync \
+  --sampling-backend greedy \
+  --decode-log-interval 40 \
+  --health-check-timeout-secs 1800 \
+  --engine-startup-timeout 3000 \
+  --host 127.0.0.1 \
+  --port 8000 \
+  --cudagraph-capture-sizes 1 2 4 8 16
+```
+
+DeepSeek-V4.1-Flash DSPARK, node 0, for both phases:
+
+```bash
+TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN=3.9 python3 -m tokenspeed.cli serve /data/models/DeepSeek-V4.1-Flash \
+  --language-model-only \
+  --dtype bfloat16 \
+  --speculative-algorithm DSPARK \
+  --served-model-name deepseek-v41-flash \
+  --trust-remote-code \
+  --tensor-parallel-size 4 \
+  --max-model-len 65536 \
+  --max-num-seqs 16 \
+  --chunked-prefill-size 8192 \
+  --prefill-graph-max-tokens 8192 \
+  --disable-kvstore \
+  --disable-prefix-caching \
+  --disable-autotune \
+  --disable-sampling-tp-sync \
+  --sampling-backend greedy \
+  --decode-log-interval 40 \
+  --health-check-timeout-secs 1800 \
+  --engine-startup-timeout 3000 \
+  --host 127.0.0.1 \
+  --port 8000 \
+  --cudagraph-capture-sizes 1 2 4 8 16
+```
+
+Kimi-K3 EAGLE3, node 0, for both phases:
+
+```bash
+TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN=3.75 python3 -m tokenspeed.cli serve /data/models/Kimi-K3 \
+  --language-model-only \
+  --attention-backend mla \
+  --kv-cache-dtype fp8_e4m3 \
+  --speculative-algorithm EAGLE3 \
+  --speculative-draft-model-path /data/models/kimi-k3-eagle3-mla \
+  --speculative-draft-model-quantization unquant \
+  --eagle3-layers-to-capture 2\,46\,90 \
+  --speculative-num-steps 3 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-eagle-topk 1 \
+  --served-model-name kimi-k3 \
+  --trust-remote-code \
+  --tensor-parallel-size 8 \
+  --nnodes 2 \
+  --nprocs-per-node 4 \
+  --world-size 8 \
+  --dist-init-addr 10.5.212.227:25000 \
+  --node-rank 0 \
+  --max-model-len 65536 \
+  --max-num-seqs 16 \
+  --chunked-prefill-size 8192 \
+  --disable-prefill-graph \
+  --disable-kvstore \
+  --disable-prefix-caching \
+  --disable-autotune \
+  --disable-sampling-tp-sync \
+  --sampling-backend greedy \
+  --decode-log-interval 40 \
+  --health-check-timeout-secs 1800 \
+  --engine-startup-timeout 3000 \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --cudagraph-capture-sizes 1 2 4 8 16
+```
+
+Node 1 runs the same command with `--node-rank 1`.
+
+</details>
+
 ## Acceptance
 
 Logged values are medians over the server's 40-step decode windows;

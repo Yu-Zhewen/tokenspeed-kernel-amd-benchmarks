@@ -68,6 +68,141 @@ def read_env(model_dir: Path) -> dict:
     return env
 
 
+def read_launch(model_dir: Path) -> tuple[dict, list[str]]:
+    """({node rank: (host, ip)}, container env) from run.sh's launch.txt."""
+    nodes, env = {}, []
+    for line in ac.read_lines(model_dir / "launch.txt"):
+        kind, _, rest = line.partition(" ")
+        if kind == "node":
+            rank, host, *ip = rest.split()
+            nodes[int(rank)] = (host, ip[0] if ip else "")
+        elif kind == "env":
+            env.append(rest)
+    return nodes, env
+
+
+def shell_command(cmd: str, prefix: str = "") -> list[str]:
+    """One flag per line of a recorded `tokenspeed.cli serve` command."""
+    head, *flags = cmd.strip().split(" --")
+    words = [f"{prefix} {head}" if prefix else head, *(f"  --{f}" for f in flags)]
+    return [w + " \\" for w in words[:-1]] + words[-1:]
+
+
+def node_cell(nodes: dict) -> str:
+    return ", ".join(
+        f"{rank}: `{host}`" + (f" ({ip})" if ip else "")
+        for rank, (host, ip) in sorted(nodes.items())
+    ) or "—"
+
+
+def launch_section(runs) -> list[str]:
+    lines = [
+        "## How each model was run",
+        "",
+        "Each node runs one container (`real_serving/scripts/run.sh`) that owns",
+        "all of the node's GPUs and shares the host network. Inside it",
+        "`serve_bench.sh` starts `tokenspeed.cli serve`, whose gateway listens",
+        "on port 8000, and drives emulate_rank0's client against it: a smoke",
+        "request, then the benchmark at each concurrency. Timing and profiling",
+        "are two server launches with the same command; the second runs under",
+        "`rocprofv3 --kernel-trace --marker-trace --selected-regions` with",
+        "emulate_rank0's profiler hook, and the client opens one profiling",
+        "window per stage.",
+        "",
+        "| Model | Layout | Node rank: host | Ranks per node | Profiled ranks | Simulated accept |",
+        "|---|---|---|---:|---|---:|",
+    ]
+    for r in runs:
+        lines.append(
+            f"| {r['label']} {r['algo']} | {r['where']} | {node_cell(r['nodes'])} "
+            f"| {r['gpus']} | {', '.join(r['profiled']) or '—'} | {r['simulated']} |"
+        )
+    envs = {tuple(r["env"]) for r in runs if r["env"]}
+    if len(envs) == 1:
+        lines += [
+            "",
+            "Every container also gets these settings, and `TOKENSPEED_HOST_IP`",
+            "set to its node's address (`real_serving/README.md` says why):",
+            "",
+            *(f"- `{e}`" for e in envs.pop()),
+        ]
+    for r in runs:
+        if r["nnodes"] < 2:
+            continue
+        world = r["nnodes"] * r["gpus"]
+        host = lambda rank: f"`{r['nodes'][rank][0]}`" if rank in r["nodes"] else f"node {rank}"
+        spans = ", ".join(
+            f"TP{n * r['gpus']}–TP{(n + 1) * r['gpus'] - 1} on {host(n)}"
+            for n in range(r["nnodes"])
+        )
+        head = re.search(r"--dist-init-addr (\S+)", r["cmd"])
+        lines += [
+            "",
+            f"### {r['label']} across {r['nnodes']} nodes",
+            "",
+            f"The {world} ranks form one {r['where'].split()[0]} group: {spans}.",
+            "Every node runs the same `tokenspeed.cli serve` command except",
+            "`--node-rank`, binds `--host 0.0.0.0`, and joins the group at",
+            f"node 0's `--dist-init-addr {head[1] if head else '?'}`. The other",
+            "nodes serve engines only; node 0 also runs the gateway and the",
+            "client and holds the results, so the profiled ranks are node 0's",
+            "and the kernel tables are TP0's.",
+            "",
+            "Each phase is its own launch, since the other nodes restart with",
+            "their phase's flags: `run.sh` with `ROLE=follower` and `NODE_RANK`",
+            "on every other node (detached), then `ROLE=leader` on node 0, which",
+            "returns when the phase ends; the follower containers are then",
+            "removed. Per phase, with `IMAGE_REF`, `OUT`, `MODELS_ROOT`, the",
+            "`NCCL_*`/`GLOO_*` settings above and `CONTAINER_LD_LIBRARY_PATH`",
+            "(which becomes the container's `LD_LIBRARY_PATH`) also set:",
+            "",
+            "```bash",
+            *(
+                line
+                for rank in [*range(1, r["nnodes"]), 0]
+                for line in (
+                    f"# node {rank}, {host(rank).strip('`')}",
+                    f"MODEL={r['model']} ROLE={'leader' if rank == 0 else 'follower'} "
+                    f"NNODES={r['nnodes']} NODE_RANK={rank} \\",
+                    f"HEAD_ADDR={head[1] if head else '<node 0 ip:port>'} "
+                    f"NODE_IP={r['nodes'].get(rank, ('', '<ip>'))[1] or '<ip>'} "
+                    "PHASES=<perf|hotspots> \\",
+                    "  real_serving/scripts/run.sh",
+                )
+            ),
+            "```",
+            "",
+            "RCCL sees the GPUs of both a31 trays as one scale-up domain: it",
+            "reports `UALoE-enabled (aka MNNVL)` at 1.8 Tb/s, counts one node of",
+            f"{world} local ranks, and connects its rings `via P2P/CUMEMMNNVL`.",
+        ]
+    lines += ["", "<details><summary>Serve commands</summary>", ""]
+    for r in runs:
+        prefix = (
+            f"TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN={r['simulated']}"
+            if r["simulated"] != "off" else ""
+        )
+        same = r["hot_cmd"].strip() == r["cmd"].strip()
+        lines += [
+            f"{r['label']} {r['algo']}, node 0"
+            + (", for both phases" if same else ", timing phase") + ":",
+            "",
+            "```bash",
+            *shell_command(r["cmd"], prefix),
+            "```",
+            "",
+        ]
+        if not same and r["hot_cmd"]:
+            lines += ["Profiling phase:", "", "```bash",
+                      *shell_command(r["hot_cmd"], prefix), "```", ""]
+        for rank in range(1, r["nnodes"]):
+            lines += [
+                f"Node {rank} runs the same command with `--node-rank {rank}`.",
+                "",
+            ]
+    return lines + ["</details>", ""]
+
+
 def layout(model_dir: Path, env: dict) -> str:
     base = ac.read_layout(model_dir / "serve_cmd.txt")
     nodes = int(env.get("nnodes", "1") or 1)
@@ -224,7 +359,7 @@ def main() -> None:
         raise SystemExit("--commit-date must be YYYY-MM-DD")
 
     sections, summary, accepts, dates, revisions, modes = [], [], [], set(), set(), set()
-    collectives, appendix = [], []
+    collectives, appendix, runs = [], [], []
     image, env0, work = "", {}, None
     for model, label, algo in MODELS:
         d = args.run / model
@@ -248,6 +383,17 @@ def main() -> None:
         )
         where = layout(d, env)
         accepts.append((label, algo, where, simulated or "off", accept))
+        nodes, container_env = read_launch(d)
+        runs.append({
+            "model": model, "label": label, "algo": algo, "where": where,
+            "simulated": simulated or "off",
+            "nodes": nodes, "env": container_env,
+            "nnodes": int(env.get("nnodes", "1") or 1),
+            "gpus": int(env.get("gpus_per_node", "0") or 0),
+            "profiled": [line.split()[1] for line in ac.read_lines(d / "profiled_ranks.txt")],
+            "cmd": " ".join(ac.read_lines(d / "serve_cmd.txt")),
+            "hot_cmd": " ".join(ac.read_lines(d / "serve_hotspots_cmd.txt")),
+        })
         rates = ac.read_steady_decode(d / "batches.log")
         lines = [f"## {label} {algo}, {where}", "", *perf_table(phases, rates, accept), ""]
 
@@ -373,6 +519,7 @@ def main() -> None:
         f"{env0.get('tokenspeed-triton', '?')} |",
         f"| Image | `{image}` |",
         "",
+        *launch_section(runs),
         "## Acceptance",
         "",
         "Logged values are medians over the server's 40-step decode windows;",

@@ -93,7 +93,11 @@ gives a short check. GLM-5.3-Flash takes about 8 minutes for both phases
 of that check, most of it loading the checkpoint twice.
 
 Results per model hold the same files as emulate_rank0's, plus
-`profiled_ranks.txt` (pid and rank tag of each profiled process).
+`profiled_ranks.txt` (pid and rank tag of each profiled process) and
+`launch.txt` (the node's host and address, and the container's
+`LD_LIBRARY_PATH`, `NCCL_*` and `GLOO_*` settings). For Kimi-K3, append
+node 1's `node 1 <host> <ip>` line to node 0's `launch.txt`; the report's
+"How each model was run" section reads it.
 
 Two optional inputs feed the report's collectives appendix. After the
 hotspots phase, on node 0:
@@ -127,8 +131,9 @@ python3 real_serving/scripts/generate_hotspot_report.py \
 
 It needs per model `serve_cmd.txt`, `serve_hotspots_cmd.txt`, `env.txt`,
 `image.id`, `simulation.txt`, `accept.txt`, `serve_bench.json`,
-`batches.log` and `hotspots/hotspots.json`, and reads `rank_balance.txt`
-and `allreduce_probe.txt` when present.
+`batches.log` and `hotspots/hotspots.json`, and reads `launch.txt`,
+`profiled_ranks.txt`, `rank_balance.txt` and `allreduce_probe.txt` when
+present.
 
 ## 4. Failure modes worth knowing
 
@@ -147,6 +152,6 @@ communication bucket holds the other ranks' lag as well as the transfer.
 - [`results/hotspots_20261029_f198a543`](results/hotspots_20261029_f198a543/README.md):
   main at `f198a543` on the a31 trays, GLM-5.3-Flash and DeepSeek-V4.1-Flash
   on a31-2 and Kimi-K3 over a31-1 and a31-2. The image is
-  `tokenspeed-gfx1250:9b707d56-torch214-tt3910-sched0130` with
+  `tokenspeed-gfx1250:main-f198a543` with
   `tokenspeed-triton` 3.9.10.post20261028 and every TokenSpeed package
   built from the tree.

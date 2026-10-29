@@ -58,6 +58,15 @@ while IFS='=' read -r key _; do
   env_args+=(-e "$key")
 done < <(env | grep -E '^(NCCL|GLOO)_[A-Z_]*=' || true)
 
+# This node and the settings its collectives depend on, for the report. A
+# multi-node run appends each follower's `node` line to node 0's copy.
+{
+  echo "node ${NODE_RANK:-0} $(hostname -s) ${NODE_IP:-}"
+  [[ -n "${CONTAINER_LD_LIBRARY_PATH:-}" ]] &&
+    echo "env LD_LIBRARY_PATH=$CONTAINER_LD_LIBRARY_PATH"
+  env | grep -E '^(NCCL|GLOO)_[A-Z_]*=' | sort | sed 's/^/env /' || true
+} > "$OUT/launch.txt"
+
 # The image's rdma-core has no provider for AMD Pollara (ionic) NICs; the
 # host's has the same ABI.
 net_args=()
