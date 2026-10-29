@@ -81,6 +81,17 @@ def read_launch(model_dir: Path) -> tuple[dict, list[str]]:
     return nodes, env
 
 
+IPV4 = re.compile(r"\b\d{1,3}(?:\.\d{1,3}){3}\b")
+
+
+def mask_ips(text: str, nodes: dict) -> str:
+    """The document names nodes by rank, never by address."""
+    for rank, (_, ip) in nodes.items():
+        if ip:
+            text = text.replace(ip, f"<node {rank} ip>")
+    return IPV4.sub(lambda m: m[0] if m[0] in ("127.0.0.1", "0.0.0.0") else "<ip>", text)
+
+
 def shell_command(cmd: str, prefix: str = "") -> list[str]:
     """One flag per line of a recorded `tokenspeed.cli serve` command."""
     head, *flags = cmd.strip().split(" --")
@@ -89,10 +100,7 @@ def shell_command(cmd: str, prefix: str = "") -> list[str]:
 
 
 def node_cell(nodes: dict) -> str:
-    return ", ".join(
-        f"{rank}: `{host}`" + (f" ({ip})" if ip else "")
-        for rank, (host, ip) in sorted(nodes.items())
-    ) or "—"
+    return ", ".join(f"{rank}: `{host}`" for rank, (host, _) in sorted(nodes.items())) or "—"
 
 
 def launch_section(runs) -> list[str]:
@@ -135,7 +143,7 @@ def launch_section(runs) -> list[str]:
             f"TP{n * r['gpus']}–TP{(n + 1) * r['gpus'] - 1} on {host(n)}"
             for n in range(r["nnodes"])
         )
-        head = re.search(r"--dist-init-addr (\S+)", r["cmd"])
+        head = re.search(r"--dist-init-addr (<node \d+ ip>:\d+|\S+)", r["cmd"])
         lines += [
             "",
             f"### {r['label']} across {r['nnodes']} nodes",
@@ -164,9 +172,8 @@ def launch_section(runs) -> list[str]:
                     f"# node {rank}, {host(rank).strip('`')}",
                     f"MODEL={r['model']} ROLE={'leader' if rank == 0 else 'follower'} "
                     f"NNODES={r['nnodes']} NODE_RANK={rank} \\",
-                    f"HEAD_ADDR={head[1] if head else '<node 0 ip:port>'} "
-                    f"NODE_IP={r['nodes'].get(rank, ('', '<ip>'))[1] or '<ip>'} "
-                    "PHASES=<perf|hotspots> \\",
+                    f"HEAD_ADDR={head[1] if head else '<node 0 ip>:<port>'} "
+                    f"NODE_IP=<node {rank} ip> PHASES=<perf|hotspots> \\",
                     "  real_serving/scripts/run.sh",
                 )
             ),
@@ -391,8 +398,8 @@ def main() -> None:
             "nnodes": int(env.get("nnodes", "1") or 1),
             "gpus": int(env.get("gpus_per_node", "0") or 0),
             "profiled": [line.split()[1] for line in ac.read_lines(d / "profiled_ranks.txt")],
-            "cmd": " ".join(ac.read_lines(d / "serve_cmd.txt")),
-            "hot_cmd": " ".join(ac.read_lines(d / "serve_hotspots_cmd.txt")),
+            "cmd": mask_ips(" ".join(ac.read_lines(d / "serve_cmd.txt")), nodes),
+            "hot_cmd": mask_ips(" ".join(ac.read_lines(d / "serve_hotspots_cmd.txt")), nodes),
         })
         rates = ac.read_steady_decode(d / "batches.log")
         lines = [f"## {label} {algo}, {where}", "", *perf_table(phases, rates, accept), ""]

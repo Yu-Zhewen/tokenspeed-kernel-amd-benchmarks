@@ -36,9 +36,9 @@ window per stage.
 
 | Model | Layout | Node rank: host | Ranks per node | Profiled ranks | Fixed accept length |
 |---|---|---|---:|---|---:|
-| GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 0: `ctheliosr-1b112-a31-2` (10.5.212.237) | 4 | TP0, TP1, TP2, TP3 | 2.9 |
-| DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 0: `ctheliosr-1b112-a31-2` (10.5.212.237) | 4 | TP0, TP1, TP2, TP3 | 3.9 |
-| Kimi-K3 EAGLE3 | TP8 (2 nodes x 4 GPUs) | 0: `ctheliosr-1b112-a31-1` (10.5.212.227), 1: `ctheliosr-1b112-a31-2` (10.5.212.237) | 4 | TP0, TP1, TP2, TP3 | 3.75 |
+| GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 0: `ctheliosr-1b112-a31-2` | 4 | TP0, TP1, TP2, TP3 | 2.9 |
+| DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 0: `ctheliosr-1b112-a31-2` | 4 | TP0, TP1, TP2, TP3 | 3.9 |
+| Kimi-K3 EAGLE3 | TP8 (2 nodes x 4 GPUs) | 0: `ctheliosr-1b112-a31-1`, 1: `ctheliosr-1b112-a31-2` | 4 | TP0, TP1, TP2, TP3 | 3.75 |
 
 Every container also gets these settings, and `TOKENSPEED_HOST_IP`
 set to its node's address (`real_serving/README.md` says why):
@@ -55,7 +55,7 @@ set to its node's address (`real_serving/README.md` says why):
 The 8 ranks form one TP8 group: TP0–TP3 on `ctheliosr-1b112-a31-1`, TP4–TP7 on `ctheliosr-1b112-a31-2`.
 Every node runs the same `tokenspeed.cli serve` command except
 `--node-rank`, binds `--host 0.0.0.0`, and joins the group at
-node 0's `--dist-init-addr 10.5.212.227:25000`. The other
+node 0's `--dist-init-addr <node 0 ip>:25000`. The other
 nodes serve engines only; node 0 also runs the gateway and the
 client and holds the results, so the profiled ranks are node 0's
 and the kernel tables are TP0's.
@@ -71,11 +71,11 @@ removed. Per phase, with `IMAGE_REF`, `OUT`, `MODELS_ROOT`, the
 ```bash
 # node 1, ctheliosr-1b112-a31-2
 MODEL=kimik3 ROLE=follower NNODES=2 NODE_RANK=1 \
-HEAD_ADDR=10.5.212.227:25000 NODE_IP=10.5.212.237 PHASES=<perf|hotspots> \
+HEAD_ADDR=<node 0 ip>:25000 NODE_IP=<node 1 ip> PHASES=<perf|hotspots> \
   real_serving/scripts/run.sh
 # node 0, ctheliosr-1b112-a31-1
 MODEL=kimik3 ROLE=leader NNODES=2 NODE_RANK=0 \
-HEAD_ADDR=10.5.212.227:25000 NODE_IP=10.5.212.227 PHASES=<perf|hotspots> \
+HEAD_ADDR=<node 0 ip>:25000 NODE_IP=<node 0 ip> PHASES=<perf|hotspots> \
   real_serving/scripts/run.sh
 ```
 
@@ -161,7 +161,7 @@ TOKENSPEED_SPEC_SIMULATED_ACCEPT_LEN=3.75 python3 -m tokenspeed.cli serve /data/
   --nnodes 2 \
   --nprocs-per-node 4 \
   --world-size 8 \
-  --dist-init-addr 10.5.212.227:25000 \
+  --dist-init-addr <node 0 ip>:25000 \
   --node-rank 0 \
   --max-model-len 65536 \
   --max-num-seqs 16 \
