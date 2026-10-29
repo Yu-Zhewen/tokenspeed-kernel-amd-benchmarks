@@ -8,7 +8,7 @@ phase. Writes:
   README.md                       the document
   kernel-tables/<model>/*.csv     every kernel symbol per stage
 
-Kernels are grouped with emulate_rank0's `CATEGORIES`, behind a
+Kernels are grouped with emulate_rank0's `CATEGORIES`, plus a
 `communication` bucket that emulation never ran.
 """
 
@@ -109,7 +109,9 @@ def stage_scale(stage, decode_steps):
 def breakdown_table(hotspots, decode_steps, phases, rates, accept):
     per_stage = {key: ac.category_totals(hotspots.get(key, [])) for key in STAGES}
     present = {c for totals in per_stage.values() for c in totals}
-    order = [name for name, _ in ac.CATEGORIES if name in present]
+    order = [name for name, _ in ac.CATEGORIES if name in present and name != COMMUNICATION]
+    if COMMUNICATION in present:
+        order.append(COMMUNICATION)
     if "other" in present:
         order.append("other")
     lines = [
@@ -126,8 +128,7 @@ def breakdown_table(hotspots, decode_steps, phases, rates, accept):
     totals = {key: sum(t.values()) or 1.0 for key, t in per_stage.items()}
     for category in order:
         cells = [cell(per_stage[k].get(category, 0.0), totals[k], k) for k in STAGES]
-        name = f"**{category}**" if category == COMMUNICATION else category
-        lines.append(f"| {name} | " + " | ".join(cells) + " |")
+        lines.append(f"| {category} | " + " | ".join(cells) + " |")
     cells = []
     for key in STAGES:
         total = sum(per_stage[key].values())
@@ -224,7 +225,7 @@ def main() -> None:
         raise SystemExit("--commit-date must be YYYY-MM-DD")
 
     sections, summary, accepts, dates, revisions, modes = [], [], [], set(), set(), set()
-    collectives = []
+    collectives, appendix = [], []
     image, env0, work = "", {}, None
     for model, label, algo in MODELS:
         d = args.run / model
@@ -281,7 +282,7 @@ def main() -> None:
             balance = read_rank_balance(d / "rank_balance.txt")
             probe = read_probe(d / "allreduce_probe.txt")
             if balance or probe:
-                lines += ["### Collectives", ""]
+                appendix += [f"### {label} {algo}, {where}", ""]
             if balance:
                 profiled = len({tag for tag, _ in balance})
                 world = int(env.get("nnodes", "1") or 1) * int(env.get("gpus_per_node", "0") or 0)
@@ -289,7 +290,7 @@ def main() -> None:
                     f"all {profiled} ranks" if profiled == world
                     else f"the {profiled} ranks on node 0, of {world}"
                 )
-                lines += [
+                appendix += [
                     f"Every profiled rank ({which}), from `rank_balance.txt`. A",
                     "collective ends on every rank together, so a rank that reached",
                     "it late would spend less time in it than the others.",
@@ -303,7 +304,7 @@ def main() -> None:
                     f"{fmt(c[0] / c[1] * 1e3)} us at {w.split('/')[0]}"
                     for w, c in calls.items() if c and c[1]
                 ]
-                lines += [
+                appendix += [
                     "A bf16 all-reduce of hidden-size rows over the same GPUs and",
                     "network setup outside the server (`allreduce_probe.txt`). Rank 0's",
                     "decode collectives inside the server average "
@@ -373,27 +374,6 @@ def main() -> None:
         f"{env0.get('tokenspeed-triton', '?')} |",
         f"| Image | `{image}` |",
         "",
-        "## Communication share of rank 0's kernel time",
-        "",
-        "| Model | Layout | " + " | ".join(STAGE_LABEL[s] for s in STAGES) + " |",
-        "|---|---|" + "---:|" * len(STAGES),
-        *summary,
-        "",
-        *(
-            [
-                "Batch 1 decode collectives on rank 0 against the same GPUs'",
-                "all-reduce of four hidden-size rows (one verify step's tokens)",
-                "replayed from a CUDA graph outside the server; see each model's",
-                "Collectives section.",
-                "",
-                "| Model | Layout | Calls per step | In server (us per call) "
-                "| Isolated, 4 rows (us) | Collectives per step (ms) |",
-                "|---|---|---:|---:|---:|---:|",
-                *collectives,
-                "",
-            ]
-            if collectives else []
-        ),
         "## Acceptance",
         "",
         "Logged values are medians over the server's 40-step decode windows;",
@@ -431,8 +411,8 @@ def main() -> None:
                 "  time how far the other ranks' kernel launches lag rank 0's.",
             ]
         ),
-        "- Kernel tables are rank 0's; the Collectives sections cover every",
-        "  rank on node 0. A rank's communication kernels include the time it",
+        "- Kernel tables are rank 0's; the appendix covers every rank on",
+        "  node 0. A rank's communication kernels include the time it",
         "  waits at each collective for the slowest rank.",
         "- The isolated all-reduce sends hidden-size bf16 rows; the server's",
         "  collectives can be wider or fused with a norm, so it shows what that",
@@ -442,6 +422,34 @@ def main() -> None:
         "- Accept lengths are fixed, so these runs measure the cost of a verify",
         "  step at a given acceptance, not drafter quality.",
         "",
+        *(
+            [
+                "## Appendix: collectives",
+                "",
+                "Communication's share of rank 0's kernel time per stage:",
+                "",
+                "| Model | Layout | " + " | ".join(STAGE_LABEL[s] for s in STAGES) + " |",
+                "|---|---|" + "---:|" * len(STAGES),
+                *summary,
+                "",
+            ]
+            if summary else []
+        ),
+        *(
+            [
+                "Batch 1 decode collectives on rank 0 against the same GPUs'",
+                "all-reduce of four hidden-size rows (one verify step's tokens)",
+                "replayed from a CUDA graph outside the server:",
+                "",
+                "| Model | Layout | Calls per step | In server (us per call) "
+                "| Isolated, 4 rows (us) | Collectives per step (ms) |",
+                "|---|---|---:|---:|---:|---:|",
+                *collectives,
+                "",
+            ]
+            if collectives else []
+        ),
+        *appendix,
         "Regenerate this document with:",
         "",
         "```bash",

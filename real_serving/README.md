@@ -95,7 +95,7 @@ of that check, most of it loading the checkpoint twice.
 Results per model hold the same files as emulate_rank0's, plus
 `profiled_ranks.txt` (pid and rank tag of each profiled process).
 
-Two optional inputs feed the report's Collectives sections. After the
+Two optional inputs feed the report's collectives appendix. After the
 hotspots phase, on node 0:
 
 ```bash

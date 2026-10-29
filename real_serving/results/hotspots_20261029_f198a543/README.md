@@ -21,25 +21,6 @@ Kernel tables are rank 0's.
 | torch / tokenspeed-triton | 2.14.0+rocm10.2.0a20260923 / 3.9.10.post20261028 |
 | Image | `tokenspeed-gfx1250:main-f198a543` |
 
-## Communication share of rank 0's kernel time
-
-| Model | Layout | prefill c1 | prefill c16 | decode c1 | decode c16 |
-|---|---|---:|---:|---:|---:|
-| GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 13% | 11% | 37% | 27% |
-| DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 16% | 18% | 39% | 49% |
-| Kimi-K3 EAGLE3 | TP8 (2 nodes x 4 GPUs) | 33% | 32% | 80% | 70% |
-
-Batch 1 decode collectives on rank 0 against the same GPUs'
-all-reduce of four hidden-size rows (one verify step's tokens)
-replayed from a CUDA graph outside the server; see each model's
-Collectives section.
-
-| Model | Layout | Calls per step | In server (us per call) | Isolated, 4 rows (us) | Collectives per step (ms) |
-|---|---|---:|---:|---:|---:|
-| GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 114 | 33.5 | 7.3 | 3.83 |
-| DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 94 | 44.1 | 7.3 | 4.17 |
-| Kimi-K3 EAGLE3 | TP8 (2 nodes x 4 GPUs) | 195 | 176.2 | 11.9 | 34.35 |
-
 ## Acceptance
 
 Logged values are medians over the server's 40-step decode windows;
@@ -81,7 +62,6 @@ the other ranks.
 
 | Category | prefill c1 | prefill c16 | decode c1 | decode c16 |
 |---|---:|---:|---:|---:|
-| **communication** | 128.06 (13%) | 1,705.48 (11%) | 3.83 (37%) | 4.27 (27%) |
 | KDA other | 39.77 (4%) | 623.57 (4%) | 0.23 (2%) | 0.51 (3%) |
 | MoE | 291.89 (30%) | 4,581.49 (30%) | 1.24 (12%) | 3.62 (23%) |
 | index top-k | 19.78 (2%) | 318.20 (2%) | 0.26 (2%) | 0.27 (2%) |
@@ -94,35 +74,10 @@ the other ranks.
 | rmsnorm | 11.78 (1%) | 175.75 (1%) | 0.37 (4%) | 0.43 (3%) |
 | sampling | 0.14 (0%) | 1.56 (0%) | 0.03 (0%) | 0.03 (0%) |
 | elementwise | 51.12 (5%) | 775.63 (5%) | 0.55 (5%) | 0.64 (4%) |
+| communication | 128.06 (13%) | 1,705.48 (11%) | 3.83 (37%) | 4.27 (27%) |
 | other | 8.07 (1%) | 123.14 (1%) | 0.06 (1%) | 0.09 (1%) |
 | all kernels | 982.71 | 15,080.28 | 10.40 | 16.07 |
 | **Measured, CUDA graphs** | **1,074.30** (TTFT max) | **16,509.28** (TTFT max) | **9.59** (verify step) | **14.36** (verify step) |
-
-### Collectives
-
-Every profiled rank (all 4 ranks), from `rank_balance.txt`. A
-collective ends on every rank together, so a rank that reached
-it late would spend less time in it than the others.
-
-| Rank | c1 decode: per call (us) | c1 decode: comm / compute per step (ms) | c16 decode: per call (us) | c16 decode: comm / compute per step (ms) |
-|---|---:|---:|---:|---:|
-| TP0 | 33.5 | 3.83 / 6.57 | 37.4 | 4.27 / 11.80 |
-| TP1 | 33.1 | 3.78 / 6.65 | 35.8 | 4.09 / 11.99 |
-| TP2 | 31.2 | 3.57 / 6.74 | 35.7 | 4.08 / 11.91 |
-| TP3 | 32.3 | 3.69 / 6.62 | 34.8 | 3.97 / 11.94 |
-
-A bf16 all-reduce of hidden-size rows over the same GPUs and
-network setup outside the server (`allreduce_probe.txt`). Rank 0's
-decode collectives inside the server average 33.5 us at c1 and 37.4 us at c16 per call. Some
-server collectives carry fused norms or wider rows than the
-hidden size.
-
-| Tokens | Bytes | Back-to-back (us) | CUDA-graph replay (us) |
-|---:|---:|---:|---:|
-| 4 | 32,768 | 14.7 | 7.3 |
-| 64 | 524,288 | 15.9 | 9.1 |
-| 256 | 2,097,152 | 26.8 | 20.1 |
-| 8,192 | 67,108,864 | 135.8 | — |
 
 <details><summary>prefill c1: heaviest 10 kernels</summary>
 
@@ -214,7 +169,6 @@ the other ranks.
 
 | Category | prefill c1 | prefill c16 | decode c1 | decode c16 |
 |---|---:|---:|---:|---:|
-| **communication** | 63.52 (16%) | 1,164.84 (18%) | 4.17 (39%) | 10.31 (49%) |
 | MoE | 71.89 (18%) | 1,106.30 (17%) | 1.09 (10%) | 2.69 (13%) |
 | index top-k | 20.54 (5%) | 323.48 (5%) | 0.53 (5%) | 0.57 (3%) |
 | index scoring | 56.53 (14%) | 906.24 (14%) | 0.13 (1%) | 0.68 (3%) |
@@ -226,35 +180,10 @@ the other ranks.
 | top-k and sort | 0.26 (0%) | 4.38 (0%) | — | — |
 | sampling | 0.01 (0%) | 0.11 (0%) | 0.01 (0%) | 0.01 (0%) |
 | elementwise | 41.42 (10%) | 646.62 (10%) | 0.54 (5%) | 0.67 (3%) |
+| communication | 63.52 (16%) | 1,164.84 (18%) | 4.17 (39%) | 10.31 (49%) |
 | other | 6.97 (2%) | 111.12 (2%) | 0.18 (2%) | 0.21 (1%) |
 | all kernels | 398.72 | 6,389.45 | 10.66 | 20.88 |
 | **Measured, CUDA graphs** | **399.91** (TTFT max) | **6,098.84** (TTFT max) | **8.64** (verify step) | **18.36** (verify step) |
-
-### Collectives
-
-Every profiled rank (all 4 ranks), from `rank_balance.txt`. A
-collective ends on every rank together, so a rank that reached
-it late would spend less time in it than the others.
-
-| Rank | c1 decode: per call (us) | c1 decode: comm / compute per step (ms) | c16 decode: per call (us) | c16 decode: comm / compute per step (ms) |
-|---|---:|---:|---:|---:|
-| TP0 | 44.1 | 4.17 / 6.48 | 109.1 | 10.31 / 10.57 |
-| TP1 | 41.2 | 3.89 / 6.55 | 102.9 | 9.72 / 10.54 |
-| TP2 | 40.9 | 3.87 / 6.47 | 105.2 | 9.94 / 10.48 |
-| TP3 | 35.9 | 3.39 / 6.53 | 103.8 | 9.81 / 10.45 |
-
-A bf16 all-reduce of hidden-size rows over the same GPUs and
-network setup outside the server (`allreduce_probe.txt`). Rank 0's
-decode collectives inside the server average 44.1 us at c1 and 109.1 us at c16 per call. Some
-server collectives carry fused norms or wider rows than the
-hidden size.
-
-| Tokens | Bytes | Back-to-back (us) | CUDA-graph replay (us) |
-|---:|---:|---:|---:|
-| 4 | 40,960 | 14.4 | 7.3 |
-| 64 | 655,360 | 16.0 | 9.8 |
-| 256 | 2,621,440 | 24.9 | 18.5 |
-| 8,192 | 83,886,080 | 159.3 | — |
 
 <details><summary>prefill c1: heaviest 10 kernels</summary>
 
@@ -346,7 +275,6 @@ the other ranks.
 
 | Category | prefill c1 | prefill c16 | decode c1 | decode c16 |
 |---|---:|---:|---:|---:|
-| **communication** | 633.52 (33%) | 9,536.64 (32%) | 34.35 (80%) | 35.86 (70%) |
 | KDA other | 72.54 (4%) | 1,124.94 (4%) | 0.54 (1%) | 0.94 (2%) |
 | MoE | 393.56 (20%) | 6,038.07 (20%) | 2.25 (5%) | 5.92 (11%) |
 | input projections | 195.75 (10%) | 3,032.04 (10%) | 0.84 (2%) | 1.26 (2%) |
@@ -358,35 +286,10 @@ the other ranks.
 | rmsnorm | 12.61 (1%) | 188.46 (1%) | 0.46 (1%) | 0.49 (1%) |
 | sampling | 0.13 (0%) | 1.55 (0%) | 0.03 (0%) | 0.03 (0%) |
 | elementwise | 6.89 (0%) | 99.57 (0%) | 0.13 (0%) | 0.35 (1%) |
+| communication | 633.52 (33%) | 9,536.64 (32%) | 34.35 (80%) | 35.86 (70%) |
 | other | 8.20 (0%) | 123.90 (0%) | 0.07 (0%) | 0.10 (0%) |
 | all kernels | 1,943.17 | 29,968.26 | 42.77 | 51.60 |
 | **Measured, CUDA graphs** | **2,041.37** (TTFT max) | **29,181.27** (TTFT max) | **42.79** (verify step) | **52.39** (verify step) |
-
-### Collectives
-
-Every profiled rank (the 4 ranks on node 0, of 8), from `rank_balance.txt`. A
-collective ends on every rank together, so a rank that reached
-it late would spend less time in it than the others.
-
-| Rank | c1 decode: per call (us) | c1 decode: comm / compute per step (ms) | c16 decode: per call (us) | c16 decode: comm / compute per step (ms) |
-|---|---:|---:|---:|---:|
-| TP0 | 176.2 | 34.35 / 8.42 | 184.0 | 35.86 / 15.73 |
-| TP1 | 176.7 | 34.44 / 8.34 | 183.7 | 35.81 / 15.81 |
-| TP2 | 176.6 | 34.42 / 8.35 | 184.2 | 35.91 / 15.68 |
-| TP3 | 176.0 | 34.31 / 8.44 | 184.0 | 35.86 / 15.68 |
-
-A bf16 all-reduce of hidden-size rows over the same GPUs and
-network setup outside the server (`allreduce_probe.txt`). Rank 0's
-decode collectives inside the server average 176.2 us at c1 and 184.0 us at c16 per call. Some
-server collectives carry fused norms or wider rows than the
-hidden size.
-
-| Tokens | Bytes | Back-to-back (us) | CUDA-graph replay (us) |
-|---:|---:|---:|---:|
-| 4 | 57,344 | 18.7 | 11.9 |
-| 64 | 917,504 | 25.5 | 19.3 |
-| 256 | 3,670,016 | 46.4 | 40.2 |
-| 8,192 | 117,440,512 | 242.6 | — |
 
 <details><summary>prefill c1: heaviest 10 kernels</summary>
 
@@ -461,8 +364,8 @@ hidden size.
 - Timing and profiling are separate server runs with the same flags.
   rocprofv3 traces the kernels inside the decode CUDA graphs too, so
   the profile sees the collectives as the perf run issues them.
-- Kernel tables are rank 0's; the Collectives sections cover every
-  rank on node 0. A rank's communication kernels include the time it
+- Kernel tables are rank 0's; the appendix covers every rank on
+  node 0. A rank's communication kernels include the time it
   waits at each collective for the slowest rank.
 - The isolated all-reduce sends hidden-size bf16 rows; the server's
   collectives can be wider or fused with a norm, so it shows what that
@@ -471,6 +374,104 @@ hidden size.
   natural text.
 - Accept lengths are fixed, so these runs measure the cost of a verify
   step at a given acceptance, not drafter quality.
+
+## Appendix: collectives
+
+Communication's share of rank 0's kernel time per stage:
+
+| Model | Layout | prefill c1 | prefill c16 | decode c1 | decode c16 |
+|---|---|---:|---:|---:|---:|
+| GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 13% | 11% | 37% | 27% |
+| DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 16% | 18% | 39% | 49% |
+| Kimi-K3 EAGLE3 | TP8 (2 nodes x 4 GPUs) | 33% | 32% | 80% | 70% |
+
+Batch 1 decode collectives on rank 0 against the same GPUs'
+all-reduce of four hidden-size rows (one verify step's tokens)
+replayed from a CUDA graph outside the server:
+
+| Model | Layout | Calls per step | In server (us per call) | Isolated, 4 rows (us) | Collectives per step (ms) |
+|---|---|---:|---:|---:|---:|
+| GLM-5.3-Flash MTP | TP4 (1 node, 4 GPUs) | 114 | 33.5 | 7.3 | 3.83 |
+| DeepSeek-V4.1-Flash DSPARK | TP4 (1 node, 4 GPUs) | 94 | 44.1 | 7.3 | 4.17 |
+| Kimi-K3 EAGLE3 | TP8 (2 nodes x 4 GPUs) | 195 | 176.2 | 11.9 | 34.35 |
+
+### GLM-5.3-Flash MTP, TP4 (1 node, 4 GPUs)
+
+Every profiled rank (all 4 ranks), from `rank_balance.txt`. A
+collective ends on every rank together, so a rank that reached
+it late would spend less time in it than the others.
+
+| Rank | c1 decode: per call (us) | c1 decode: comm / compute per step (ms) | c16 decode: per call (us) | c16 decode: comm / compute per step (ms) |
+|---|---:|---:|---:|---:|
+| TP0 | 33.5 | 3.83 / 6.57 | 37.4 | 4.27 / 11.80 |
+| TP1 | 33.1 | 3.78 / 6.65 | 35.8 | 4.09 / 11.99 |
+| TP2 | 31.2 | 3.57 / 6.74 | 35.7 | 4.08 / 11.91 |
+| TP3 | 32.3 | 3.69 / 6.62 | 34.8 | 3.97 / 11.94 |
+
+A bf16 all-reduce of hidden-size rows over the same GPUs and
+network setup outside the server (`allreduce_probe.txt`). Rank 0's
+decode collectives inside the server average 33.5 us at c1 and 37.4 us at c16 per call. Some
+server collectives carry fused norms or wider rows than the
+hidden size.
+
+| Tokens | Bytes | Back-to-back (us) | CUDA-graph replay (us) |
+|---:|---:|---:|---:|
+| 4 | 32,768 | 14.7 | 7.3 |
+| 64 | 524,288 | 15.9 | 9.1 |
+| 256 | 2,097,152 | 26.8 | 20.1 |
+| 8,192 | 67,108,864 | 135.8 | — |
+
+### DeepSeek-V4.1-Flash DSPARK, TP4 (1 node, 4 GPUs)
+
+Every profiled rank (all 4 ranks), from `rank_balance.txt`. A
+collective ends on every rank together, so a rank that reached
+it late would spend less time in it than the others.
+
+| Rank | c1 decode: per call (us) | c1 decode: comm / compute per step (ms) | c16 decode: per call (us) | c16 decode: comm / compute per step (ms) |
+|---|---:|---:|---:|---:|
+| TP0 | 44.1 | 4.17 / 6.48 | 109.1 | 10.31 / 10.57 |
+| TP1 | 41.2 | 3.89 / 6.55 | 102.9 | 9.72 / 10.54 |
+| TP2 | 40.9 | 3.87 / 6.47 | 105.2 | 9.94 / 10.48 |
+| TP3 | 35.9 | 3.39 / 6.53 | 103.8 | 9.81 / 10.45 |
+
+A bf16 all-reduce of hidden-size rows over the same GPUs and
+network setup outside the server (`allreduce_probe.txt`). Rank 0's
+decode collectives inside the server average 44.1 us at c1 and 109.1 us at c16 per call. Some
+server collectives carry fused norms or wider rows than the
+hidden size.
+
+| Tokens | Bytes | Back-to-back (us) | CUDA-graph replay (us) |
+|---:|---:|---:|---:|
+| 4 | 40,960 | 14.4 | 7.3 |
+| 64 | 655,360 | 16.0 | 9.8 |
+| 256 | 2,621,440 | 24.9 | 18.5 |
+| 8,192 | 83,886,080 | 159.3 | — |
+
+### Kimi-K3 EAGLE3, TP8 (2 nodes x 4 GPUs)
+
+Every profiled rank (the 4 ranks on node 0, of 8), from `rank_balance.txt`. A
+collective ends on every rank together, so a rank that reached
+it late would spend less time in it than the others.
+
+| Rank | c1 decode: per call (us) | c1 decode: comm / compute per step (ms) | c16 decode: per call (us) | c16 decode: comm / compute per step (ms) |
+|---|---:|---:|---:|---:|
+| TP0 | 176.2 | 34.35 / 8.42 | 184.0 | 35.86 / 15.73 |
+| TP1 | 176.7 | 34.44 / 8.34 | 183.7 | 35.81 / 15.81 |
+| TP2 | 176.6 | 34.42 / 8.35 | 184.2 | 35.91 / 15.68 |
+| TP3 | 176.0 | 34.31 / 8.44 | 184.0 | 35.86 / 15.68 |
+
+A bf16 all-reduce of hidden-size rows over the same GPUs and
+network setup outside the server (`allreduce_probe.txt`). Rank 0's
+decode collectives inside the server average 176.2 us at c1 and 184.0 us at c16 per call. Some
+server collectives carry fused norms or wider rows than the
+hidden size.
+
+| Tokens | Bytes | Back-to-back (us) | CUDA-graph replay (us) |
+|---:|---:|---:|---:|
+| 4 | 57,344 | 18.7 | 11.9 |
+| 64 | 917,504 | 25.5 | 19.3 |
+| 256 | 3,670,016 | 46.4 | 40.2 |
+| 8,192 | 117,440,512 | 242.6 | — |
 
 Regenerate this document with:
 
